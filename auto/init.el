@@ -5,12 +5,12 @@
                      '(("article" "11pt")))
    (TeX-add-to-alist 'LaTeX-provided-package-options
                      '(("inputenc" "utf8") ("fontenc" "T1") ("ulem" "normalem") ("vietnam" "utf8")))
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperref")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperimage")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperbaseurl")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "nolinkurl")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "url")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "path")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "url")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "nolinkurl")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperbaseurl")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperimage")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperref")
    (add-to-list 'LaTeX-verbatim-macros-with-delims-local "path")
    (TeX-run-style-hooks
     "latex2e"
@@ -31,17 +31,18 @@
     "hyperref"
     "vietnam")
    (LaTeX-add-labels
-    "sec:org7ed0e9f"
-    "sec:orgb390509"
-    "sec:org351e26a"
-    "sec:orge2fe01b"
-    "sec:org5b8b177"
-    "sec:org44f4a26"
-    "sec:org1fd1df5"
-    "sec:org9884e1d"
-    "sec:orge3330f6"
-    "sec:orgcb5d600"
-    "sec:orgf6efb0b"
-    "sec:orgce27dc9"))
+    "sec:org3cad4ac"
+    "sec:org5be3dba"
+    "sec:org3f3a779"
+    "sec:orga114509"
+    "sec:org066f88e"
+    "sec:orgde977d8"
+    "sec:org0f53ed6"
+    "sec:org4814d00"
+    "sec:orgc7bb284"
+    "sec:org58b544a"
+    "sec:org386a568"
+    "sec:org7e07b15"
+    "sec:org00ccad5"))
  :latex)
 

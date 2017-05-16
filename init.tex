@@ -1,4 +1,4 @@
-% Created 2017-05-17 T4 05:10
+% Created 2017-05-17 T4 06:17
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,15 +31,17 @@
 The whole thing is driven by the following \texttt{.emacs}
 
 \begin{verbatim}
-
 ;; init.el for this setup. Must use Emacs 24
 (org-babel-load-file
 (expand-file-name "init.org"
                  "/media/Logical_Drive/Emacs/Settings"))
 \end{verbatim}
 
-\section*{Path configurations}
-\label{sec:org7ed0e9f}
+\section*{General}
+\label{sec:org3cad4ac}
+General config for emacs with no major mode involved
+\subsection*{Path configurations}
+\label{sec:org5be3dba}
 
 \begin{verbatim}
 
@@ -50,8 +52,8 @@ The whole thing is driven by the following \texttt{.emacs}
 
 \end{verbatim}
 
-\section*{Appearence}
-\label{sec:orgb390509}
+\subsection*{Appearence}
+\label{sec:org3f3a779}
 
 \begin{verbatim}
 
@@ -96,8 +98,8 @@ The whole thing is driven by the following \texttt{.emacs}
 
 \end{verbatim}
 
-\section*{Editing}
-\label{sec:org351e26a}
+\subsection*{Editing}
+\label{sec:orga114509}
 
 \begin{verbatim}
 
@@ -145,8 +147,8 @@ The whole thing is driven by the following \texttt{.emacs}
 
 \end{verbatim}
 
-\section*{Miscelanous}
-\label{sec:orge2fe01b}
+\subsection*{Miscelanous}
+\label{sec:org066f88e}
 \begin{verbatim}
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -180,8 +182,9 @@ The whole thing is driven by the following \texttt{.emacs}
 
 \end{verbatim}
 
+
 \section*{Helm config}
-\label{sec:org5b8b177}
+\label{sec:orgde977d8}
 \begin{verbatim}
 
 (require 'helm)
@@ -238,7 +241,7 @@ The whole thing is driven by the following \texttt{.emacs}
 \end{verbatim}
 
 \section*{ESS}
-\label{sec:org44f4a26}
+\label{sec:org0f53ed6}
 
 \begin{verbatim}
 
@@ -301,7 +304,7 @@ The whole thing is driven by the following \texttt{.emacs}
 \end{verbatim}
 
 \section*{Elpy}
-\label{sec:org1fd1df5}
+\label{sec:org4814d00}
 
 \begin{verbatim}
 (elpy-enable)				
@@ -313,7 +316,7 @@ The whole thing is driven by the following \texttt{.emacs}
 \end{verbatim}
 
 \section*{AUCTeX}
-\label{sec:org9884e1d}
+\label{sec:orgc7bb284}
 \begin{verbatim}
 
 (setq TeX-auto-save t)			    
@@ -331,7 +334,7 @@ The whole thing is driven by the following \texttt{.emacs}
 \end{verbatim}
 
 \section*{Polymode}
-\label{sec:orge3330f6}
+\label{sec:org58b544a}
 
 \begin{verbatim}
 
@@ -351,7 +354,7 @@ The whole thing is driven by the following \texttt{.emacs}
 \end{verbatim}
 
 \section*{Pdf-tools}
-\label{sec:orgcb5d600}
+\label{sec:org386a568}
 
 \begin{verbatim}
 
@@ -364,7 +367,7 @@ The whole thing is driven by the following \texttt{.emacs}
 \end{verbatim}
 
 \section*{Magit}
-\label{sec:orgf6efb0b}
+\label{sec:org7e07b15}
 
 \begin{verbatim}
 
@@ -374,6 +377,6 @@ The whole thing is driven by the following \texttt{.emacs}
 \end{verbatim}
 
 \section*{Draft}
-\label{sec:orgce27dc9}
+\label{sec:org00ccad5}
 Settings in this section are not yet organized but are being used
 \end{document}

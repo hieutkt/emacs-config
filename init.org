@@ -1,6 +1,7 @@
 #+TITLE: Emacs Configuration
 #+AUTHOR: Nguyễn Đức Hiếu
 #+OPTIONS: toc:nil num:nil ^:nil
+#+LATEX_CLASS: article
 #+LATEX_HEADER: \usepackage[utf8]{vietnam}
 
 
@@ -13,7 +14,9 @@ The whole thing is driven by the following =.emacs=
                    "/media/Logical_Drive/Emacs/Settings"))
 #+end_example
 
-* Path configurations
+* General
+General config for emacs with no major mode involved
+** Path configurations
 
 #+BEGIN_SRC emacs-lisp
 
@@ -24,7 +27,7 @@ The whole thing is driven by the following =.emacs=
 
 #+END_SRC
 
-* Appearence
+** Appearence
 
 #+BEGIN_SRC emacs-lisp
 
@@ -69,7 +72,7 @@ The whole thing is driven by the following =.emacs=
 
 #+END_SRC
 
-* Editing
+** Editing
 
 #+BEGIN_SRC emacs-lisp
 
@@ -117,7 +120,7 @@ The whole thing is driven by the following =.emacs=
 
 #+END_SRC
 
-* Miscelanous
+** Miscelanous
 #+BEGIN_SRC emacs-lisp
   ;; Auto-revert mode
   (global-auto-revert-mode 1)
@@ -150,6 +153,7 @@ The whole thing is driven by the following =.emacs=
   (find-file "/media/Logical_Drive/Emacs/Settings/init.org")
 
 #+END_SRC
+
 
 * Helm config
 #+BEGIN_SRC emacs-lisp
