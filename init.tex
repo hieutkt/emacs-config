@@ -1,4 +1,4 @@
-% Created 2017-05-17 T4 06:17
+% Created 2017-05-19 T6 10:52
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -15,6 +15,7 @@
 \usepackage{capt-of}
 \usepackage{hyperref}
 \usepackage[utf8]{vietnam}
+\setcounter{secnumdepth}{3}
 \author{Nguyễn Đức Hiếu}
 \date{\today}
 \title{Emacs Configuration}
@@ -28,6 +29,10 @@
 \begin{document}
 
 \maketitle
+
+\section{Information}
+\label{sec:org3f50529}
+
 The whole thing is driven by the following \texttt{.emacs}
 
 \begin{verbatim}
@@ -37,11 +42,11 @@ The whole thing is driven by the following \texttt{.emacs}
                  "/media/Logical_Drive/Emacs/Settings"))
 \end{verbatim}
 
-\section*{General}
-\label{sec:org3cad4ac}
+\section{General}
+\label{sec:org765618b}
 General config for emacs with no major mode involved
-\subsection*{Path configurations}
-\label{sec:org5be3dba}
+\subsection{Path configurations}
+\label{sec:orga59c073}
 
 \begin{verbatim}
 
@@ -52,8 +57,8 @@ General config for emacs with no major mode involved
 
 \end{verbatim}
 
-\subsection*{Appearence}
-\label{sec:org3f3a779}
+\subsection{Appearence}
+\label{sec:org14fbb3c}
 
 \begin{verbatim}
 
@@ -71,16 +76,17 @@ General config for emacs with no major mode involved
 
 
 ;; Set themes
-(add-hook 'after-init-hook (lambda () (load-theme 'gruvbox)))
+(load-theme 'gruvbox t)
+(set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
+(set-face-attribute 'default nil :foreground "#ffffff")
+(set-face-attribute 'mode-line nil :background "#2f4f4f")
+
+;; Set background face for color string
+(add-hook 'prog-mode-hook 'rainbow-mode)
+
 
 ;; Global font-lock mode
 (setq global-font-lock-mode t)
-
-;; fontify code in code blocks
-(setq org-src-fontify-natively t)
-;; (set-face-attribute 'org-block nil :foreground "white")
-(set-face-attribute 'org-block nil 
-				 :foreground "#ffffff")
 
 
 ;; Enable line number and column number
@@ -98,15 +104,16 @@ General config for emacs with no major mode involved
 
 \end{verbatim}
 
-\subsection*{Editing}
-\label{sec:orga114509}
+\subsection{Editing}
+\label{sec:orgaee9b32}
 
 \begin{verbatim}
 
 ;; Delete marked region when input
 (delete-selection-mode 1)
 
-
+;; Global mark ring
+(setq global-mark-ring-max 50000)
 
 ;; "Yes or no"? Too much writing
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -123,6 +130,8 @@ General config for emacs with no major mode involved
 (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
 
+;; Set kill ring size
+(setq global-mark-ring-max 50000)
 
 ;; Code completion
 (require 'company)
@@ -135,7 +144,9 @@ General config for emacs with no major mode involved
       company-minimum-prefix-length 2
       company-tooltip-limit 10)
 
-
+;; Expand region with M-m
+(require 'expand-region)
+(global-set-key (kbd "M-m") 'er/expand-region)
 
 ;; Define function: fill character to 80
 (defun fill-to-end (char)
@@ -147,8 +158,8 @@ General config for emacs with no major mode involved
 
 \end{verbatim}
 
-\subsection*{Miscelanous}
-\label{sec:org066f88e}
+\subsection{Miscelanous}
+\label{sec:org9eec69f}
 \begin{verbatim}
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -182,9 +193,23 @@ General config for emacs with no major mode involved
 
 \end{verbatim}
 
+\section{Org-mode}
+\label{sec:org7938933}
+\begin{verbatim}
 
-\section*{Helm config}
-\label{sec:orgde977d8}
+;; Enable shift selection
+(setq org-support-shift-select t)
+
+
+;; fontify code in code blocks
+(setq org-src-fontify-natively t)
+(set-face-attribute 'org-block nil :foreground "#ffffff")
+(set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
+(set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
+
+\end{verbatim}
+\section{Helm config}
+\label{sec:org8685144}
 \begin{verbatim}
 
 (require 'helm)
@@ -240,22 +265,23 @@ General config for emacs with no major mode involved
 
 \end{verbatim}
 
-\section*{ESS}
-\label{sec:org0f53ed6}
+\section{\texttt{ESS} for \texttt{R} programming}
+\label{sec:org8ab440a}
 
 \begin{verbatim}
 
 (require 'ess-site)
 (require 'ess-rutils)
 
+(add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
 
-(add-hook 'inferior-ess-mode-hook (font-lock-mode))
 ;; Indentation style
 (setq ess-default-style 'RStudio)
 
 ;; Remap "<-" key to M-- instead of smart bind to "_"
 (ess-toggle-underscore nil)
 (define-key ess-mode-map (kbd "M--") 'ess-smart-S-assign)
+(define-key inferior-ess-mode-map (kbd "M--") 'ess-smart-S-assign)
 
 ;; Hot key C-S-m for pipe operator in ESS
 (defun then_R_operator ()
@@ -278,6 +304,29 @@ General config for emacs with no major mode involved
      ("summary(%s, maxsum = 20)")))
 
 
+(defun ess-rmarkdown ()
+"Compile R markdown (.Rmd). Should work for any output type."
+(interactive)
+;; Check if attached R-session
+(condition-case nil
+    (ess-get-process)
+  (error
+   (ess-switch-process)))
+(let* ((rmd-buf (current-buffer)))
+  (save-excursion
+    (let* ((sprocess (ess-get-process ess-current-process-name))
+	   (sbuffer (process-buffer sprocess))
+	   (buf-coding (symbol-name buffer-file-coding-system))
+	   (R-cmd
+	    (format "library(rmarkdown); rmarkdown::render(\"%s\")"
+		    buffer-file-name)))
+      (message "Running rmarkdown on %s" buffer-file-name)
+      (ess-execute R-cmd 'buffer nil nil)
+      (switch-to-buffer rmd-buf)
+      (ess-show-buffer (buffer-name sbuffer) nil)))))
+
+(define-key ess-mode-map "\M-ns" 'ess-rmarkdown)
+
 (defun ess-rshiny ()
   "Compile R markdown (.Rmd). Should work for any output type."
   (interactive)
@@ -292,7 +341,7 @@ General config for emacs with no major mode involved
 	     (sbuffer (process-buffer sprocess))
 	     (buf-coding (symbol-name buffer-file-coding-system))
 	     (R-cmd
-	      (format "library(rmarkdown); rmarkdown::run(\"%s\")"
+	      (format "rmarkdown::run(\"%s\")"
 		      buffer-file-name)))
 	(message "Running shiny on %s" buffer-file-name)
 	(ess-execute R-cmd 'buffer nil nil)
@@ -303,8 +352,8 @@ General config for emacs with no major mode involved
 
 \end{verbatim}
 
-\section*{Elpy}
-\label{sec:org4814d00}
+\section{\texttt{Elpy} for \texttt{python} programming}
+\label{sec:org9d63e8f}
 
 \begin{verbatim}
 (elpy-enable)				
@@ -315,8 +364,8 @@ General config for emacs with no major mode involved
 
 \end{verbatim}
 
-\section*{AUCTeX}
-\label{sec:orgc7bb284}
+\section{\texttt{AUCTeX} for \LaTeX{} programming}
+\label{sec:org1a4a5cc}
 \begin{verbatim}
 
 (setq TeX-auto-save t)			    
@@ -331,10 +380,14 @@ General config for emacs with no major mode involved
 ;; Word-wrap
 (add-hook 'TeX-mode-hook (lambda () (setq-default word-wrap t)))
 
+;; Completion
+(require 'company-auctex)
+(company-auctex-init)
+
 \end{verbatim}
 
-\section*{Polymode}
-\label{sec:org58b544a}
+\section{Polymode}
+\label{sec:org96df92f}
 
 \begin{verbatim}
 
@@ -353,8 +406,8 @@ General config for emacs with no major mode involved
 (add-to-list 'auto-mode-alist '("\\.cppR$" . poly-c++r-mode))
 \end{verbatim}
 
-\section*{Pdf-tools}
-\label{sec:org386a568}
+\section{Pdf-tools}
+\label{sec:org3e47077}
 
 \begin{verbatim}
 
@@ -366,8 +419,8 @@ General config for emacs with no major mode involved
 
 \end{verbatim}
 
-\section*{Magit}
-\label{sec:org7e07b15}
+\section{Magit}
+\label{sec:org192483f}
 
 \begin{verbatim}
 
@@ -376,7 +429,7 @@ General config for emacs with no major mode involved
 
 \end{verbatim}
 
-\section*{Draft}
-\label{sec:org00ccad5}
+\section{Draft}
+\label{sec:orge000c0f}
 Settings in this section are not yet organized but are being used
 \end{document}

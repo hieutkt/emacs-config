@@ -17,16 +17,17 @@
 
 
 ;; Set themes
-(add-hook 'after-init-hook (lambda () (load-theme 'gruvbox)))
+(load-theme 'gruvbox t)
+(set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
+(set-face-attribute 'default nil :foreground "#ffffff")
+(set-face-attribute 'mode-line nil :background "#2f4f4f")
+
+;; Set background face for color string
+(add-hook 'prog-mode-hook 'rainbow-mode)
+
 
 ;; Global font-lock mode
 (setq global-font-lock-mode t)
-
-;; fontify code in code blocks
-(setq org-src-fontify-natively t)
-;; (set-face-attribute 'org-block nil :foreground "white")
-(set-face-attribute 'org-block nil 
-                                 :foreground "#ffffff")
 
 
 ;; Enable line number and column number
@@ -44,7 +45,8 @@
 ;; Delete marked region when input
 (delete-selection-mode 1)
 
-
+;; Global mark ring
+(setq global-mark-ring-max 50000)
 
 ;; "Yes or no"? Too much writing
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -61,6 +63,8 @@
 (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
 
+;; Set kill ring size
+(setq global-mark-ring-max 50000)
 
 ;; Code completion
 (require 'company)
@@ -73,7 +77,9 @@
       company-minimum-prefix-length 2
       company-tooltip-limit 10)
 
-
+;; Expand region with M-m
+(require 'expand-region)
+(global-set-key (kbd "M-m") 'er/expand-region)
 
 ;; Define function: fill character to 80
 (defun fill-to-end (char)
@@ -112,6 +118,16 @@
 
 ;; Startup
 (find-file "/media/Logical_Drive/Emacs/Settings/init.org")
+
+;; Enable shift selection
+(setq org-support-shift-select t)
+
+
+;; fontify code in code blocks
+(setq org-src-fontify-natively t)
+(set-face-attribute 'org-block nil :foreground "#ffffff")
+(set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
+(set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
 (require 'helm)
 (require 'helm-config)
@@ -166,14 +182,15 @@
 (require 'ess-site)
 (require 'ess-rutils)
 
+(add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
 
-(add-hook 'inferior-ess-mode-hook (font-lock-mode))
 ;; Indentation style
 (setq ess-default-style 'RStudio)
 
 ;; Remap "<-" key to M-- instead of smart bind to "_"
 (ess-toggle-underscore nil)
 (define-key ess-mode-map (kbd "M--") 'ess-smart-S-assign)
+(define-key inferior-ess-mode-map (kbd "M--") 'ess-smart-S-assign)
 
 ;; Hot key C-S-m for pipe operator in ESS
 (defun then_R_operator ()
@@ -196,6 +213,29 @@
      ("summary(%s, maxsum = 20)")))
 
 
+(defun ess-rmarkdown ()
+"Compile R markdown (.Rmd). Should work for any output type."
+(interactive)
+;; Check if attached R-session
+(condition-case nil
+    (ess-get-process)
+  (error
+   (ess-switch-process)))
+(let* ((rmd-buf (current-buffer)))
+  (save-excursion
+    (let* ((sprocess (ess-get-process ess-current-process-name))
+           (sbuffer (process-buffer sprocess))
+           (buf-coding (symbol-name buffer-file-coding-system))
+           (R-cmd
+            (format "library(rmarkdown); rmarkdown::render(\"%s\")"
+                    buffer-file-name)))
+      (message "Running rmarkdown on %s" buffer-file-name)
+      (ess-execute R-cmd 'buffer nil nil)
+      (switch-to-buffer rmd-buf)
+      (ess-show-buffer (buffer-name sbuffer) nil)))))
+
+(define-key ess-mode-map "\M-ns" 'ess-rmarkdown)
+
 (defun ess-rshiny ()
   "Compile R markdown (.Rmd). Should work for any output type."
   (interactive)
@@ -210,7 +250,7 @@
 	     (sbuffer (process-buffer sprocess))
 	     (buf-coding (symbol-name buffer-file-coding-system))
 	     (R-cmd
-	      (format "library(rmarkdown); rmarkdown::run(\"%s\")"
+	      (format "rmarkdown::run(\"%s\")"
 		      buffer-file-name)))
 	(message "Running shiny on %s" buffer-file-name)
 	(ess-execute R-cmd 'buffer nil nil)
@@ -236,6 +276,10 @@
 
 ;; Word-wrap
 (add-hook 'TeX-mode-hook (lambda () (setq-default word-wrap t)))
+
+;; Completion
+(require 'company-auctex)
+(company-auctex-init)
 
 (require 'polymode)
 (require 'poly-R)
