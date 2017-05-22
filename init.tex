@@ -1,4 +1,4 @@
-% Created 2017-05-19 T6 10:52
+% Created 2017-05-22 T2 10:07
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,7 +31,7 @@
 \maketitle
 
 \section{Information}
-\label{sec:org3f50529}
+\label{sec:org23e560a}
 
 The whole thing is driven by the following \texttt{.emacs}
 
@@ -43,10 +43,10 @@ The whole thing is driven by the following \texttt{.emacs}
 \end{verbatim}
 
 \section{General}
-\label{sec:org765618b}
+\label{sec:org63638fc}
 General config for emacs with no major mode involved
 \subsection{Path configurations}
-\label{sec:orga59c073}
+\label{sec:orge429291}
 
 \begin{verbatim}
 
@@ -58,7 +58,7 @@ General config for emacs with no major mode involved
 \end{verbatim}
 
 \subsection{Appearence}
-\label{sec:org14fbb3c}
+\label{sec:orgf215310}
 
 \begin{verbatim}
 
@@ -95,7 +95,7 @@ General config for emacs with no major mode involved
 ;; Disable tool bar, menu bar, and scroll bar
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
-
+(menu-bar-mode 1)
 
 ;; Paren mode
 (show-paren-mode t)
@@ -105,7 +105,7 @@ General config for emacs with no major mode involved
 \end{verbatim}
 
 \subsection{Editing}
-\label{sec:orgaee9b32}
+\label{sec:org6ffa110}
 
 \begin{verbatim}
 
@@ -159,7 +159,7 @@ General config for emacs with no major mode involved
 \end{verbatim}
 
 \subsection{Miscelanous}
-\label{sec:org9eec69f}
+\label{sec:orgd4123fd}
 \begin{verbatim}
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -193,23 +193,19 @@ General config for emacs with no major mode involved
 
 \end{verbatim}
 
-\section{Org-mode}
-\label{sec:org7938933}
+\subsection{Yasnippets}
+\label{sec:org30a80d7}
+
 \begin{verbatim}
 
-;; Enable shift selection
-(setq org-support-shift-select t)
-
-
-;; fontify code in code blocks
-(setq org-src-fontify-natively t)
-(set-face-attribute 'org-block nil :foreground "#ffffff")
-(set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
-(set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
+;; Enable Yasnippets
+(require 'yasnippet)
+(yas-global-mode 1)
 
 \end{verbatim}
-\section{Helm config}
-\label{sec:org8685144}
+
+\subsection{Helm}
+\label{sec:org0495569}
 \begin{verbatim}
 
 (require 'helm)
@@ -265,9 +261,37 @@ General config for emacs with no major mode involved
 
 \end{verbatim}
 
-\section{\texttt{ESS} for \texttt{R} programming}
-\label{sec:org8ab440a}
+\section{Org-mode}
+\label{sec:org95bdb85}
+\begin{verbatim}
 
+;; Enable shift selection
+(setq org-support-shift-select t)
+
+
+;; fontify code in code blocks
+(setq org-src-fontify-natively t)
+(set-face-attribute 'org-block nil :foreground "#ffffff")
+(set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
+(set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
+
+\end{verbatim}
+\section{Terminal}
+\label{sec:org5893ee7}
+\begin{verbatim}
+;; Keybinding for terminal
+(global-set-key [f1] 'shell)
+
+;; Use ubuntu font
+(add-hook 'shell-mode-hook (lambda ()   
+   (setq buffer-face-mode-face '(:family "Ubuntu"))
+			  (buffer-face-mode)))
+
+\end{verbatim}
+\section{\texttt{ESS} for \texttt{R} programming}
+\label{sec:orge2d5ca7}
+\subsection{Setting up}
+\label{sec:org62f68f0}
 \begin{verbatim}
 
 (require 'ess-site)
@@ -277,6 +301,40 @@ General config for emacs with no major mode involved
 
 ;; Indentation style
 (setq ess-default-style 'RStudio)
+
+;; Describe object
+(setq ess-R-describe-object-at-point-commands
+    '(("str(%s)")
+     ("print(%s)")
+     ("summary(%s, maxsum = 20)")))
+
+\end{verbatim}
+
+\subsection{Code completion}
+\label{sec:org9e77466}
+\begin{verbatim}
+(setq ess-use-company 'script-only)
+
+;; Show quickhelp
+(define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
+
+;; Others
+(setq company-selection-wrap-around t
+    company-tooltip-align-annotations t
+    company-idle-delay 0.36
+    company-minimum-prefix-length 2
+    company-tooltip-limit 10)
+
+;; Eldoc mode for function arguments hints
+(require 'ess-eldoc)
+
+
+\end{verbatim}
+
+\subsection{Functions and key bindind}
+\label{sec:org938d6f2}
+\begin{verbatim}
+
 
 ;; Remap "<-" key to M-- instead of smart bind to "_"
 (ess-toggle-underscore nil)
@@ -296,12 +354,6 @@ General config for emacs with no major mode involved
 ;; Truncate long lines
 (add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
 (add-hook 'inferior-ess-mode-hook (lambda () (setq truncate-lines t)))
-
-;; Describe object
-(setq ess-R-describe-object-at-point-commands
-    '(("str(%s)")
-     ("print(%s)")
-     ("summary(%s, maxsum = 20)")))
 
 
 (defun ess-rmarkdown ()
@@ -353,20 +405,29 @@ General config for emacs with no major mode involved
 \end{verbatim}
 
 \section{\texttt{Elpy} for \texttt{python} programming}
-\label{sec:org9d63e8f}
+\label{sec:org4d9d70e}
 
 \begin{verbatim}
 (elpy-enable)				
 (setq elpy-rpc-python-command "python3")
 (setq python-shell-interpreter "python3")
 
-(require 'pymacs)
+;; ipython
+(elpy-use-ipython "python3")
 
+;; Enable company
+(add-hook 'python-mode-hook 'company-mode)
+(add-hook 'inferior-python-mode-hook 'company-mode)
 \end{verbatim}
 
 \section{\texttt{AUCTeX} for \LaTeX{} programming}
-\label{sec:org1a4a5cc}
+\label{sec:orgc235fbe}
 \begin{verbatim}
+(load "auctex.el" nil t t)
+
+;; Appearance
+(require 'font-latex)
+(set-face-attribute 'font-latex-math-face nil :foreground "#ffffff")
 
 (setq TeX-auto-save t)			    
 (setq TeX-parse-self t)
@@ -387,7 +448,7 @@ General config for emacs with no major mode involved
 \end{verbatim}
 
 \section{Polymode}
-\label{sec:org96df92f}
+\label{sec:org43a5ee7}
 
 \begin{verbatim}
 
@@ -404,10 +465,11 @@ General config for emacs with no major mode involved
 (add-to-list 'auto-mode-alist '("\\.Rbrew$" . poly-brew+r-mode))
 (add-to-list 'auto-mode-alist '("\\.Rcpp$" . poly-r+c++-mode))
 (add-to-list 'auto-mode-alist '("\\.cppR$" . poly-c++r-mode))
+
 \end{verbatim}
 
 \section{Pdf-tools}
-\label{sec:org3e47077}
+\label{sec:org81f5ecc}
 
 \begin{verbatim}
 
@@ -420,7 +482,7 @@ General config for emacs with no major mode involved
 \end{verbatim}
 
 \section{Magit}
-\label{sec:org192483f}
+\label{sec:orgf3e9e5d}
 
 \begin{verbatim}
 
@@ -430,6 +492,6 @@ General config for emacs with no major mode involved
 \end{verbatim}
 
 \section{Draft}
-\label{sec:orge000c0f}
+\label{sec:org7862d04}
 Settings in this section are not yet organized but are being used
 \end{document}

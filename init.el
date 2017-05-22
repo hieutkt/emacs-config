@@ -36,7 +36,7 @@
 ;; Disable tool bar, menu bar, and scroll bar
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
-
+(menu-bar-mode 1)
 
 ;; Paren mode
 (show-paren-mode t)
@@ -119,15 +119,9 @@
 ;; Startup
 (find-file "/media/Logical_Drive/Emacs/Settings/init.org")
 
-;; Enable shift selection
-(setq org-support-shift-select t)
-
-
-;; fontify code in code blocks
-(setq org-src-fontify-natively t)
-(set-face-attribute 'org-block nil :foreground "#ffffff")
-(set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
-(set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
+;; Enable Yasnippets
+(require 'yasnippet)
+(yas-global-mode 1)
 
 (require 'helm)
 (require 'helm-config)
@@ -179,6 +173,24 @@
 (global-set-key (kbd "M-x") 'helm-M-x)
 (setq helm-M-x-fuzzy-match t)
 
+;; Enable shift selection
+(setq org-support-shift-select t)
+
+
+;; fontify code in code blocks
+(setq org-src-fontify-natively t)
+(set-face-attribute 'org-block nil :foreground "#ffffff")
+(set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
+(set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
+
+;; Keybinding for terminal
+(global-set-key [f1] 'shell)
+
+;; Use ubuntu font
+(add-hook 'shell-mode-hook (lambda ()   
+   (setq buffer-face-mode-face '(:family "Ubuntu"))
+			  (buffer-face-mode)))
+
 (require 'ess-site)
 (require 'ess-rutils)
 
@@ -186,6 +198,27 @@
 
 ;; Indentation style
 (setq ess-default-style 'RStudio)
+
+;; Describe object
+(setq ess-R-describe-object-at-point-commands
+    '(("str(%s)")
+     ("print(%s)")
+     ("summary(%s, maxsum = 20)")))
+
+(setq ess-use-company 'script-only)
+
+;; Show quickhelp
+(define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
+
+;; Others
+(setq company-selection-wrap-around t
+    company-tooltip-align-annotations t
+    company-idle-delay 0.36
+    company-minimum-prefix-length 2
+    company-tooltip-limit 10)
+
+;; Eldoc mode for function arguments hints
+(require 'ess-eldoc)
 
 ;; Remap "<-" key to M-- instead of smart bind to "_"
 (ess-toggle-underscore nil)
@@ -206,12 +239,6 @@
 (add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
 (add-hook 'inferior-ess-mode-hook (lambda () (setq truncate-lines t)))
 
-;; Describe object
-(setq ess-R-describe-object-at-point-commands
-    '(("str(%s)")
-     ("print(%s)")
-     ("summary(%s, maxsum = 20)")))
-
 
 (defun ess-rmarkdown ()
 "Compile R markdown (.Rmd). Should work for any output type."
@@ -224,11 +251,11 @@
 (let* ((rmd-buf (current-buffer)))
   (save-excursion
     (let* ((sprocess (ess-get-process ess-current-process-name))
-           (sbuffer (process-buffer sprocess))
-           (buf-coding (symbol-name buffer-file-coding-system))
-           (R-cmd
-            (format "library(rmarkdown); rmarkdown::render(\"%s\")"
-                    buffer-file-name)))
+	   (sbuffer (process-buffer sprocess))
+	   (buf-coding (symbol-name buffer-file-coding-system))
+	   (R-cmd
+	    (format "library(rmarkdown); rmarkdown::render(\"%s\")"
+		    buffer-file-name)))
       (message "Running rmarkdown on %s" buffer-file-name)
       (ess-execute R-cmd 'buffer nil nil)
       (switch-to-buffer rmd-buf)
@@ -263,7 +290,18 @@
 (setq elpy-rpc-python-command "python3")
 (setq python-shell-interpreter "python3")
 
-(require 'pymacs)
+;; ipython
+(elpy-use-ipython "python3")
+
+;; Enable company
+(add-hook 'python-mode-hook 'company-mode)
+(add-hook 'inferior-python-mode-hook 'company-mode)
+
+(load "auctex.el" nil t t)
+
+;; Appearance
+(require 'font-latex)
+(set-face-attribute 'font-latex-math-face nil :foreground "#ffffff")
 
 (setq TeX-auto-save t)			    
 (setq TeX-parse-self t)
