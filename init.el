@@ -3,8 +3,16 @@
 
 (package-initialize)
 
+;; 
+(require 'server)
+(unless (server-running-p)
+  (server-start))
+
 ;; Initialize Emacs full screen 
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
+
+;; No startup messages on *scratch* buffer
+(setq initial-scratch-message "")
 
 ;; Cursor type
 (setq-default cursor-type 'bar)
@@ -20,7 +28,7 @@
 (load-theme 'gruvbox t)
 (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
 (set-face-attribute 'default nil :foreground "#ffffff")
-(set-face-attribute 'mode-line nil :background "#2f4f4f")
+(set-face-attribute 'mode-line nil :background "#2f4f4f" :foreground "#ffffff")
 
 ;; Set background face for color string
 (add-hook 'prog-mode-hook 'rainbow-mode)
@@ -77,9 +85,19 @@
       company-minimum-prefix-length 2
       company-tooltip-limit 10)
 
+;; Bound undo to C-z
+(global-set-key (kbd "C-z") 'undo)
+
 ;; Expand region with M-m
 (require 'expand-region)
-(global-set-key (kbd "M-m") 'er/expand-region)
+(global-set-key (kbd "C-'") 'er/expand-region)
+
+;; Multi-cursor
+(require 'multiple-cursors)
+(global-set-key (kbd "C-M") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 ;; Define function: fill character to 80
 (defun fill-to-end (char)
@@ -117,7 +135,9 @@
 
 
 ;; Startup
-(find-file "/media/Logical_Drive/Emacs/Settings/init.org")
+(add-hook 'after-init-hook 
+  (lambda () 
+  (find-file "/media/Logical_Drive/Emacs/Settings/init.org")))
 
 ;; Enable Yasnippets
 (require 'yasnippet)
@@ -135,31 +155,17 @@
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
 (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)   ; make TAB work in terminal
 (define-key helm-map (kbd "C-z")  'helm-select-action)              ; list actions using C-z
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
 
 (when (executable-find "curl")
-  (setq helm-google-suggest-use-curl-p t))
+(setq helm-google-suggest-use-curl-p t))
 
-(setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-      helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
-      helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-      helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-      helm-ff-file-name-history-use-recentf t
-      helm-echo-input-in-header-line t)
-
-(defun spacemacs//helm-hide-minibuffer-maybe ()
-  "Hide minibuffer in Helm session if we use the header line as input field."
-  (when (with-helm-buffer helm-echo-input-in-header-line)
-    (let ((ov (make-overlay (point-min) (point-max) nil nil t)))
-      (overlay-put ov 'window (selected-window))
-      (overlay-put ov 'face
-		   (let ((bg-color (face-background 'default nil)))
-		     `(:background ,bg-color :foreground ,bg-color)))
-      (setq-local cursor-type nil))))
-
-
-(add-hook 'helm-minibuffer-set-up-hook
-	  'spacemacs//helm-hide-minibuffer-maybe)
+(setq 
+helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+helm-ff-file-name-history-use-recentf t
+helm-echo-input-in-header-line        t)
 
 
 (setq helm-autoresize-max-height 0)
@@ -168,10 +174,19 @@
 
 (helm-mode 1)
 
-
+;; Use helm for some common task
 (global-set-key (kbd "C-x b") 'helm-buffers-list)
 (global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
 (setq helm-M-x-fuzzy-match t)
+
+
+;; Use "C-:" to switch to Helm interface during companying
+(require 'helm-company)
+(eval-after-load 'company
+'(progn
+(define-key company-mode-map (kbd "C-:") 'helm-company)
+(define-key company-active-map (kbd "C-:") 'helm-company)))
 
 ;; Enable shift selection
 (setq org-support-shift-select t)
@@ -206,16 +221,17 @@
      ("summary(%s, maxsum = 20)")))
 
 (setq ess-use-company 'script-only)
+(setq ess-tab-complete-in-script t)	;Press <tab> inside functions for completions
 
 ;; Show quickhelp
-(define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
+(define-key company-active-map (kbd "C-;") 'company-show-doc-buffer)
 
 ;; Others
 (setq company-selection-wrap-around t
-    company-tooltip-align-annotations t
-    company-idle-delay 0.36
-    company-minimum-prefix-length 2
-    company-tooltip-limit 10)
+company-tooltip-align-annotations t
+company-idle-delay 0.36
+company-minimum-prefix-length 2
+company-tooltip-limit 10)
 
 ;; Eldoc mode for function arguments hints
 (require 'ess-eldoc)
@@ -231,7 +247,7 @@
   (interactive)
   (just-one-space 1)
   (insert "%>%")
-  (reindent-then-newline-and-indent))
+  (just-one-space 1))
 (define-key ess-mode-map (kbd "C-S-m") 'then_R_operator)
 (define-key inferior-ess-mode-map (kbd "C-S-m") 'then_R_operator)
 
@@ -277,7 +293,7 @@
 	     (sbuffer (process-buffer sprocess))
 	     (buf-coding (symbol-name buffer-file-coding-system))
 	     (R-cmd
-	      (format "rmarkdown::run(\"%s\")"
+	      (format "library(rmarkdown);rmarkdown::run(\"%s\")"
 		      buffer-file-name)))
 	(message "Running shiny on %s" buffer-file-name)
 	(ess-execute R-cmd 'buffer nil nil)
@@ -318,6 +334,10 @@
 ;; Completion
 (require 'company-auctex)
 (company-auctex-init)
+
+;; Rainbow mode
+(add-hook 'html-mode-hook 'rainbow-mode)
+(add-hook 'css-mode-hook 'rainbow-mode)
 
 (require 'polymode)
 (require 'poly-R)
