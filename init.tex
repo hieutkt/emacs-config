@@ -1,4 +1,4 @@
-% Created 2017-05-23 T3 18:02
+% Created 2017-05-30 T3 09:28
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,7 +31,7 @@
 \maketitle
 
 \section{Information}
-\label{sec:org50a49ee}
+\label{sec:orgf72aa21}
 
 The whole thing is driven by the following \texttt{.emacs}
 
@@ -40,29 +40,29 @@ The whole thing is driven by the following \texttt{.emacs}
 (org-babel-load-file
 (expand-file-name "init.org"
                  "/media/Logical_Drive/Emacs/Settings"))
+
 \end{verbatim}
 
 \section{General}
-\label{sec:orgd46d012}
+\label{sec:orgda3613a}
 General config for emacs with no major mode involved
 \subsection{Path configurations}
-\label{sec:orgc4d3cd2}
+\label{sec:orgdf484df}
 
 \begin{verbatim}
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-
+(add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
 (package-initialize)
 
-;; 
-(require 'server)
-(unless (server-running-p)
-  (server-start)) 
+;; Requice common-lisp library
+(require 'cl-lib)
+(require 'bind-key)
 \end{verbatim}
 
 \subsection{Appearence}
-\label{sec:orgfc0e3dd}
+\label{sec:org041d096}
 
 \begin{verbatim}
 
@@ -112,8 +112,8 @@ General config for emacs with no major mode involved
 \end{verbatim}
 
 \subsection{Editing}
-\label{sec:org8e52687}
-
+\label{sec:org8622ded}
+Viết một chữ gì đấy bằng tiếng việt thì hay hơn
 \begin{verbatim}
 
 ;; Delete marked region when input
@@ -140,6 +140,45 @@ General config for emacs with no major mode involved
 ;; Set kill ring size
 (setq global-mark-ring-max 50000)
 
+;; Bound undo to C-z
+(global-set-key (kbd "C-z") 'undo)
+
+;; Expand region with M-m
+(require 'expand-region)
+(global-set-key (kbd "C-'") 'er/expand-region)
+
+;; Multi-cursor
+(require 'multiple-cursors)
+(global-set-key (kbd "C-?") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-N") 'mc/insert-numbers)
+
+;; Define function: fill character to 80
+(defun fill-to-end (char)
+  (interactive "cFill Character:")
+  (save-excursion
+    (end-of-line)
+    (while (< (current-column) 80)
+      (insert-char char))))
+
+;; Eval and replace lisp expression
+(defun fc-eval-and-replace ()
+"Replace the preceding sexp with its value."
+(interactive)
+(backward-kill-sexp)
+(prin1 (eval (read (current-kill 0)))
+(current-buffer)))
+(global-set-key (kbd "C-c e") 'fc-eval-and-replace)
+
+\end{verbatim}
+
+\subsection{Company}
+\label{sec:org8d90c99}
+Company is a completion mechanism that is very flexible
+
+\begin{verbatim}
 ;; Code completion
 (require 'company)
 (require 'company-files)
@@ -151,32 +190,14 @@ General config for emacs with no major mode involved
       company-minimum-prefix-length 2
       company-tooltip-limit 10)
 
-;; Bound undo to C-z
-(global-set-key (kbd "C-z") 'undo)
-
-;; Expand region with M-m
-(require 'expand-region)
-(global-set-key (kbd "C-'") 'er/expand-region)
-
-;; Multi-cursor
-(require 'multiple-cursors)
-(global-set-key (kbd "C-M") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-
-;; Define function: fill character to 80
-(defun fill-to-end (char)
-  (interactive "cFill Character:")
-  (save-excursion
-    (end-of-line)
-    (while (< (current-column) 80)
-      (insert-char char))))
+;; Quick help show up in a popup
+(company-quickhelp-mode 1)
+(setq company-quickhelp-delay 0.2)
 
 \end{verbatim}
 
 \subsection{Miscelanous}
-\label{sec:org1631a6f}
+\label{sec:orge7fd6ce}
 \begin{verbatim}
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -208,12 +229,12 @@ General config for emacs with no major mode involved
 ;; Startup
 (add-hook 'after-init-hook 
   (lambda () 
-  (find-file "/media/Logical_Drive/Emacs/Settings/init.org")))
+  (find-file "/home/hieu/Documents/emacs-config/init.org")))
 
 \end{verbatim}
 
 \subsection{Yasnippets}
-\label{sec:orgcd0c8bd}
+\label{sec:org32abe88}
 
 \begin{verbatim}
 
@@ -224,7 +245,7 @@ General config for emacs with no major mode involved
 \end{verbatim}
 
 \subsection{Helm}
-\label{sec:org49ddabe}
+\label{sec:org4261dd5}
 \begin{verbatim}
 
 (require 'helm)
@@ -233,7 +254,7 @@ General config for emacs with no major mode involved
 ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
 ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
 ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-(global-set-key (kbd "C-c h") 'helm-command-prefix)
+(bind-key* (kbd "C-c h") 'helm-command-prefix)
 (global-unset-key (kbd "C-x c"))
 
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
@@ -275,8 +296,29 @@ helm-echo-input-in-header-line        t)
 
 \end{verbatim}
 
+\subsection{Polymode}
+\label{sec:org3bed63b}
+
+\begin{verbatim}
+
+(require 'polymode)
+(require 'poly-R)
+(require 'poly-markdown)
+(add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.Snw$" . poly-noweb+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rnw$" . poly-noweb+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown+r-mode))
+;; (add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.rapport$" . poly-rapport-mode))
+(add-to-list 'auto-mode-alist '("\\.Rhtml$" . poly-html+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rbrew$" . poly-brew+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rcpp$" . poly-r+c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cppR$" . poly-c++r-mode))
+
+\end{verbatim}
+
 \section{Org-mode}
-\label{sec:org0ce0bbc}
+\label{sec:org3615f16}
 \begin{verbatim}
 
 ;; Enable shift selection
@@ -291,21 +333,16 @@ helm-echo-input-in-header-line        t)
 
 \end{verbatim}
 \section{Terminal}
-\label{sec:org20f80e2}
+\label{sec:org1c58642}
 \begin{verbatim}
 ;; Keybinding for terminal
-(global-set-key [f1] 'shell)
-
-;; Use ubuntu font
-(add-hook 'shell-mode-hook (lambda ()   
-   (setq buffer-face-mode-face '(:family "Ubuntu"))
-			  (buffer-face-mode)))
+(global-set-key [f2] 'shell)
 
 \end{verbatim}
 \section{\texttt{ESS} for \texttt{R} programming}
-\label{sec:org6cbb8af}
+\label{sec:org5531610}
 \subsection{Setting up}
-\label{sec:orgfe4900a}
+\label{sec:org15548c5}
 \begin{verbatim}
 
 (require 'ess-site)
@@ -325,7 +362,7 @@ helm-echo-input-in-header-line        t)
 \end{verbatim}
 
 \subsection{Code completion}
-\label{sec:org79106ff}
+\label{sec:org5f9a376}
 \begin{verbatim}
 (setq ess-use-company 'script-only)
 (setq ess-tab-complete-in-script t)	;Press <tab> inside functions for completions
@@ -343,13 +380,19 @@ company-tooltip-limit 10)
 ;; Eldoc mode for function arguments hints
 (require 'ess-eldoc)
 
-
 \end{verbatim}
 
 \subsection{Functions and key bindind}
-\label{sec:org3ea002b}
+\label{sec:org2700791}
 \begin{verbatim}
+;; Returm C-c h as prefix to Helm"
+(defun ess-map-control-h-to-helm ()
+   "Return C-c h to helm prefix instead of ess-handy-commands"
+   (interactive)
+   (local-unset-key (kbd "C-c h"))
+   (local-set-key (kbd "C-c h") 'helm-command-prefix))
 
+(add-hook 'ess-mode-hook 'ess-map-control-h-to-helm)
 
 ;; Remap "<-" key to M-- instead of smart bind to "_"
 (ess-toggle-underscore nil)
@@ -392,7 +435,7 @@ company-tooltip-limit 10)
       (switch-to-buffer rmd-buf)
       (ess-show-buffer (buffer-name sbuffer) nil)))))
 
-(define-key ess-mode-map "\M-ns" 'ess-rmarkdown)
+(define-key polymode-mode-map "\M-ns" 'ess-rmarkdown)
 
 (defun ess-rshiny ()
   "Compile R markdown (.Rmd). Should work for any output type."
@@ -415,15 +458,16 @@ company-tooltip-limit 10)
 	(switch-to-buffer rmd-buf)
 	(ess-show-buffer (buffer-name sbuffer) nil)))))
 
-(define-key ess-mode-map "\M-nr" 'ess-rshiny)
+(define-key polymode-mode-map "\M-nr" 'ess-rshiny)
 
 \end{verbatim}
 
 \section{\texttt{Elpy} for \texttt{python} programming}
-\label{sec:orgd776d71}
+\label{sec:org876840b}
 
 \begin{verbatim}
 (elpy-enable)				
+(with-eval-after-load 'elpy (flymake-mode -1))
 (setq elpy-rpc-python-command "python3")
 (setq python-shell-interpreter "python3")
 
@@ -433,10 +477,27 @@ company-tooltip-limit 10)
 ;; Enable company
 (add-hook 'python-mode-hook 'company-mode)
 (add-hook 'inferior-python-mode-hook 'company-mode)
+
+;; Keybinding
+(define-key python-mode-map (kbd "C-c C-c") 'elpy-shell-send-current-statement)
+(define-key python-mode-map (kbd "C-c <RET>") 'elpy-shell-send-region-or-buffer)
+
+;; Ill put flycheck configurations here temporary
+;; (with-eval-after-load 'flycheck
+;; (flycheck-pos-tip-mode))
+
+;; (defun flymake-to-flycheck ()
+;;    "Change from flymake to flycheck when flymake is on."
+;;    (interactive)
+;;    (flymake-mode-off)
+;;    (flycheck-mode 1))
+
+;; (add-hook 'python-mode-hook 'flymake-to-flycheck)
+
 \end{verbatim}
 
 \section{\texttt{AUCTeX} for \LaTeX{} programming}
-\label{sec:org44a1fcb}
+\label{sec:orgeba9eab}
 \begin{verbatim}
 (load "auctex.el" nil t t)
 
@@ -463,35 +524,16 @@ company-tooltip-limit 10)
 \end{verbatim}
 
 \section{Web Developments}
-\label{sec:org4a064f8}
+\label{sec:orgf97159f}
 \begin{verbatim}
 ;; Rainbow mode
 (add-hook 'html-mode-hook 'rainbow-mode)
 (add-hook 'css-mode-hook 'rainbow-mode)
 \end{verbatim}
-\section{Polymode}
-\label{sec:orge5b7755}
-
-\begin{verbatim}
-
-(require 'polymode)
-(require 'poly-R)
-(require 'poly-markdown)
-(add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.Snw$" . poly-noweb+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rnw$" . poly-noweb+r-mode))
-;; (add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.rapport$" . poly-rapport-mode))
-(add-to-list 'auto-mode-alist '("\\.Rhtml$" . poly-html+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rbrew$" . poly-brew+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rcpp$" . poly-r+c++-mode))
-(add-to-list 'auto-mode-alist '("\\.cppR$" . poly-c++r-mode))
-
-\end{verbatim}
 
 \section{Pdf-tools}
-\label{sec:org609035b}
+\label{sec:org310c788}
+This packages should be manually downloaded from MELPA to prevent compiling errors
 
 \begin{verbatim}
 
@@ -501,10 +543,11 @@ company-tooltip-limit 10)
 (setq ess-pdf-viewer-pref "emacsclient")
 (setq TeX-view-program-selection '((output-pdf "PDF Tools")))
 
+(setq pdf-view-midnight-colors '("#fffff8" . "#111111"))
 \end{verbatim}
 
 \section{Magit}
-\label{sec:orgcb261cd}
+\label{sec:orgb20ca7b}
 
 \begin{verbatim}
 
@@ -514,6 +557,92 @@ company-tooltip-limit 10)
 \end{verbatim}
 
 \section{Draft}
-\label{sec:org6064bd5}
+\label{sec:org4a654b2}
 Settings in this section are not yet organized but are being used
+
+\begin{verbatim}
+
+  ;; Add ess command to always run in multiple cursor mode
+  (setq ess-cmds-run-all-mc '(ess-smart-comma then_R_operator ess-smart-S-assign))
+  (setq mc/cmds-to-run-once 
+    (set-difference mc/cmds-to-run-once ess-cmds-run-all-mc))
+  (setq mc/cmds-to-run-for-all 
+    (union mc/cmds-to-run-for-all ess-cmds-run-all-mc))
+
+
+  ;; Email settings
+  (setq user-full-name "Nguyễn Đức Hiếu"
+	user-mail-address "hieunguyen31371@gmail.com")
+
+  ;; ess syntax highlight
+
+(add-hook 'ess-mode-hook
+      '(lambda()
+	 (font-lock-add-keywords
+	  nil
+	  '(
+
+	("\\<\\(if\\|for\\|function\\|return\\|$\\|@\\)\\>[\n[:blank:]]*(" 1
+	 font-lock-keyword-face) ; must go first to override highlighting below
+
+	("\\<\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*(" 1
+	 font-lock-function-name-face) ; highlight function names
+
+	("\\([(,]\\|[\n[:blank:]]*\\)\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*=[^=]"
+	 2 font-lock-reference-face)
+
+	;; highlight operators
+	("\\(\\$\\|\\@\\|\\!\\|\\%\\|\\^\\|\\&\\|\\*\\|\(\\|\)\\|\{\\|\}\\|\\[\\|\\]\\|\\-\\|\\+\\|\=\\|\\/\\|\<\\|\>\\|:\\)" 1 font-lock-builtin-face)
+
+	;; highlight S4 methods
+	("\\(setMethod\\|setGeneric\\|setGroupGeneric\\|setClass\\|setRefClass\\|setReplaceMethod\\)" 1 font-lock-reference-face)
+
+	;; highlight packages called through ::, :::
+	("\\(\\w+\\):\\{2,3\\}" 1 font-lock-constant-face)
+
+	;; highlight named arguments -- this was found on an earlier mailing list post
+	("\\([(,]\\|[\n[:blank:]]*\\)\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*=[^=]"
+	2 font-lock-reference-face)
+
+	;; highlight packages called through ::, :::
+	("\\(\\w+\\):\\{2,3\\}" 1 font-lock-constant-face)
+
+	;; highlight S4 methods
+	("\\(setMethod\\|setGeneric\\|setGroupGeneric\\|setClass\\|setRefClass\\|setReplaceMethod\\)" 1 font-lock-reference-face)
+
+	))
+	 ))
+
+\end{verbatim}
+
+\section{{\bfseries\sffamily TODO} }
+\label{sec:org88b2556}
+\subsection{Add special face to latex default font}
+\label{sec:org6c80e8c}
+
+\begin{verbatim}
+regex for everything
+((.|\n)*)
+"\\(.\\|\\\n\\)*"
+
+regex for special command:
+(\\\w+(\*|)|\{(|.+?)\}|\[(|.+?)\]|[^\\]%(.+|)|<<(.|\n)*?@)
+"\\(\\\\\\([A-Za-z]*\\)\\|{\\(.\\|\\\n\\)*?}\\|\\[\\(.\\|\\\n\\)*?\\]\\|<<\\(.\\|\\\n\\)*?@\\)"
+
+\end{verbatim}
+\subsection{Add special font to all TODO keywords in all modes}
+\label{sec:org5646bf8}
+Through something like:
+
+\begin{verbatim}
+
+(add-hook 'tex-mode-hook
+  (lambda ()
+   (font-lock-add-keywords nil
+    '(("\\<\\(FIXME\\):" 1 'font-lock-warning-face prepend)
+      ("\\<\\(and\\|or\\|not\\)\\>" .
+       'font-lock-keyword-face)))))
+
+
+\end{verbatim}
 \end{document}

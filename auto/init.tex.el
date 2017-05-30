@@ -1,5 +1,5 @@
 (TeX-add-style-hook
- "init"
+ "init.tex"
  (lambda ()
    (TeX-add-to-alist 'LaTeX-provided-class-options
                      '(("article" "11pt")))
@@ -35,30 +35,30 @@
     "hyperref"
     "vietnam")
    (LaTeX-add-labels
-    "sec:orgf72aa21"
-    "sec:orgda3613a"
-    "sec:orgdf484df"
-    "sec:org041d096"
-    "sec:org8622ded"
-    "sec:org8d90c99"
-    "sec:orge7fd6ce"
-    "sec:org32abe88"
-    "sec:org4261dd5"
-    "sec:org3bed63b"
-    "sec:org3615f16"
-    "sec:org1c58642"
-    "sec:org5531610"
-    "sec:org15548c5"
-    "sec:org5f9a376"
-    "sec:org2700791"
-    "sec:org876840b"
-    "sec:orgeba9eab"
-    "sec:orgf97159f"
-    "sec:org310c788"
-    "sec:orgb20ca7b"
-    "sec:org4a654b2"
-    "sec:org88b2556"
-    "sec:org6c80e8c"
-    "sec:org5646bf8"))
+    "sec:org690d6c7"
+    "sec:org2bc431c"
+    "sec:orga1406a5"
+    "sec:org07d6173"
+    "sec:org3138334"
+    "sec:org7067328"
+    "sec:orgc5265f3"
+    "sec:org9b006be"
+    "sec:orgae9be09"
+    "sec:orgea9703b"
+    "sec:org4de48f9"
+    "sec:orgf80261e"
+    "sec:org7f2fc02"
+    "sec:org426cdea"
+    "sec:org6786810"
+    "sec:org284bdbd"
+    "sec:org7762497"
+    "sec:org5623759"
+    "sec:orgf27e1e9"
+    "sec:org99d5d21"
+    "sec:orge983708"
+    "sec:org8f7830e"
+    "sec:org4b41f0c"
+    "sec:org0024228"
+    "sec:org6b0ddb3"))
  :latex)
 

@@ -197,18 +197,19 @@ Company is a completion mechanism that is very flexible
   ;; Startup
   (add-hook 'after-init-hook 
     (lambda () 
-    (find-file "/media/Logical_Drive/Emacs/Settings/init.org")))
+    (find-file (format "%s/%s" config-directory "init.org"))))
   
 #+END_SRC
 
 ** Yasnippets
 
 #+BEGIN_SRC emacs-lisp
-  
+
   ;; Enable Yasnippets
   (require 'yasnippet)
   (yas-global-mode 1)
-
+  
+  (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
 #+END_SRC
 
 ** Helm
@@ -574,6 +575,8 @@ Settings in this section are not yet organized but are being used
 
 * TODO
 ** Add special face to latex default font
+
+\begin{verbatim}
 regex for everything
 ((.|\n)*)
 "\\(.\\|\\\n\\)*"
@@ -582,8 +585,11 @@ regex for special command:
 (\\\w+(\*|)|\{(|.+?)\}|\[(|.+?)\]|[^\\]%(.+|)|<<(.|\n)*?@)
 "\\(\\\\\\([A-Za-z]*\\)\\|{\\(.\\|\\\n\\)*?}\\|\\[\\(.\\|\\\n\\)*?\\]\\|<<\\(.\\|\\\n\\)*?@\\)"
 
+\end{verbatim}
 ** Add special font to all TODO keywords in all modes
 Through something like:
+
+\begin{verbatim}
 
 (add-hook 'tex-mode-hook
   (lambda ()
@@ -593,4 +599,5 @@ Through something like:
        'font-lock-keyword-face)))))
 
 
+\end{verbatim}
 

@@ -1,12 +1,11 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-
+(add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
 (package-initialize)
 
-;; 
-(require 'server)
-(unless (server-running-p)
-  (server-start))
+;; Requice common-lisp library
+(require 'cl-lib)
+(require 'bind-key)
 
 ;; Initialize Emacs full screen 
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
@@ -74,6 +73,38 @@
 ;; Set kill ring size
 (setq global-mark-ring-max 50000)
 
+;; Bound undo to C-z
+(global-set-key (kbd "C-z") 'undo)
+
+;; Expand region with M-m
+(require 'expand-region)
+(global-set-key (kbd "C-'") 'er/expand-region)
+
+;; Multi-cursor
+(require 'multiple-cursors)
+(global-set-key (kbd "C-?") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-N") 'mc/insert-numbers)
+
+;; Define function: fill character to 80
+(defun fill-to-end (char)
+  (interactive "cFill Character:")
+  (save-excursion
+    (end-of-line)
+    (while (< (current-column) 80)
+      (insert-char char))))
+
+;; Eval and replace lisp expression
+(defun fc-eval-and-replace ()
+"Replace the preceding sexp with its value."
+(interactive)
+(backward-kill-sexp)
+(prin1 (eval (read (current-kill 0)))
+(current-buffer)))
+(global-set-key (kbd "C-c e") 'fc-eval-and-replace)
+
 ;; Code completion
 (require 'company)
 (require 'company-files)
@@ -85,27 +116,9 @@
       company-minimum-prefix-length 2
       company-tooltip-limit 10)
 
-;; Bound undo to C-z
-(global-set-key (kbd "C-z") 'undo)
-
-;; Expand region with M-m
-(require 'expand-region)
-(global-set-key (kbd "C-'") 'er/expand-region)
-
-;; Multi-cursor
-(require 'multiple-cursors)
-(global-set-key (kbd "C-M") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-
-;; Define function: fill character to 80
-(defun fill-to-end (char)
-  (interactive "cFill Character:")
-  (save-excursion
-    (end-of-line)
-    (while (< (current-column) 80)
-      (insert-char char))))
+;; Quick help show up in a popup
+(company-quickhelp-mode 1)
+(setq company-quickhelp-delay 0.2)
 
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -137,11 +150,13 @@
 ;; Startup
 (add-hook 'after-init-hook 
   (lambda () 
-  (find-file "/media/Logical_Drive/Emacs/Settings/init.org")))
+  (find-file (format "%s/%s" config-directory "init.org"))))
 
 ;; Enable Yasnippets
 (require 'yasnippet)
 (yas-global-mode 1)
+
+(setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
 
 (require 'helm)
 (require 'helm-config)
@@ -149,7 +164,7 @@
 ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
 ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
 ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-(global-set-key (kbd "C-c h") 'helm-command-prefix)
+(bind-key* (kbd "C-c h") 'helm-command-prefix)
 (global-unset-key (kbd "C-x c"))
 
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
@@ -188,6 +203,20 @@ helm-echo-input-in-header-line        t)
 (define-key company-mode-map (kbd "C-:") 'helm-company)
 (define-key company-active-map (kbd "C-:") 'helm-company)))
 
+(require 'polymode)
+(require 'poly-R)
+(require 'poly-markdown)
+(add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.Snw$" . poly-noweb+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rnw$" . poly-noweb+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown+r-mode))
+;; (add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.rapport$" . poly-rapport-mode))
+(add-to-list 'auto-mode-alist '("\\.Rhtml$" . poly-html+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rbrew$" . poly-brew+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rcpp$" . poly-r+c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cppR$" . poly-c++r-mode))
+
 ;; Enable shift selection
 (setq org-support-shift-select t)
 
@@ -199,7 +228,7 @@ helm-echo-input-in-header-line        t)
 (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
 ;; Keybinding for terminal
-(global-set-key [f1] 'shell)
+(global-set-key [f2] 'shell)
 
 ;; Use ubuntu font
 (add-hook 'shell-mode-hook (lambda ()   
@@ -235,6 +264,15 @@ company-tooltip-limit 10)
 
 ;; Eldoc mode for function arguments hints
 (require 'ess-eldoc)
+
+;; Returm C-c h as prefix to Helm"
+(defun ess-map-control-h-to-helm ()
+   "Return C-c h to helm prefix instead of ess-handy-commands"
+   (interactive)
+   (local-unset-key (kbd "C-c h"))
+   (local-set-key (kbd "C-c h") 'helm-command-prefix))
+
+(add-hook 'ess-mode-hook 'ess-map-control-h-to-helm)
 
 ;; Remap "<-" key to M-- instead of smart bind to "_"
 (ess-toggle-underscore nil)
@@ -277,7 +315,7 @@ company-tooltip-limit 10)
       (switch-to-buffer rmd-buf)
       (ess-show-buffer (buffer-name sbuffer) nil)))))
 
-(define-key ess-mode-map "\M-ns" 'ess-rmarkdown)
+(define-key polymode-mode-map "\M-ns" 'ess-rmarkdown)
 
 (defun ess-rshiny ()
   "Compile R markdown (.Rmd). Should work for any output type."
@@ -300,9 +338,10 @@ company-tooltip-limit 10)
 	(switch-to-buffer rmd-buf)
 	(ess-show-buffer (buffer-name sbuffer) nil)))))
 
-(define-key ess-mode-map "\M-nr" 'ess-rshiny)
+(define-key polymode-mode-map "\M-nr" 'ess-rshiny)
 
 (elpy-enable)				
+(with-eval-after-load 'elpy (flymake-mode -1))
 (setq elpy-rpc-python-command "python3")
 (setq python-shell-interpreter "python3")
 
@@ -312,6 +351,22 @@ company-tooltip-limit 10)
 ;; Enable company
 (add-hook 'python-mode-hook 'company-mode)
 (add-hook 'inferior-python-mode-hook 'company-mode)
+
+;; Keybinding
+(define-key python-mode-map (kbd "C-c C-c") 'elpy-shell-send-current-statement)
+(define-key python-mode-map (kbd "C-c <RET>") 'elpy-shell-send-region-or-buffer)
+
+;; Ill put flycheck configurations here temporary
+;; (with-eval-after-load 'flycheck
+;; (flycheck-pos-tip-mode))
+
+;; (defun flymake-to-flycheck ()
+;;    "Change from flymake to flycheck when flymake is on."
+;;    (interactive)
+;;    (flymake-mode-off)
+;;    (flycheck-mode 1))
+
+;; (add-hook 'python-mode-hook 'flymake-to-flycheck)
 
 (load "auctex.el" nil t t)
 
@@ -339,27 +394,64 @@ company-tooltip-limit 10)
 (add-hook 'html-mode-hook 'rainbow-mode)
 (add-hook 'css-mode-hook 'rainbow-mode)
 
-(require 'polymode)
-(require 'poly-R)
-(require 'poly-markdown)
-(add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.Snw$" . poly-noweb+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rnw$" . poly-noweb+r-mode))
-;; (add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.rapport$" . poly-rapport-mode))
-(add-to-list 'auto-mode-alist '("\\.Rhtml$" . poly-html+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rbrew$" . poly-brew+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rcpp$" . poly-r+c++-mode))
-(add-to-list 'auto-mode-alist '("\\.cppR$" . poly-c++r-mode))
-
 (pdf-tools-install)
 (setq pdf-view-display-size "fit-page")
 (setq auto-revert-interval 0)
 (setq ess-pdf-viewer-pref "emacsclient")
 (setq TeX-view-program-selection '((output-pdf "PDF Tools")))
 
+(setq pdf-view-midnight-colors '("#fffff8" . "#111111"))
+
 ;; Currently magit cause some error when auto revert mode is on
 (setq magit-auto-revert-mode nil)
 
+;; Add ess command to always run in multiple cursor mode
+  (setq ess-cmds-run-all-mc '(ess-smart-comma then_R_operator ess-smart-S-assign))
+  (setq mc/cmds-to-run-once 
+    (set-difference mc/cmds-to-run-once ess-cmds-run-all-mc))
+  (setq mc/cmds-to-run-for-all 
+    (union mc/cmds-to-run-for-all ess-cmds-run-all-mc))
 
+
+  ;; Email settings
+  (setq user-full-name "Nguyễn Đức Hiếu"
+	user-mail-address "hieunguyen31371@gmail.com")
+
+  ;; ess syntax highlight
+
+(add-hook 'ess-mode-hook
+      '(lambda()
+	 (font-lock-add-keywords
+	  nil
+	  '(
+
+	("\\<\\(if\\|for\\|function\\|return\\|$\\|@\\)\\>[\n[:blank:]]*(" 1
+	 font-lock-keyword-face) ; must go first to override highlighting below
+
+	("\\<\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*(" 1
+	 font-lock-function-name-face) ; highlight function names
+
+	("\\([(,]\\|[\n[:blank:]]*\\)\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*=[^=]"
+	 2 font-lock-reference-face)
+
+	;; highlight operators
+	("\\(\\$\\|\\@\\|\\!\\|\\%\\|\\^\\|\\&\\|\\*\\|\(\\|\)\\|\{\\|\}\\|\\[\\|\\]\\|\\-\\|\\+\\|\=\\|\\/\\|\<\\|\>\\|:\\)" 1 font-lock-builtin-face)
+
+	;; highlight S4 methods
+	("\\(setMethod\\|setGeneric\\|setGroupGeneric\\|setClass\\|setRefClass\\|setReplaceMethod\\)" 1 font-lock-reference-face)
+
+	;; highlight packages called through ::, :::
+	("\\(\\w+\\):\\{2,3\\}" 1 font-lock-constant-face)
+
+	;; highlight named arguments -- this was found on an earlier mailing list post
+	("\\([(,]\\|[\n[:blank:]]*\\)\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*=[^=]"
+	2 font-lock-reference-face)
+
+	;; highlight packages called through ::, :::
+	("\\(\\w+\\):\\{2,3\\}" 1 font-lock-constant-face)
+
+	;; highlight S4 methods
+	("\\(setMethod\\|setGeneric\\|setGroupGeneric\\|setClass\\|setRefClass\\|setReplaceMethod\\)" 1 font-lock-reference-face)
+
+	))
+	 ))
