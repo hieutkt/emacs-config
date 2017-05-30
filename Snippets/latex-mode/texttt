@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: texttt{ ... }
+# key: tt
+# --
+\texttt{`yas-selected-text`$1}$0

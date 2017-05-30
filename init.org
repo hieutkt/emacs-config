@@ -9,12 +9,12 @@
   
 The whole thing is driven by the following =.emacs=
 
-#+begin_example emacs-lisp
-  ;; init.el for this setup. Must use Emacs 24
+#+begin_example emacs-lisp :eval no
+  (require 'org)
+
+  (setq config-directory "/media/Logical_Drive/Emacs/emacs-config/")
   (org-babel-load-file
-  (expand-file-name "init.org"
-                   "/media/Logical_Drive/Emacs/Settings"))
-		   
+    (expand-file-name "init.org" config-directory))		   
 #+end_example
 
 * General
@@ -207,9 +207,30 @@ Company is a completion mechanism that is very flexible
 
   ;; Enable Yasnippets
   (require 'yasnippet)
+  (add-to-list 'yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
+
   (yas-global-mode 1)
   
-  (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
+  (global-set-key (kbd "<C-tab>") 'yas-insert-snippet)
+
+
+  ;; It will test whether it can expand, if yes, cursor color -> green.
+(defun yasnippet-can-fire-p (&optional field)
+  (interactive)
+  (setq yas--condition-cache-timestamp (current-time))
+  (let (templates-and-pos)
+    (unless (and yas-expand-only-for-last-commands
+                 (not (member last-command yas-expand-only-for-last-commands)))
+      (setq templates-and-pos (if field
+                                  (save-restriction
+                                    (narrow-to-region (yas--field-start field)
+                                                      (yas--field-end field))
+                                    (yas--templates-for-key-at-point))
+                                (yas--templates-for-key-at-point))))
+
+  (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
+                        "green" "white"))))
+  (add-hook 'post-command-hook 'yasnippet-can-fire-p)
 #+END_SRC
 
 ** Helm
@@ -283,6 +304,90 @@ Company is a completion mechanism that is very flexible
 
 #+END_SRC
 
+** Magical TAB
+Make TAB the magical button that almost always do the right thing
+- Indent the current line,
+- If there is a yasnippet to expand, expand it, even if this means aborting a company completion (I don't use abbreviations much, so no abbreviation support yet),
+- If a company completion is ongoing, complete with the selected item,
+- Otherwise try to use company to start autocomplete,
+- If there is nothing to autocomplete and we're in a yasnippet placeholder, skip to the next placeholder.
+Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
+
+#+BEGIN_SRC emacs-lisp
+(defun check-expansion ()
+  (save-excursion
+    (if (looking-at "\\_>") t
+      (backward-char 1)
+      (if (looking-at "\\.") t
+    (backward-char 1)
+    (if (looking-at "->") t nil)))))
+
+(defun do-yas-expand ()
+  (let ((yas/fallback-behavior 'return-nil))
+    (yas/expand)))
+
+(defun tab-indent-or-complete ()
+  (interactive)
+  (cond
+   ((minibufferp)
+    (minibuffer-complete))
+   (t
+    (indent-for-tab-command)
+    (if (or (not yas/minor-mode)
+        (null (do-yas-expand)))
+    (if (check-expansion)
+        (progn
+          (company-manual-begin)
+          (if (null company-candidates)
+          (progn
+            (company-abort)
+            (indent-for-tab-command)))))))))
+
+(defun tab-complete-or-next-field ()
+  (interactive)
+  (if (or (not yas/minor-mode)
+      (null (do-yas-expand)))
+      (if company-candidates
+      (company-complete-selection)
+    (if (check-expansion)
+      (progn
+        (company-manual-begin)
+        (if (null company-candidates)
+        (progn
+          (company-abort)
+          (yas-next-field))))
+      (yas-next-field)))))
+
+(defun expand-snippet-or-complete-selection ()
+  (interactive)
+  (if (or (not yas/minor-mode)
+      (null (do-yas-expand))
+      (company-abort))
+      (company-complete-selection)))
+
+(defun abort-company-or-yas ()
+  (interactive)
+  (if (null company-candidates)
+      (yas-abort-snippet)
+    (company-abort)))
+
+(global-set-key [tab] 'tab-indent-or-complete)
+(global-set-key (kbd "TAB") 'tab-indent-or-complete)
+(global-set-key [(control return)] 'company-complete-common)
+
+(define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
+(define-key company-active-map (kbd "TAB") 'expand-snippet-or-complete-selection)
+
+(define-key yas-minor-mode-map [tab] nil)
+(define-key yas-minor-mode-map (kbd "TAB") nil)
+
+(define-key yas-keymap [tab] 'tab-complete-or-next-field)
+(define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
+(define-key yas-keymap [(control tab)] 'yas-next-field)
+(define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)
+
+
+#+END_SRC
 * Org-mode
 #+BEGIN_SRC emacs-lisp
 

@@ -1,4 +1,4 @@
-% Created 2017-05-30 T3 09:28
+% Created 2017-05-30 T3 22:24
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,7 +31,7 @@
 \maketitle
 
 \section{Information}
-\label{sec:orgf72aa21}
+\label{sec:org3ef80d1}
 
 The whole thing is driven by the following \texttt{.emacs}
 
@@ -44,10 +44,10 @@ The whole thing is driven by the following \texttt{.emacs}
 \end{verbatim}
 
 \section{General}
-\label{sec:orgda3613a}
+\label{sec:org9fb20ef}
 General config for emacs with no major mode involved
 \subsection{Path configurations}
-\label{sec:orgdf484df}
+\label{sec:org02182ad}
 
 \begin{verbatim}
 
@@ -62,7 +62,7 @@ General config for emacs with no major mode involved
 \end{verbatim}
 
 \subsection{Appearence}
-\label{sec:org041d096}
+\label{sec:orgc3ea522}
 
 \begin{verbatim}
 
@@ -112,7 +112,7 @@ General config for emacs with no major mode involved
 \end{verbatim}
 
 \subsection{Editing}
-\label{sec:org8622ded}
+\label{sec:org271f9f0}
 Viết một chữ gì đấy bằng tiếng việt thì hay hơn
 \begin{verbatim}
 
@@ -175,7 +175,7 @@ Viết một chữ gì đấy bằng tiếng việt thì hay hơn
 \end{verbatim}
 
 \subsection{Company}
-\label{sec:org8d90c99}
+\label{sec:orgc03d443}
 Company is a completion mechanism that is very flexible
 
 \begin{verbatim}
@@ -197,7 +197,7 @@ Company is a completion mechanism that is very flexible
 \end{verbatim}
 
 \subsection{Miscelanous}
-\label{sec:orge7fd6ce}
+\label{sec:org7e571a2}
 \begin{verbatim}
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -229,23 +229,45 @@ Company is a completion mechanism that is very flexible
 ;; Startup
 (add-hook 'after-init-hook 
   (lambda () 
-  (find-file "/home/hieu/Documents/emacs-config/init.org")))
+  (find-file (format "%s/%s" config-directory "init.org"))))
 
 \end{verbatim}
 
 \subsection{Yasnippets}
-\label{sec:org32abe88}
+\label{sec:org035855f}
 
 \begin{verbatim}
 
-;; Enable Yasnippets
-(require 'yasnippet)
-(yas-global-mode 1)
+  ;; Enable Yasnippets
+  (require 'yasnippet)
+  (add-to-list 'yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
 
+  (yas-global-mode 1)
+
+  (global-set-key (kbd "<C-tab>") 'yas-insert-snippet)
+
+
+  ;; It will test whether it can expand, if yes, cursor color -> green.
+(defun yasnippet-can-fire-p (&optional field)
+  (interactive)
+  (setq yas--condition-cache-timestamp (current-time))
+  (let (templates-and-pos)
+    (unless (and yas-expand-only-for-last-commands
+		 (not (member last-command yas-expand-only-for-last-commands)))
+      (setq templates-and-pos (if field
+				  (save-restriction
+				    (narrow-to-region (yas--field-start field)
+						      (yas--field-end field))
+				    (yas--templates-for-key-at-point))
+				(yas--templates-for-key-at-point))))
+
+  (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
+			"green" "white"))))
+  (add-hook 'post-command-hook 'yasnippet-can-fire-p)
 \end{verbatim}
 
 \subsection{Helm}
-\label{sec:org4261dd5}
+\label{sec:orgbbcdd10}
 \begin{verbatim}
 
 (require 'helm)
@@ -297,7 +319,7 @@ helm-echo-input-in-header-line        t)
 \end{verbatim}
 
 \subsection{Polymode}
-\label{sec:org3bed63b}
+\label{sec:orgdcd692d}
 
 \begin{verbatim}
 
@@ -317,8 +339,95 @@ helm-echo-input-in-header-line        t)
 
 \end{verbatim}
 
+\subsection{Magical TAB}
+\label{sec:org39877f3}
+Make TAB the magical button that almost always do the right thing
+\begin{itemize}
+\item Indent the current line,
+\item If there is a yasnippet to expand, expand it, even if this means aborting a company completion (I don't use abbreviations much, so no abbreviation support yet),
+\item If a company completion is ongoing, complete with the selected item,
+\item Otherwise try to use company to start autocomplete,
+\item If there is nothing to autocomplete and we're in a yasnippet placeholder, skip to the next placeholder.
+\end{itemize}
+Probs to \href{https://emacs.stackexchange.com/a/7925/15689}{Kristóf Marussy}
+
+\begin{verbatim}
+(defun check-expansion ()
+  (save-excursion
+    (if (looking-at "\\_>") t
+      (backward-char 1)
+      (if (looking-at "\\.") t
+    (backward-char 1)
+    (if (looking-at "->") t nil)))))
+
+(defun do-yas-expand ()
+  (let ((yas/fallback-behavior 'return-nil))
+    (yas/expand)))
+
+(defun tab-indent-or-complete ()
+  (interactive)
+  (cond
+   ((minibufferp)
+    (minibuffer-complete))
+   (t
+    (indent-for-tab-command)
+    (if (or (not yas/minor-mode)
+	(null (do-yas-expand)))
+    (if (check-expansion)
+	(progn
+	  (company-manual-begin)
+	  (if (null company-candidates)
+	  (progn
+	    (company-abort)
+	    (indent-for-tab-command)))))))))
+
+(defun tab-complete-or-next-field ()
+  (interactive)
+  (if (or (not yas/minor-mode)
+      (null (do-yas-expand)))
+      (if company-candidates
+      (company-complete-selection)
+    (if (check-expansion)
+      (progn
+	(company-manual-begin)
+	(if (null company-candidates)
+	(progn
+	  (company-abort)
+	  (yas-next-field))))
+      (yas-next-field)))))
+
+(defun expand-snippet-or-complete-selection ()
+  (interactive)
+  (if (or (not yas/minor-mode)
+      (null (do-yas-expand))
+      (company-abort))
+      (company-complete-selection)))
+
+(defun abort-company-or-yas ()
+  (interactive)
+  (if (null company-candidates)
+      (yas-abort-snippet)
+    (company-abort)))
+
+(global-set-key [tab] 'tab-indent-or-complete)
+(global-set-key (kbd "TAB") 'tab-indent-or-complete)
+(global-set-key [(control return)] 'company-complete-common)
+
+(define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
+(define-key company-active-map (kbd "TAB") 'expand-snippet-or-complete-selection)
+
+(define-key yas-minor-mode-map [tab] nil)
+(define-key yas-minor-mode-map (kbd "TAB") nil)
+
+(define-key yas-keymap [tab] 'tab-complete-or-next-field)
+(define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
+(define-key yas-keymap [(control tab)] 'yas-next-field)
+(define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)
+
+
+\end{verbatim}
 \section{Org-mode}
-\label{sec:org3615f16}
+\label{sec:orge205089}
 \begin{verbatim}
 
 ;; Enable shift selection
@@ -333,16 +442,21 @@ helm-echo-input-in-header-line        t)
 
 \end{verbatim}
 \section{Terminal}
-\label{sec:org1c58642}
+\label{sec:orgcc31bf0}
 \begin{verbatim}
 ;; Keybinding for terminal
 (global-set-key [f2] 'shell)
 
+;; Use ubuntu font
+(add-hook 'shell-mode-hook (lambda ()   
+   (setq buffer-face-mode-face '(:family "Ubuntu"))
+			  (buffer-face-mode)))
+
 \end{verbatim}
 \section{\texttt{ESS} for \texttt{R} programming}
-\label{sec:org5531610}
+\label{sec:orga2d7370}
 \subsection{Setting up}
-\label{sec:org15548c5}
+\label{sec:orgc7cf1c0}
 \begin{verbatim}
 
 (require 'ess-site)
@@ -362,7 +476,7 @@ helm-echo-input-in-header-line        t)
 \end{verbatim}
 
 \subsection{Code completion}
-\label{sec:org5f9a376}
+\label{sec:orgf1b1384}
 \begin{verbatim}
 (setq ess-use-company 'script-only)
 (setq ess-tab-complete-in-script t)	;Press <tab> inside functions for completions
@@ -383,7 +497,7 @@ company-tooltip-limit 10)
 \end{verbatim}
 
 \subsection{Functions and key bindind}
-\label{sec:org2700791}
+\label{sec:org496447f}
 \begin{verbatim}
 ;; Returm C-c h as prefix to Helm"
 (defun ess-map-control-h-to-helm ()
@@ -463,7 +577,7 @@ company-tooltip-limit 10)
 \end{verbatim}
 
 \section{\texttt{Elpy} for \texttt{python} programming}
-\label{sec:org876840b}
+\label{sec:org6ada814}
 
 \begin{verbatim}
 (elpy-enable)				
@@ -497,7 +611,7 @@ company-tooltip-limit 10)
 \end{verbatim}
 
 \section{\texttt{AUCTeX} for \LaTeX{} programming}
-\label{sec:orgeba9eab}
+\label{sec:org047d50a}
 \begin{verbatim}
 (load "auctex.el" nil t t)
 
@@ -524,7 +638,7 @@ company-tooltip-limit 10)
 \end{verbatim}
 
 \section{Web Developments}
-\label{sec:orgf97159f}
+\label{sec:org07a031f}
 \begin{verbatim}
 ;; Rainbow mode
 (add-hook 'html-mode-hook 'rainbow-mode)
@@ -532,8 +646,7 @@ company-tooltip-limit 10)
 \end{verbatim}
 
 \section{Pdf-tools}
-\label{sec:org310c788}
-This packages should be manually downloaded from MELPA to prevent compiling errors
+\label{sec:org304f1a9}
 
 \begin{verbatim}
 
@@ -547,7 +660,7 @@ This packages should be manually downloaded from MELPA to prevent compiling erro
 \end{verbatim}
 
 \section{Magit}
-\label{sec:orgb20ca7b}
+\label{sec:orge77f68c}
 
 \begin{verbatim}
 
@@ -557,7 +670,7 @@ This packages should be manually downloaded from MELPA to prevent compiling erro
 \end{verbatim}
 
 \section{Draft}
-\label{sec:org4a654b2}
+\label{sec:org752ba4d}
 Settings in this section are not yet organized but are being used
 
 \begin{verbatim}
@@ -616,9 +729,9 @@ Settings in this section are not yet organized but are being used
 \end{verbatim}
 
 \section{{\bfseries\sffamily TODO} }
-\label{sec:org88b2556}
+\label{sec:orgb2f277f}
 \subsection{Add special face to latex default font}
-\label{sec:org6c80e8c}
+\label{sec:orgf57b66a}
 
 \begin{verbatim}
 regex for everything
@@ -631,7 +744,7 @@ regex for special command:
 
 \end{verbatim}
 \subsection{Add special font to all TODO keywords in all modes}
-\label{sec:org5646bf8}
+\label{sec:org9415def}
 Through something like:
 
 \begin{verbatim}

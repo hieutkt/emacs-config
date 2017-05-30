@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: ggplot
+# key: gg
+# --
+ggplot(`yas-selected-text`$1) +
+  geom_$2$0
