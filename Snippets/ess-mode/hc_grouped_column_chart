@@ -1,0 +1,13 @@
+# key: hc_grouped_column
+# name: hc_grouped_column_chart
+# --
+data_lst <- ${1:`yas-selected-text`} %>% 
+group_by($1\$${2:small_group}) %>% 
+do(data = list.parse2(.[, c('${3:big_group}', '$${4:count}')])) %>% 
+    rename(name = $1\$$2) %>% 
+    mutate(type = 'column') %>% 
+    list.parse3()
+
+highchart() %>%
+    hc_xAxis(categories = $1\$$3) %>%
+    hc_add_series_list(data_lst)$0

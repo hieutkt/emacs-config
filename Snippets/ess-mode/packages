@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: packages
+# key: pkgs
+# --
+pkgs <- c($1)
+sapply(pkgs, require, character.only = TRUE)

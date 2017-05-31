@@ -50,60 +50,103 @@
 (setq show-paren-delay 0)
 
 ;; Delete marked region when input
-(delete-selection-mode 1)
+  (delete-selection-mode 1)
 
-;; Global mark ring
-(setq global-mark-ring-max 50000)
+  ;; Global mark ring
+  (setq global-mark-ring-max 50000)
 
-;; "Yes or no"? Too much writing
-(defalias 'yes-or-no-p 'y-or-n-p)
-
-
-;; Auto close bracket insertion.
-(electric-pair-mode 1)
-(setq electric-pair-pairs '(
-			    (?\" . ?\")
-			    (?\( . ?\))
-			    (?\{ . ?\})
-			    ) )
-
-(when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
+  ;; "Yes or no"? Too much writing
+  (defalias 'yes-or-no-p 'y-or-n-p)
 
 
-;; Set kill ring size
-(setq global-mark-ring-max 50000)
+  ;; Auto close bracket insertion.
+  (electric-pair-mode 1)
+  (setq electric-pair-pairs '(
+			      (?\" . ?\")
+			      (?\( . ?\))
+			      (?\{ . ?\})
+			      ) )
 
-;; Bound undo to C-z
-(global-set-key (kbd "C-z") 'undo)
+  (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
-;; Expand region with M-m
-(require 'expand-region)
-(global-set-key (kbd "C-'") 'er/expand-region)
+  ;; Add new line at the bottom of buffer
+  (setq next-line-add-newlines t)
 
-;; Multi-cursor
-(require 'multiple-cursors)
-(global-set-key (kbd "C-?") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-N") 'mc/insert-numbers)
+  ;; Set kill ring size
+  (setq global-mark-ring-max 50000)
 
-;; Define function: fill character to 80
-(defun fill-to-end (char)
-  (interactive "cFill Character:")
-  (save-excursion
-    (end-of-line)
-    (while (< (current-column) 80)
-      (insert-char char))))
+  ;; Bound undo to C-z
+  (global-set-key (kbd "C-z") 'undo)
 
-;; Eval and replace lisp expression
-(defun fc-eval-and-replace ()
-"Replace the preceding sexp with its value."
-(interactive)
-(backward-kill-sexp)
-(prin1 (eval (read (current-kill 0)))
-(current-buffer)))
-(global-set-key (kbd "C-c e") 'fc-eval-and-replace)
+  ;; Expand region with C-' and return to original position with C-g
+  (require 'expand-region)
+  (global-set-key (kbd "C-'") 'er/expand-region)
+  (defadvice keyboard-quit (before collapse-region activate)
+  (when (memq last-command '(er/expand-region er/contract-region))
+    (er/contract-region 0)))
+
+
+  ;; Multi-cursor
+  (require 'multiple-cursors)
+  (global-set-key (kbd "C-?") 'mc/edit-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  (global-set-key (kbd "C-N") 'mc/insert-numbers)
+
+  ;; Define function: fill character to 80
+  (defun fill-to-end (char)
+    (interactive "cFill Character:")
+    (save-excursion
+      (end-of-line)
+      (while (< (current-column) 80)
+	(insert-char char))))
+
+  ;; Eval and replace lisp expression
+  (defun fc-eval-and-replace ()
+  "Replace the preceding sexp with its value."
+  (interactive)
+  (backward-kill-sexp)
+  (prin1 (eval (read (current-kill 0)))
+  (current-buffer)))
+  (global-set-key (kbd "C-c e") 'fc-eval-and-replace)
+
+  ;; Move line/region up/down
+  (defun move-text-internal (arg)
+   (cond
+    ((and mark-active transient-mark-mode)
+     (if (> (point) (mark))
+            (exchange-point-and-mark))
+     (let ((column (current-column))
+              (text (delete-and-extract-region (point) (mark))))
+       (forward-line arg)
+       (move-to-column column t)
+       (set-mark (point))
+       (insert text)
+       (exchange-point-and-mark)
+       (setq deactivate-mark nil)))
+    (t
+     (beginning-of-line)
+     (when (or (> arg 0) (not (bobp)))
+       (forward-line)
+       (when (or (< arg 0) (not (eobp)))
+            (transpose-lines arg))
+       (forward-line -1)))))
+
+(defun move-text-down (arg)
+   "Move region (transient-mark-mode active) or current line
+  arg lines down."
+   (interactive "*p")
+   (move-text-internal arg))
+
+(defun move-text-up (arg)
+   "Move region (transient-mark-mode active) or current line
+  arg lines up."
+   (interactive "*p")
+   (move-text-internal (- arg)))
+
+(global-set-key [\M-up] 'move-text-up)
+(global-set-key [\M-down] 'move-text-down)
 
 ;; Code completion
 (require 'company)
@@ -118,7 +161,7 @@
 
 ;; Quick help show up in a popup
 (company-quickhelp-mode 1)
-(setq company-quickhelp-delay 0.2)
+(setq company-quickhelp-delay 1)
 
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -178,6 +221,10 @@
   (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
                         "green" "white"))))
   (add-hook 'post-command-hook 'yasnippet-can-fire-p)
+  
+  (yas-reload-all)
+  ;; With backquote warnings:
+  ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
 
 (require 'helm)
 (require 'helm-config)
@@ -319,6 +366,20 @@ helm-echo-input-in-header-line        t)
 (set-face-attribute 'org-block nil :foreground "#ffffff")
 (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
 (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
+
+;; This setup is tested on Emacs 24.3 & Emacs 24.4 on Linux/OSX
+;; org v8 bundled with Emacs 24.4
+(setq org-odt-preferred-output-format "doc")
+;; BTW, you can assign "pdf" in above variables if you prefer PDF format
+;; Only OSX need below setup
+(defun my-setup-odt-org-convert-process ()
+  (interactive)
+  (let ((cmd "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
+    (when (and (eq system-type 'darwin) (file-exists-p cmd))
+      ;; org v8
+      (setq org-odt-convert-processes '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))
+    ))
+(my-setup-odt-org-convert-process)
 
 ;; Keybinding for terminal
 (global-set-key [f2] 'shell)
@@ -482,6 +543,11 @@ company-tooltip-limit 10)
 ;; Completion
 (require 'company-auctex)
 (company-auctex-init)
+
+(require 'gnuplot-mode)
+;; automatically open files ending with .gp or .gnuplot in gnuplot mode
+(setq auto-mode-alist 
+(append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
 
 ;; Rainbow mode
 (add-hook 'html-mode-hook 'rainbow-mode)

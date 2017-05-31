@@ -106,16 +106,22 @@ Viết một chữ gì đấy bằng tiếng việt thì hay hơn
 
   (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
+  ;; Add new line at the bottom of buffer
+  (setq next-line-add-newlines t)
 
   ;; Set kill ring size
   (setq global-mark-ring-max 50000)
-  
+
   ;; Bound undo to C-z
   (global-set-key (kbd "C-z") 'undo)
 
-  ;; Expand region with M-m
+  ;; Expand region with C-' and return to original position with C-g
   (require 'expand-region)
   (global-set-key (kbd "C-'") 'er/expand-region)
+  (defadvice keyboard-quit (before collapse-region activate)
+  (when (memq last-command '(er/expand-region er/contract-region))
+    (er/contract-region 0)))
+
 
   ;; Multi-cursor
   (require 'multiple-cursors)
@@ -142,6 +148,42 @@ Viết một chữ gì đấy bằng tiếng việt thì hay hơn
   (current-buffer)))
   (global-set-key (kbd "C-c e") 'fc-eval-and-replace)
 
+  ;; Move line/region up/down
+  (defun move-text-internal (arg)
+   (cond
+    ((and mark-active transient-mark-mode)
+     (if (> (point) (mark))
+            (exchange-point-and-mark))
+     (let ((column (current-column))
+              (text (delete-and-extract-region (point) (mark))))
+       (forward-line arg)
+       (move-to-column column t)
+       (set-mark (point))
+       (insert text)
+       (exchange-point-and-mark)
+       (setq deactivate-mark nil)))
+    (t
+     (beginning-of-line)
+     (when (or (> arg 0) (not (bobp)))
+       (forward-line)
+       (when (or (< arg 0) (not (eobp)))
+            (transpose-lines arg))
+       (forward-line -1)))))
+
+(defun move-text-down (arg)
+   "Move region (transient-mark-mode active) or current line
+  arg lines down."
+   (interactive "*p")
+   (move-text-internal arg))
+
+(defun move-text-up (arg)
+   "Move region (transient-mark-mode active) or current line
+  arg lines up."
+   (interactive "*p")
+   (move-text-internal (- arg)))
+
+(global-set-key [\M-up] 'move-text-up)
+(global-set-key [\M-down] 'move-text-down)
 #+END_SRC
 
 ** Company
@@ -161,7 +203,7 @@ Company is a completion mechanism that is very flexible
 	
   ;; Quick help show up in a popup
   (company-quickhelp-mode 1)
-  (setq company-quickhelp-delay 0.2)
+  (setq company-quickhelp-delay 1)
 
 #+END_SRC
 
@@ -231,6 +273,11 @@ Company is a completion mechanism that is very flexible
   (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
                         "green" "white"))))
   (add-hook 'post-command-hook 'yasnippet-can-fire-p)
+  
+  (yas-reload-all)
+  ;; With backquote warnings:
+  ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
+
 #+END_SRC
 
 ** Helm
@@ -388,6 +435,7 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 
 #+END_SRC
+
 * Org-mode
 #+BEGIN_SRC emacs-lisp
 
@@ -402,6 +450,26 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
   (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
 #+END_SRC
+
+** Org export to docx. [[http://blog.binchen.org/posts/how-to-take-screen-shot-for-business-people-efficiently-in-emacs.html#sec-2-3][Credit]].
+
+#+BEGIN_SRC emacs-lisp
+;; This setup is tested on Emacs 24.3 & Emacs 24.4 on Linux/OSX
+;; org v8 bundled with Emacs 24.4
+(setq org-odt-preferred-output-format "doc")
+;; BTW, you can assign "pdf" in above variables if you prefer PDF format
+;; Only OSX need below setup
+(defun my-setup-odt-org-convert-process ()
+  (interactive)
+  (let ((cmd "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
+    (when (and (eq system-type 'darwin) (file-exists-p cmd))
+      ;; org v8
+      (setq org-odt-convert-processes '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))
+    ))
+(my-setup-odt-org-convert-process)
+
+#+END_SRC
+
 * Terminal
 #+BEGIN_SRC emacs-lisp
   ;; Keybinding for terminal
@@ -591,6 +659,15 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 #+END_SRC
 
+* GNUplot-mode
+I may expand this later to expand this along with org-mode
+
+#+BEGIN_SRC emacs-lisp
+(require 'gnuplot-mode)
+;; automatically open files ending with .gp or .gnuplot in gnuplot mode
+(setq auto-mode-alist 
+(append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
+#+END_SRC
 * Web Developments
 #+BEGIN_SRC emacs-lisp
   ;; Rainbow mode

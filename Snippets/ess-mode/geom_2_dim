@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: geom(...2 dimension...)
+# key: geom_
+# --
+geom_${1:$$(yas/choose-value '("point" "line"))}(aes(x = $2, y = $3)$4)

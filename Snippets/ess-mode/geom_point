@@ -2,4 +2,4 @@
 # name: geom_point
 # key: geom_point
 # --
-geom_point(aes(x = $1, y = $2)$3)$4
+geom_point(aes(x = $1, y = $2)$3)

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: geom_bar
+# key: geom_bar
+# --
+geom_bar(aes(x = $1)$2)
