@@ -81,6 +81,7 @@
   ;; Expand region with C-' and return to original position with C-g
   (require 'expand-region)
   (global-set-key (kbd "C-'") 'er/expand-region)
+
   (defadvice keyboard-quit (before collapse-region activate)
   (when (memq last-command '(er/expand-region er/contract-region))
     (er/contract-region 0)))
@@ -91,7 +92,6 @@
   (global-set-key (kbd "C-?") 'mc/edit-lines)
   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
   (global-set-key (kbd "C-N") 'mc/insert-numbers)
 
   ;; Define function: fill character to 80
@@ -226,6 +226,10 @@
   ;; With backquote warnings:
   ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
 
+(require 'key-chord)
+(key-chord-define-global "??" 'mc/mark-all-like-this)
+(key-chord-mode +1)
+
 (require 'helm)
 (require 'helm-config)
 
@@ -261,6 +265,7 @@ helm-echo-input-in-header-line        t)
 (global-set-key (kbd "C-x b") 'helm-buffers-list)
 (global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
 (setq helm-M-x-fuzzy-match t)
 
 
@@ -364,6 +369,7 @@ helm-echo-input-in-header-line        t)
 ;; fontify code in code blocks
 (setq org-src-fontify-natively t)
 (set-face-attribute 'org-block nil :foreground "#ffffff")
+
 (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
 (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
@@ -434,14 +440,15 @@ company-tooltip-limit 10)
 (define-key inferior-ess-mode-map (kbd "M--") 'ess-smart-S-assign)
 
 ;; Hot key C-S-m for pipe operator in ESS
-(defun then_R_operator ()
-  "R - %>% operator or 'then' pipe operator"
-  (interactive)
-  (just-one-space 1)
-  (insert "%>%")
-  (just-one-space 1))
-(define-key ess-mode-map (kbd "C-S-m") 'then_R_operator)
-(define-key inferior-ess-mode-map (kbd "C-S-m") 'then_R_operator)
+;; Temporary removed and use Yasnippet instead
+;; (defun then_R_operator ()
+;;   "R - %>% operator or 'then' pipe operator"
+;;   (interactive)
+;;   (just-one-space 1)
+;;   (insert "%>%")
+;;   (just-one-space 1))
+;; (define-key ess-mode-map (kbd "C-S-m") 'then_R_operator)
+;; (define-key inferior-ess-mode-map (kbd "C-S-m") 'then_R_operator)
 
 ;; Truncate long lines
 (add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
