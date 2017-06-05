@@ -456,7 +456,7 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 #+END_SRC
 
 * Org-mode
-** Setting up
+
 #+BEGIN_SRC emacs-lisp
   ;; Auto indent normally
   (setq org-src-tab-acts-natively t)
@@ -474,24 +474,7 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 #+END_SRC
 
-** Org export to docx. [[http://blog.binchen.org/posts/how-to-take-screen-shot-for-business-people-efficiently-in-emacs.html#sec-2-3][Credit]].
 
-#+BEGIN_SRC emacs-lisp
-  ;; This setup is tested on Emacs 24.3 & Emacs 24.4 on Linux/OSX
-  ;; org v8 bundled with Emacs 24.4
-  (setq org-odt-preferred-output-format "doc")
-  ;; BTW, you can assign "pdf" in above variables if you prefer PDF format
-  ;; Only OSX need below setup
-  (defun my-setup-odt-org-convert-process ()
-    (interactive)
-    (let ((cmd "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
-      (when (and (eq system-type 'darwin) (file-exists-p cmd))
-	;; org v8
-	(setq org-odt-convert-processes '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))
-      ))
-  (my-setup-odt-org-convert-process)
-
-#+END_SRC
 * =ESS= for =R= programming
 ** Setting up
 #+BEGIN_SRC emacs-lisp
@@ -804,8 +787,6 @@ Through something like:
 
 
 \end{verbatim}
-
-
 
 
 
