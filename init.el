@@ -150,7 +150,6 @@
 
 ;; Code completion
 (require 'company)
-(require 'company-files)
 (add-hook 'after-init-hook 'global-company-mode)
 
 (setq company-selection-wrap-around t
@@ -197,7 +196,7 @@
 
 ;; Enable Yasnippets
   (require 'yasnippet)
-  (add-to-list 'yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
+  (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
 
   (yas-global-mode 1)
   
@@ -387,14 +386,6 @@ helm-echo-input-in-header-line        t)
     ))
 (my-setup-odt-org-convert-process)
 
-;; Keybinding for terminal
-(global-set-key [f2] 'shell)
-
-;; Use ubuntu font
-(add-hook 'shell-mode-hook (lambda ()   
-   (setq buffer-face-mode-face '(:family "Ubuntu"))
-			  (buffer-face-mode)))
-
 (require 'ess-site)
 (require 'ess-rutils)
 
@@ -504,10 +495,10 @@ company-tooltip-limit 10)
 (elpy-enable)				
 (with-eval-after-load 'elpy (flymake-mode -1))
 (setq elpy-rpc-python-command "python3")
-(setq python-shell-interpreter "python3")
-
+(elpy-use-cpython "python3")
+(setq elpy-rpc-backend "jedi")
 ;; ipython
-(elpy-use-ipython "python3")
+;; (elpy-use-ipython "python3")
 
 ;; Enable company
 (add-hook 'python-mode-hook 'company-mode)
@@ -528,6 +519,19 @@ company-tooltip-limit 10)
 ;;    (flycheck-mode 1))
 
 ;; (add-hook 'python-mode-hook 'flymake-to-flycheck)
+
+
+;; Fix:Calling ‘run-python’ with ‘python-shell-interpreter’ set to "python3"
+;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24401
+;; This will be fixed in the next version of Emacs
+(defun python-shell-completion-native-try ()
+    "Return non-nil if can trigger native completion."
+    (let ((python-shell-completion-native-enable t)
+          (python-shell-completion-native-output-timeout
+           python-shell-completion-native-try-output-timeout))
+      (python-shell-completion-native-get-completions
+       (get-buffer-process (current-buffer))
+       nil "_")))
 
 (load "auctex.el" nil t t)
 
@@ -550,6 +554,14 @@ company-tooltip-limit 10)
 ;; Completion
 (require 'company-auctex)
 (company-auctex-init)
+
+;; Keybinding for terminal
+(global-set-key [f2] 'shell)
+
+;; Use ubuntu font
+(add-hook 'shell-mode-hook (lambda ()   
+   (setq buffer-face-mode-face '(:family "Ubuntu"))
+			  (buffer-face-mode)))
 
 (require 'gnuplot-mode)
 ;; automatically open files ending with .gp or .gnuplot in gnuplot mode

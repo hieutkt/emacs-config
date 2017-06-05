@@ -192,7 +192,6 @@ Company is a completion mechanism that is very flexible
 #+BEGIN_SRC emacs-lisp
   ;; Code completion
   (require 'company)
-  (require 'company-files)
   (add-hook 'after-init-hook 'global-company-mode)
 
   (setq company-selection-wrap-around t
@@ -249,7 +248,7 @@ Company is a completion mechanism that is very flexible
 
   ;; Enable Yasnippets
   (require 'yasnippet)
-  (add-to-list 'yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
+  (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
 
   (yas-global-mode 1)
   
@@ -481,18 +480,6 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 (my-setup-odt-org-convert-process)
 
 #+END_SRC
-
-* Terminal
-#+BEGIN_SRC emacs-lisp
-  ;; Keybinding for terminal
-  (global-set-key [f2] 'shell)
-
-  ;; Use ubuntu font
-  (add-hook 'shell-mode-hook (lambda ()   
-     (setq buffer-face-mode-face '(:family "Ubuntu"))
-			    (buffer-face-mode)))
-
-#+END_SRC
 * =ESS= for =R= programming
 ** Setting up
 #+BEGIN_SRC emacs-lisp
@@ -619,10 +606,10 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
   (elpy-enable)				
   (with-eval-after-load 'elpy (flymake-mode -1))
   (setq elpy-rpc-python-command "python3")
-  (setq python-shell-interpreter "python3")
-
+  (elpy-use-cpython "python3")
+  (setq elpy-rpc-backend "jedi")
   ;; ipython
-  (elpy-use-ipython "python3")
+  ;; (elpy-use-ipython "python3")
 
   ;; Enable company
   (add-hook 'python-mode-hook 'company-mode)
@@ -643,6 +630,19 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
   ;;    (flycheck-mode 1))
 
   ;; (add-hook 'python-mode-hook 'flymake-to-flycheck)
+
+
+  ;; Fix:Calling ‘run-python’ with ‘python-shell-interpreter’ set to "python3"
+  ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24401
+  ;; This will be fixed in the next version of Emacs
+  (defun python-shell-completion-native-try ()
+      "Return non-nil if can trigger native completion."
+      (let ((python-shell-completion-native-enable t)
+            (python-shell-completion-native-output-timeout
+             python-shell-completion-native-try-output-timeout))
+        (python-shell-completion-native-get-completions
+         (get-buffer-process (current-buffer))
+         nil "_")))
 
 #+END_SRC
 
@@ -669,6 +669,18 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
   ;; Completion
   (require 'company-auctex)
   (company-auctex-init)
+
+#+END_SRC
+
+* Terminal
+#+BEGIN_SRC emacs-lisp
+  ;; Keybinding for terminal
+  (global-set-key [f2] 'shell)
+
+  ;; Use ubuntu font
+  (add-hook 'shell-mode-hook (lambda ()   
+     (setq buffer-face-mode-face '(:family "Ubuntu"))
+			    (buffer-face-mode)))
 
 #+END_SRC
 

@@ -1,0 +1,5 @@
+# key: def
+# name: def
+# --
+def ${1:definition}:
+$0
