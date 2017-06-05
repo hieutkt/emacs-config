@@ -58,7 +58,7 @@
   ;; "Yes or no"? Too much writing
   (defalias 'yes-or-no-p 'y-or-n-p)
 
-
+  
   ;; Auto close bracket insertion.
   (electric-pair-mode 1)
   (setq electric-pair-pairs '(
@@ -83,8 +83,8 @@
   (global-set-key (kbd "C-'") 'er/expand-region)
 
   (defadvice keyboard-quit (before collapse-region activate)
-  (when (memq last-command '(er/expand-region er/contract-region))
-    (er/contract-region 0)))
+    (when (memq last-command '(er/expand-region er/contract-region))
+      (er/contract-region 0)))
 
 
   ;; Multi-cursor
@@ -104,48 +104,48 @@
 
   ;; Eval and replace lisp expression
   (defun fc-eval-and-replace ()
-  "Replace the preceding sexp with its value."
-  (interactive)
-  (backward-kill-sexp)
-  (prin1 (eval (read (current-kill 0)))
-  (current-buffer)))
+    "Replace the preceding sexp with its value."
+    (interactive)
+    (backward-kill-sexp)
+    (prin1 (eval (read (current-kill 0)))
+	   (current-buffer)))
   (global-set-key (kbd "C-c e") 'fc-eval-and-replace)
 
   ;; Move line/region up/down
   (defun move-text-internal (arg)
-   (cond
-    ((and mark-active transient-mark-mode)
-     (if (> (point) (mark))
-            (exchange-point-and-mark))
-     (let ((column (current-column))
-              (text (delete-and-extract-region (point) (mark))))
-       (forward-line arg)
-       (move-to-column column t)
-       (set-mark (point))
-       (insert text)
-       (exchange-point-and-mark)
-       (setq deactivate-mark nil)))
-    (t
-     (beginning-of-line)
-     (when (or (> arg 0) (not (bobp)))
-       (forward-line)
-       (when (or (< arg 0) (not (eobp)))
-            (transpose-lines arg))
-       (forward-line -1)))))
+    (cond
+     ((and mark-active transient-mark-mode)
+      (if (> (point) (mark))
+	  (exchange-point-and-mark))
+      (let ((column (current-column))
+	    (text (delete-and-extract-region (point) (mark))))
+	(forward-line arg)
+	(move-to-column column t)
+	(set-mark (point))
+	(insert text)
+	(exchange-point-and-mark)
+	(setq deactivate-mark nil)))
+     (t
+      (beginning-of-line)
+      (when (or (> arg 0) (not (bobp)))
+	(forward-line)
+	(when (or (< arg 0) (not (eobp)))
+	  (transpose-lines arg))
+	(forward-line -1)))))
 
-(defun move-text-down (arg)
-   "Move region (transient-mark-mode active) or current line
+  (defun move-text-down (arg)
+    "Move region (transient-mark-mode active) or current line
   arg lines down."
-   (interactive "*p")
-   (move-text-internal arg))
+    (interactive "*p")
+    (move-text-internal arg))
 
-(defun move-text-up (arg)
-   "Move region (transient-mark-mode active) or current line
+  (defun move-text-up (arg)
+    "Move region (transient-mark-mode active) or current line
   arg lines up."
-   (interactive "*p")
-   (move-text-internal (- arg)))
+    (interactive "*p")
+    (move-text-internal (- arg)))
 
-(global-set-key [\M-up] 'move-text-up)
+  (global-set-key [\M-up] 'move-text-up)
 (global-set-key [\M-down] 'move-text-down)
 
 ;; Code completion
@@ -191,39 +191,44 @@
 
 ;; Startup
 (add-hook 'after-init-hook 
-  (lambda () 
-  (find-file (format "%s/%s" config-directory "init.org"))))
+	  (lambda () 
+	    (find-file (format "%s/%s" config-directory "init.org"))))
+
+
+;; Information settings
+(setq user-full-name "Nguyễn Đức Hiếu"
+      user-mail-address "hieunguyen31371@gmail.com")
 
 ;; Enable Yasnippets
-  (require 'yasnippet)
-  (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
+(require 'yasnippet)
+(setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
 
-  (yas-global-mode 1)
-  
-  (global-set-key (kbd "<C-tab>") 'yas-insert-snippet)
+(yas-global-mode 1)
+
+(global-set-key (kbd "<C-tab>") 'yas-insert-snippet)
 
 
-  ;; It will test whether it can expand, if yes, cursor color -> green.
+;; It will test whether it can expand, if yes, cursor color -> green.
 (defun yasnippet-can-fire-p (&optional field)
   (interactive)
   (setq yas--condition-cache-timestamp (current-time))
   (let (templates-and-pos)
     (unless (and yas-expand-only-for-last-commands
-                 (not (member last-command yas-expand-only-for-last-commands)))
+		 (not (member last-command yas-expand-only-for-last-commands)))
       (setq templates-and-pos (if field
-                                  (save-restriction
-                                    (narrow-to-region (yas--field-start field)
-                                                      (yas--field-end field))
-                                    (yas--templates-for-key-at-point))
-                                (yas--templates-for-key-at-point))))
+				  (save-restriction
+				    (narrow-to-region (yas--field-start field)
+						      (yas--field-end field))
+				    (yas--templates-for-key-at-point))
+				(yas--templates-for-key-at-point))))
 
-  (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
-                        "green" "white"))))
-  (add-hook 'post-command-hook 'yasnippet-can-fire-p)
-  
-  (yas-reload-all)
-  ;; With backquote warnings:
-  ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
+    (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
+			  "green" "white"))))
+(add-hook 'post-command-hook 'yasnippet-can-fire-p)
+
+(yas-reload-all)
+;; With backquote warnings:
+;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
 
 (require 'key-chord)
 (key-chord-define-global "??" 'mc/mark-all-like-this)
@@ -243,15 +248,15 @@
 (define-key helm-map (kbd "C-z")  'helm-select-action)              ; list actions using C-z
 
 (when (executable-find "curl")
-(setq helm-google-suggest-use-curl-p t))
+  (setq helm-google-suggest-use-curl-p t))
 
 (setq 
-helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
-helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-helm-ff-file-name-history-use-recentf t
-helm-echo-input-in-header-line        t)
+ helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+ helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+ helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+ helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+ helm-ff-file-name-history-use-recentf t
+ helm-echo-input-in-header-line        t)
 
 
 (setq helm-autoresize-max-height 0)
@@ -271,18 +276,20 @@ helm-echo-input-in-header-line        t)
 ;; Use "C-:" to switch to Helm interface during companying
 (require 'helm-company)
 (eval-after-load 'company
-'(progn
-(define-key company-mode-map (kbd "C-:") 'helm-company)
-(define-key company-active-map (kbd "C-:") 'helm-company)))
+  '(progn
+     (define-key company-mode-map (kbd "C-:") 'helm-company)
+     (define-key company-active-map (kbd "C-:") 'helm-company)))
 
 (require 'polymode)
 (require 'poly-R)
 (require 'poly-markdown)
+(require 'poly-org)
+
+(add-to-list 'auto-mode-alist '("\\.org" . poly-org-mode))
 (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.Snw$" . poly-noweb+r-mode))
 (add-to-list 'auto-mode-alist '("\\.Rnw$" . poly-noweb+r-mode))
 (add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown+r-mode))
-;; (add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.rapport$" . poly-rapport-mode))
 (add-to-list 'auto-mode-alist '("\\.Rhtml$" . poly-html+r-mode))
 (add-to-list 'auto-mode-alist '("\\.Rbrew$" . poly-brew+r-mode))
@@ -294,8 +301,8 @@ helm-echo-input-in-header-line        t)
     (if (looking-at "\\_>") t
       (backward-char 1)
       (if (looking-at "\\.") t
-    (backward-char 1)
-    (if (looking-at "->") t nil)))))
+	(backward-char 1)
+	(if (looking-at "->") t nil)))))
 
 (defun do-yas-expand ()
   (let ((yas/fallback-behavior 'return-nil))
@@ -309,35 +316,35 @@ helm-echo-input-in-header-line        t)
    (t
     (indent-for-tab-command)
     (if (or (not yas/minor-mode)
-        (null (do-yas-expand)))
-    (if (check-expansion)
-        (progn
-          (company-manual-begin)
-          (if (null company-candidates)
-          (progn
-            (company-abort)
-            (indent-for-tab-command)))))))))
+	    (null (do-yas-expand)))
+	(if (check-expansion)
+	    (progn
+	      (company-manual-begin)
+	      (if (null company-candidates)
+		  (progn
+		    (company-abort)
+		    (indent-for-tab-command)))))))))
 
 (defun tab-complete-or-next-field ()
   (interactive)
   (if (or (not yas/minor-mode)
-      (null (do-yas-expand)))
+	  (null (do-yas-expand)))
       (if company-candidates
-      (company-complete-selection)
-    (if (check-expansion)
-      (progn
-        (company-manual-begin)
-        (if (null company-candidates)
-        (progn
-          (company-abort)
-          (yas-next-field))))
-      (yas-next-field)))))
+	  (company-complete-selection)
+	(if (check-expansion)
+	    (progn
+	      (company-manual-begin)
+	      (if (null company-candidates)
+		  (progn
+		    (company-abort)
+		    (yas-next-field))))
+	  (yas-next-field)))))
 
 (defun expand-snippet-or-complete-selection ()
   (interactive)
   (if (or (not yas/minor-mode)
-      (null (do-yas-expand))
-      (company-abort))
+	  (null (do-yas-expand))
+	  (company-abort))
       (company-complete-selection)))
 
 (defun abort-company-or-yas ()
@@ -360,6 +367,9 @@ helm-echo-input-in-header-line        t)
 (define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
 (define-key yas-keymap [(control tab)] 'yas-next-field)
 (define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)
+
+;; Auto indent normally
+(setq org-src-tab-acts-natively t)
 
 ;; Enable shift selection
 (setq org-support-shift-select t)
@@ -389,39 +399,73 @@ helm-echo-input-in-header-line        t)
 (require 'ess-site)
 (require 'ess-rutils)
 
-(add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
+
+;; Describe object
+(setq ess-R-describe-object-at-point-commands
+      '(("str(%s)")
+	("print(%s)")
+	("summary(%s, maxsum = 20)")))
+
+;; Truncate long lines
+(add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
+(add-hook 'inferior-ess-mode-hook (lambda () (setq truncate-lines t)))
+
 
 ;; Indentation style
 (setq ess-default-style 'RStudio)
 
-;; Describe object
-(setq ess-R-describe-object-at-point-commands
-    '(("str(%s)")
-     ("print(%s)")
-     ("summary(%s, maxsum = 20)")))
 
-(setq ess-use-company 'script-only)
-(setq ess-tab-complete-in-script t)	;Press <tab> inside functions for completions
+;; ESS syntax highlight  
+(add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
+(add-hook 'ess-mode-hook
+	  '(lambda()
+	     (font-lock-add-keywords
+	      nil-1
+	      '(
 
-;; Show quickhelp
-(define-key company-active-map (kbd "C-;") 'company-show-doc-buffer)
+		("\\<\\(if\\|for\\|function\\|return\\|$\\|@\\)\\>[\n[:blank:]]*(" 1
+		 font-lock-keyword-face) ; must go first to override highlighting below
 
-;; Others
-(setq company-selection-wrap-around t
-company-tooltip-align-annotations t
-company-idle-delay 0.36
-company-minimum-prefix-length 2
-company-tooltip-limit 10)
+		("\\<\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*(" 1
+		 font-lock-function-name-face) ; highlight function names
+
+		("\\([(,]\\|[\n[:blank:]]*\\)\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*=[^=]"
+		 2 font-lock-reference-face)
+
+		;; highlight operators
+		("\\(\\$\\|\\@\\|\\!\\|\\%\\|\\^\\|\\&\\|\\*\\|\(\\|\)\\|\{\\|\}\\|\\[\\|\\]\\|\\-\\|\\+\\|\=\\|\\/\\|\<\\|\>\\|:\\)" 1 font-lock-builtin-face)
+
+		;; highlight S4 methods
+		("\\(setMethod\\|setGeneric\\|setGroupGeneric\\|setClass\\|setRefClass\\|setReplaceMethod\\)" 1 font-lock-reference-face)
+
+		;; highlight packages called through ::, :::
+		("\\(\\w+\\):\\{2,3\\}" 1 font-lock-constant-face)
+
+		;; highlight named arguments -- this was found on an earlier mailing list post
+		("\\([(,]\\|[\n[:blank:]]*\\)\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*=[^=]"
+		 2 font-lock-reference-face)
+
+		;; highlight packages called through ::, :::
+		("\\(\\w+\\):\\{2,3\\}" 1 font-lock-constant-face)
+
+		;; highlight S4 methods
+		("\\(setMethod\\|setGeneric\\|setGroupGeneric\\|setClass\\|setRefClass\\|setReplaceMethod\\)" 1 font-lock-reference-face)
+
+		))
+	     ))
 
 ;; Eldoc mode for function arguments hints
-(require 'ess-eldoc)
+(require 'ess-eldoc)  
+
+(setq ess-use-company 'script-only)
+(setq ess-tab-complete-in-script t)	;; Press <tab> inside functions for completions
 
 ;; Returm C-c h as prefix to Helm"
 (defun ess-map-control-h-to-helm ()
-   "Return C-c h to helm prefix instead of ess-handy-commands"
-   (interactive)
-   (local-unset-key (kbd "C-c h"))
-   (local-set-key (kbd "C-c h") 'helm-command-prefix))
+  "Return C-c h to helm prefix instead of ess-handy-commands"
+  (interactive)
+  (local-unset-key (kbd "C-c h"))
+  (local-set-key (kbd "C-c h") 'helm-command-prefix))
 
 (add-hook 'ess-mode-hook 'ess-map-control-h-to-helm)
 
@@ -441,31 +485,28 @@ company-tooltip-limit 10)
 ;; (define-key ess-mode-map (kbd "C-S-m") 'then_R_operator)
 ;; (define-key inferior-ess-mode-map (kbd "C-S-m") 'then_R_operator)
 
-;; Truncate long lines
-(add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
-(add-hook 'inferior-ess-mode-hook (lambda () (setq truncate-lines t)))
 
 
 (defun ess-rmarkdown ()
-"Compile R markdown (.Rmd). Should work for any output type."
-(interactive)
-;; Check if attached R-session
-(condition-case nil
-    (ess-get-process)
-  (error
-   (ess-switch-process)))
-(let* ((rmd-buf (current-buffer)))
-  (save-excursion
-    (let* ((sprocess (ess-get-process ess-current-process-name))
-	   (sbuffer (process-buffer sprocess))
-	   (buf-coding (symbol-name buffer-file-coding-system))
-	   (R-cmd
-	    (format "library(rmarkdown); rmarkdown::render(\"%s\")"
-		    buffer-file-name)))
-      (message "Running rmarkdown on %s" buffer-file-name)
-      (ess-execute R-cmd 'buffer nil nil)
-      (switch-to-buffer rmd-buf)
-      (ess-show-buffer (buffer-name sbuffer) nil)))))
+  "Compile R markdown (.Rmd). Should work for any output type."
+  (interactive)
+  ;; Check if attached R-session
+  (condition-case nil
+      (ess-get-process)
+    (error
+     (ess-switch-process)))
+  (let* ((rmd-buf (current-buffer)))
+    (save-excursion
+      (let* ((sprocess (ess-get-process ess-current-process-name))
+	     (sbuffer (process-buffer sprocess))
+	     (buf-coding (symbol-name buffer-file-coding-system))
+	     (R-cmd
+	      (format "library(rmarkdown); rmarkdown::render(\"%s\")"
+		      buffer-file-name)))
+	(message "Running rmarkdown on %s" buffer-file-name)
+	(ess-execute R-cmd 'buffer nil nil)
+	(switch-to-buffer rmd-buf)
+	(ess-show-buffer (buffer-name sbuffer) nil)))))
 
 (define-key polymode-mode-map "\M-ns" 'ess-rmarkdown)
 
@@ -497,8 +538,7 @@ company-tooltip-limit 10)
 (setq elpy-rpc-python-command "python3")
 (elpy-use-cpython "python3")
 (setq elpy-rpc-backend "jedi")
-;; ipython
-;; (elpy-use-ipython "python3")
+
 
 ;; Enable company
 (add-hook 'python-mode-hook 'company-mode)
@@ -525,13 +565,13 @@ company-tooltip-limit 10)
 ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24401
 ;; This will be fixed in the next version of Emacs
 (defun python-shell-completion-native-try ()
-    "Return non-nil if can trigger native completion."
-    (let ((python-shell-completion-native-enable t)
-          (python-shell-completion-native-output-timeout
-           python-shell-completion-native-try-output-timeout))
-      (python-shell-completion-native-get-completions
-       (get-buffer-process (current-buffer))
-       nil "_")))
+  "Return non-nil if can trigger native completion."
+  (let ((python-shell-completion-native-enable t)
+	(python-shell-completion-native-output-timeout
+	 python-shell-completion-native-try-output-timeout))
+    (python-shell-completion-native-get-completions
+     (get-buffer-process (current-buffer))
+     nil "_")))
 
 (load "auctex.el" nil t t)
 
@@ -539,97 +579,46 @@ company-tooltip-limit 10)
 (require 'font-latex)
 (set-face-attribute 'font-latex-math-face nil :foreground "#ffffff")
 
-(setq TeX-auto-save t)			    
-(setq TeX-parse-self t)
 ;; Enable query for master file
 (setq-default TeX-master nil)		    
-(setq TeX-save-query nil)		    
-(setq TeX-PDF-mode t)			    
-(setq font-latex-fontify-sectioning 'color) 
-(setq font-latex-fontify-script nil)	    
+(setq TeX-auto-save t			    
+      TeX-parse-self t
+      TeX-save-query nil
+      TeX-PDF-mode t	    
+      font-latex-fontify-sectioning 'color
+      font-latex-fontify-script nil)    
 
 ;; Word-wrap
-(add-hook 'TeX-mode-hook (lambda () (setq-default word-wrap t)))
+(add-hook 'TeX-mode-hook (lambda () (setq word-wrap t)))
 
 ;; Completion
 (require 'company-auctex)
 (company-auctex-init)
 
+(require 'shx)
+(add-hook 'shell-mode-hook #'shx-mode)
+
+;; Make comint promts read-only
+(add-hook 'shx-mode-hook (lambda () (setq comint-prompt-read-only t)))
+
 ;; Keybinding for terminal
 (global-set-key [f2] 'shell)
-
-;; Use ubuntu font
-(add-hook 'shell-mode-hook (lambda ()   
-   (setq buffer-face-mode-face '(:family "Ubuntu"))
-			  (buffer-face-mode)))
 
 (require 'gnuplot-mode)
 ;; automatically open files ending with .gp or .gnuplot in gnuplot mode
 (setq auto-mode-alist 
-(append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
+      (append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
 
 ;; Rainbow mode
 (add-hook 'html-mode-hook 'rainbow-mode)
 (add-hook 'css-mode-hook 'rainbow-mode)
 
 (pdf-tools-install)
-(setq pdf-view-display-size "fit-page")
-(setq auto-revert-interval 0)
-(setq ess-pdf-viewer-pref "emacsclient")
-(setq TeX-view-program-selection '((output-pdf "PDF Tools")))
-
-(setq pdf-view-midnight-colors '("#fffff8" . "#111111"))
+(setq pdf-view-display-size "fit-page"
+      auto-revert-interval 0
+      ess-pdf-viewer-pref "emacsclient"
+      TeX-view-program-selection '((output-pdf "PDF Tools"))
+      pdf-view-midnight-colors '("#fffff8" . "#111111"))
 
 ;; Currently magit cause some error when auto revert mode is on
 (setq magit-auto-revert-mode nil)
-
-;; Add ess command to always run in multiple cursor mode
-  (setq ess-cmds-run-all-mc '(ess-smart-comma then_R_operator ess-smart-S-assign))
-  (setq mc/cmds-to-run-once 
-    (set-difference mc/cmds-to-run-once ess-cmds-run-all-mc))
-  (setq mc/cmds-to-run-for-all 
-    (union mc/cmds-to-run-for-all ess-cmds-run-all-mc))
-
-
-  ;; Email settings
-  (setq user-full-name "Nguyễn Đức Hiếu"
-	user-mail-address "hieunguyen31371@gmail.com")
-
-  ;; ess syntax highlight
-
-(add-hook 'ess-mode-hook
-      '(lambda()
-	 (font-lock-add-keywords
-	  nil
-	  '(
-
-	("\\<\\(if\\|for\\|function\\|return\\|$\\|@\\)\\>[\n[:blank:]]*(" 1
-	 font-lock-keyword-face) ; must go first to override highlighting below
-
-	("\\<\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*(" 1
-	 font-lock-function-name-face) ; highlight function names
-
-	("\\([(,]\\|[\n[:blank:]]*\\)\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*=[^=]"
-	 2 font-lock-reference-face)
-
-	;; highlight operators
-	("\\(\\$\\|\\@\\|\\!\\|\\%\\|\\^\\|\\&\\|\\*\\|\(\\|\)\\|\{\\|\}\\|\\[\\|\\]\\|\\-\\|\\+\\|\=\\|\\/\\|\<\\|\>\\|:\\)" 1 font-lock-builtin-face)
-
-	;; highlight S4 methods
-	("\\(setMethod\\|setGeneric\\|setGroupGeneric\\|setClass\\|setRefClass\\|setReplaceMethod\\)" 1 font-lock-reference-face)
-
-	;; highlight packages called through ::, :::
-	("\\(\\w+\\):\\{2,3\\}" 1 font-lock-constant-face)
-
-	;; highlight named arguments -- this was found on an earlier mailing list post
-	("\\([(,]\\|[\n[:blank:]]*\\)\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*=[^=]"
-	2 font-lock-reference-face)
-
-	;; highlight packages called through ::, :::
-	("\\(\\w+\\):\\{2,3\\}" 1 font-lock-constant-face)
-
-	;; highlight S4 methods
-	("\\(setMethod\\|setGeneric\\|setGroupGeneric\\|setClass\\|setRefClass\\|setReplaceMethod\\)" 1 font-lock-reference-face)
-
-	))
-	 ))
