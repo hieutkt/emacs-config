@@ -590,6 +590,9 @@
 ;; Keybinding for terminal
 (global-set-key [f2] 'shell)
 
+;; Company
+(add-to-list 'company-backends '(company-shell company-shell-env company-fish-shell))
+
 (require 'gnuplot-mode)
 ;; automatically open files ending with .gp or .gnuplot in gnuplot mode
 (setq auto-mode-alist 

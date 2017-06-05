@@ -715,6 +715,9 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
   ;; Keybinding for terminal
   (global-set-key [f2] 'shell)
 
+  ;; Company
+  (add-to-list 'company-backends '(company-shell company-shell-env company-fish-shell))
+
 #+END_SRC
 
 * GNUplot-mode
