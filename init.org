@@ -17,6 +17,7 @@ The whole thing is driven by the following =.emacs=
     (expand-file-name "init.org" config-directory))		   
 #+end_example
 
+
 * General
 General config for emacs with no major mode involved
 ** Path configurations
@@ -183,7 +184,13 @@ General config for emacs with no major mode involved
     (move-text-internal (- arg)))
 
   (global-set-key [\M-up] 'move-text-up)
-(global-set-key [\M-down] 'move-text-down)
+  (global-set-key [\M-down] 'move-text-down)
+
+  ;; Srink whitespace, simple but useful
+  (require 'shrink-whitespace)
+  (global-set-key (kbd "C-SPC") 'shrink-whitespace)
+
+
 #+END_SRC
 
 ** Company
@@ -203,6 +210,11 @@ Company is a completion mechanism that is very flexible
   ;; Quick help show up in a popup
   (company-quickhelp-mode 1)
   (setq company-quickhelp-delay 1)
+
+  ;; Math backend, this will input math symbols everywhere except in 
+  ;; LaTeX math evironments
+  (require 'company-math)
+  (add-to-list 'company-backends 'company-math-symbols-unicode)
 
 #+END_SRC
 
@@ -455,6 +467,7 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 #+END_SRC
 
+
 * Org-mode
 
 #+BEGIN_SRC emacs-lisp
@@ -484,10 +497,10 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 
   ;; Describe object
-  (setq ess-R-describe-object-at-point-commands
-	'(("str(%s)")
-	  ("print(%s)")
-	  ("summary(%s, maxsum = 20)")))
+  ;; (setq ess-R-describe-object-at-point-commands
+  ;; 	'(("str(%s)")
+  ;; 	  ("print(%s)")
+  ;; 	  ("summary(%s, maxsum = 20)")))
 
 #+END_SRC
 
@@ -611,6 +624,7 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 #+END_SRC
 
+
 * =Elpy= for =python= programming
 
 #+BEGIN_SRC emacs-lisp
@@ -656,12 +670,16 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 #+END_SRC
 
+
 * =AUCTeX= for \LaTeX{} programming
 #+BEGIN_SRC emacs-lisp
   (load "auctex.el" nil t t)
 
   ;; Appearance
   (require 'font-latex)
+
+  ;; Math mode
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (set-face-attribute 'font-latex-math-face nil :foreground "#ffffff")
 
   ;; Enable query for master file
@@ -682,6 +700,7 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 #+END_SRC
 
+
 * Terminal
 #+BEGIN_SRC emacs-lisp
 
@@ -699,6 +718,7 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 #+END_SRC
 
+
 * GNUplot-mode
 I may expand this later to expand this along with org-mode
 
@@ -709,12 +729,14 @@ I may expand this later to expand this along with org-mode
 	(append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
 #+END_SRC
 
+
 * Web Developments
 #+BEGIN_SRC emacs-lisp
   ;; Rainbow mode
   (add-hook 'html-mode-hook 'rainbow-mode)
   (add-hook 'css-mode-hook 'rainbow-mode)
 #+END_SRC
+
 
 * Pdf-tools 
 
@@ -729,6 +751,7 @@ I may expand this later to expand this along with org-mode
 
 #+END_SRC
 
+
 * Magit
 
 #+BEGIN_SRC emacs-lisp
@@ -737,6 +760,7 @@ I may expand this later to expand this along with org-mode
   (setq magit-auto-revert-mode nil)
 
 #+END_SRC
+
 
 * Draft
 Settings in this section are not yet organized but are being used
@@ -769,6 +793,7 @@ Through something like:
 
 
 \end{verbatim}
+
 
 
 

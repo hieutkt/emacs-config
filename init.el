@@ -50,103 +50,107 @@
 (setq show-paren-delay 0)
 
 ;; Delete marked region when input
-  (delete-selection-mode 1)
+(delete-selection-mode 1)
 
-  ;; Global mark ring
-  (setq global-mark-ring-max 50000)
+;; Global mark ring
+(setq global-mark-ring-max 50000)
 
-  ;; "Yes or no"? Too much writing
-  (defalias 'yes-or-no-p 'y-or-n-p)
-
-  
-  ;; Auto close bracket insertion.
-  (electric-pair-mode 1)
-  (setq electric-pair-pairs '(
-			      (?\" . ?\")
-			      (?\( . ?\))
-			      (?\{ . ?\})
-			      ) )
-
-  (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
-
-  ;; Add new line at the bottom of buffer
-  (setq next-line-add-newlines t)
-
-  ;; Set kill ring size
-  (setq global-mark-ring-max 50000)
-
-  ;; Bound undo to C-z
-  (global-set-key (kbd "C-z") 'undo)
-
-  ;; Expand region with C-' and return to original position with C-g
-  (require 'expand-region)
-  (global-set-key (kbd "C-'") 'er/expand-region)
-
-  (defadvice keyboard-quit (before collapse-region activate)
-    (when (memq last-command '(er/expand-region er/contract-region))
-      (er/contract-region 0)))
+;; "Yes or no"? Too much writing
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 
-  ;; Multi-cursor
-  (require 'multiple-cursors)
-  (global-set-key (kbd "C-?") 'mc/edit-lines)
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-N") 'mc/insert-numbers)
+;; Auto close bracket insertion.
+(electric-pair-mode 1)
+(setq electric-pair-pairs '(
+			    (?\" . ?\")
+			    (?\( . ?\))
+			    (?\{ . ?\})
+			    ) )
 
-  ;; Define function: fill character to 80
-  (defun fill-to-end (char)
-    (interactive "cFill Character:")
-    (save-excursion
-      (end-of-line)
-      (while (< (current-column) 80)
-	(insert-char char))))
+(when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
-  ;; Eval and replace lisp expression
-  (defun fc-eval-and-replace ()
-    "Replace the preceding sexp with its value."
-    (interactive)
-    (backward-kill-sexp)
-    (prin1 (eval (read (current-kill 0)))
-	   (current-buffer)))
-  (global-set-key (kbd "C-c e") 'fc-eval-and-replace)
+;; Add new line at the bottom of buffer
+(setq next-line-add-newlines t)
 
-  ;; Move line/region up/down
-  (defun move-text-internal (arg)
-    (cond
-     ((and mark-active transient-mark-mode)
-      (if (> (point) (mark))
-	  (exchange-point-and-mark))
-      (let ((column (current-column))
-	    (text (delete-and-extract-region (point) (mark))))
-	(forward-line arg)
-	(move-to-column column t)
-	(set-mark (point))
-	(insert text)
-	(exchange-point-and-mark)
-	(setq deactivate-mark nil)))
-     (t
-      (beginning-of-line)
-      (when (or (> arg 0) (not (bobp)))
-	(forward-line)
-	(when (or (< arg 0) (not (eobp)))
-	  (transpose-lines arg))
-	(forward-line -1)))))
+;; Set kill ring size
+(setq global-mark-ring-max 50000)
 
-  (defun move-text-down (arg)
-    "Move region (transient-mark-mode active) or current line
-  arg lines down."
-    (interactive "*p")
-    (move-text-internal arg))
+;; Bound undo to C-z
+(global-set-key (kbd "C-z") 'undo)
 
-  (defun move-text-up (arg)
-    "Move region (transient-mark-mode active) or current line
-  arg lines up."
-    (interactive "*p")
-    (move-text-internal (- arg)))
+;; Expand region with C-' and return to original position with C-g
+(require 'expand-region)
+(global-set-key (kbd "C-'") 'er/expand-region)
 
-  (global-set-key [\M-up] 'move-text-up)
+(defadvice keyboard-quit (before collapse-region activate)
+  (when (memq last-command '(er/expand-region er/contract-region))
+    (er/contract-region 0)))
+
+
+;; Multi-cursor
+(require 'multiple-cursors)
+(global-set-key (kbd "C-?") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-N") 'mc/insert-numbers)
+
+;; Define function: fill character to 80
+(defun fill-to-end (char)
+  (interactive "cFill Character:")
+  (save-excursion
+    (end-of-line)
+    (while (< (current-column) 80)
+      (insert-char char))))
+
+;; Eval and replace lisp expression
+(defun fc-eval-and-replace ()
+  "Replace the preceding sexp with its value."
+  (interactive)
+  (backward-kill-sexp)
+  (prin1 (eval (read (current-kill 0)))
+	 (current-buffer)))
+(global-set-key (kbd "C-c e") 'fc-eval-and-replace)
+
+;; Move line/region up/down
+(defun move-text-internal (arg)
+  (cond
+   ((and mark-active transient-mark-mode)
+    (if (> (point) (mark))
+	(exchange-point-and-mark))
+    (let ((column (current-column))
+	  (text (delete-and-extract-region (point) (mark))))
+      (forward-line arg)
+      (move-to-column column t)
+      (set-mark (point))
+      (insert text)
+      (exchange-point-and-mark)
+      (setq deactivate-mark nil)))
+   (t
+    (beginning-of-line)
+    (when (or (> arg 0) (not (bobp)))
+      (forward-line)
+      (when (or (< arg 0) (not (eobp)))
+	(transpose-lines arg))
+      (forward-line -1)))))
+
+(defun move-text-down (arg)
+  "Move region (transient-mark-mode active) or current line
+arg lines down."
+  (interactive "*p")
+  (move-text-internal arg))
+
+(defun move-text-up (arg)
+  "Move region (transient-mark-mode active) or current line
+arg lines up."
+  (interactive "*p")
+  (move-text-internal (- arg)))
+
+(global-set-key [\M-up] 'move-text-up)
 (global-set-key [\M-down] 'move-text-down)
+
+;; Srink whitespace, simple but useful
+(require 'shrink-whitespace)
+(global-set-key (kbd "C-SPC") 'shrink-whitespace)
 
 ;; Code completion
 (require 'company)
@@ -161,6 +165,11 @@
 ;; Quick help show up in a popup
 (company-quickhelp-mode 1)
 (setq company-quickhelp-delay 1)
+
+;; Math backend, this will input math symbols everywhere except in 
+;; LaTeX math evironments
+(require 'company-math)
+(add-to-list 'company-backends 'company-math-symbols-unicode)
 
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -387,10 +396,10 @@
 
 
 ;; Describe object
-(setq ess-R-describe-object-at-point-commands
-      '(("str(%s)")
-	("print(%s)")
-	("summary(%s, maxsum = 20)")))
+;; (setq ess-R-describe-object-at-point-commands
+;; 	'(("str(%s)")
+;; 	  ("print(%s)")
+;; 	  ("summary(%s, maxsum = 20)")))
 
 ;; Truncate long lines
 (add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
@@ -543,6 +552,9 @@
 
 ;; Appearance
 (require 'font-latex)
+
+;; Math mode
+(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
 (set-face-attribute 'font-latex-math-face nil :foreground "#ffffff")
 
 ;; Enable query for master file
