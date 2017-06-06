@@ -625,8 +625,8 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 #+END_SRC
 
 
-* =Elpy= for =python= programming
-
+* =python= programming
+** =ELPY=
 #+BEGIN_SRC emacs-lisp
   (elpy-enable)				
   (with-eval-after-load 'elpy (flymake-mode -1))
@@ -670,6 +670,14 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 #+END_SRC
 
+** =EIN=
+
+#+BEGIN_SRC emacs-lisp
+  ;; (require 'ein)
+  ;; (require 'ein-loaddefs)
+  ;; (require 'ein-notebook)
+  ;; (require 'ein-subpackages)
+#+END_SRC
 
 * =AUCTeX= for \LaTeX{} programming
 #+BEGIN_SRC emacs-lisp
