@@ -25,9 +25,9 @@
 
 ;; Set themes
 (load-theme 'gruvbox t)
-(set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
+nil
 ;; (set-face-attribute 'default nil :foreground "#ffffff")
-(set-face-attribute 'mode-line nil :background "#2f4f4f" :foreground "#ffffff")
+(set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
 
 ;; Set background face for color string
 (add-hook 'prog-mode-hook 'rainbow-mode)
@@ -232,7 +232,7 @@ arg lines up."
 				(yas--templates-for-key-at-point))))
 
     (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
-			  "green" "white"))))
+			  "green" "#ffffaf"))))
 (add-hook 'post-command-hook 'yasnippet-can-fire-p)
 
 (yas-reload-all)
