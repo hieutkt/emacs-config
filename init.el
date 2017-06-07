@@ -26,7 +26,7 @@
 ;; Set themes
 (load-theme 'gruvbox t)
 (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
-(set-face-attribute 'default nil :foreground "#ffffff")
+;; (set-face-attribute 'default nil :foreground "#ffffff")
 (set-face-attribute 'mode-line nil :background "#2f4f4f" :foreground "#ffffff")
 
 ;; Set background face for color string
@@ -548,19 +548,22 @@ arg lines up."
      (get-buffer-process (current-buffer))
      nil "_")))
 
-(require 'ein)
-(require 'ein-loaddefs)
-(require 'ein-notebook)
-(require 'ein-subpackages)
+;; (require 'ein)
+;; (require 'ein-loaddefs)
+;; (require 'ein-notebook)
+;; (require 'ein-subpackages)
 
 (load "auctex.el" nil t t)
 
 ;; Appearance
 (require 'font-latex)
 
+;; Preview-latex
+;; (set-default 'preview-scale-function 1.2)
+
 ;; Math mode
 (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-(set-face-attribute 'font-latex-math-face nil :foreground "#ffffff")
+;; (set-face-attribute 'font-latex-math-face nil :foreground "#ffffff")
 
 ;; Enable query for master file
 (setq-default TeX-master nil)		    
