@@ -548,10 +548,10 @@ arg lines up."
      (get-buffer-process (current-buffer))
      nil "_")))
 
-(require 'ein)
-(require 'ein-loaddefs)
-(require 'ein-notebook)
-(require 'ein-subpackages)
+;; (require 'ein)
+;; (require 'ein-loaddefs)
+;; (require 'ein-notebook)
+;; (require 'ein-subpackages)
 
 (load "auctex.el" nil t t)
 
