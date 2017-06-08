@@ -21,11 +21,9 @@
 (require 'unicode-fonts)
 (unicode-fonts-setup)
 (set-frame-font "DejaVu Sans Mono 10" nil t)
-
-
 ;; Set themes
 (load-theme 'gruvbox t)
-nil
+(set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
 ;; (set-face-attribute 'default nil :foreground "#ffffff")
 (set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
 
@@ -68,9 +66,6 @@ nil
 			    ) )
 
 (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
-
-;; Add new line at the bottom of buffer
-(setq next-line-add-newlines t)
 
 ;; Set kill ring size
 (setq global-mark-ring-max 50000)

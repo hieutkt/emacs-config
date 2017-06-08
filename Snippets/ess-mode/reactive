@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: reactive
+# key: reactive
+# --
+${1:reactive_object} <- reactive({
+  `yas-selected-text`$0
+})
