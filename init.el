@@ -7,6 +7,40 @@
 (require 'cl-lib)
 (require 'bind-key)
 
+;; Auto-revert mode
+(global-auto-revert-mode 1)
+(setq auto-revert-interval 0.5)
+
+;; Backup stored in /tmp
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
+;; Delete old backup
+(message "Deleting old backup files...")
+(let ((week (* 60 60 24 7))
+      (current (float-time (current-time))))
+  (dolist (file (directory-files temporary-file-directory t))
+    (when (and (backup-file-name-p file)
+	       (> (- current (float-time (fifth (file-attributes file))))
+		  week))
+      (message "%s" file)
+      (delete-file file))))
+
+
+
+
+;; Startup
+(add-hook 'after-init-hook 
+	  (lambda () 
+	    (find-file (format "%s/%s" config-directory "init.org"))))
+
+
+;; Information settings
+(setq user-full-name "Nguyễn Đức Hiếu"
+      user-mail-address "hieunguyen31371@gmail.com")
+
 ;; Initialize Emacs full screen 
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 
@@ -47,6 +81,12 @@
 (show-paren-mode t)
 (setq show-paren-delay 0)
 
+;; Ignore disabled command
+(setq disabled-command-function 'ignore)
+
+;; I never want to enter overwrite mode
+(put 'overwrite-mode 'disabled t)
+
 ;; Delete marked region when input
 (delete-selection-mode 1)
 
@@ -56,6 +96,8 @@
 ;; "Yes or no"? Too much writing
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+;; Make comint promts read-only
+(setq comint-prompt-read-only t)
 
 ;; Auto close bracket insertion.
 (electric-pair-mode 1)
@@ -81,6 +123,27 @@
   (when (memq last-command '(er/expand-region er/contract-region))
     (er/contract-region 0)))
 
+;; Comment Do-What-I-Mean
+(defun comment-dwim-mod ()	       	
+  "Like `comment-dwim', but toggle comment if cursor is not at end of line.
+URL `http://ergoemacs.org/emacs/emacs_toggle_comment_by_line.html'
+Version 2016-10-25"
+  (interactive)
+  (if (region-active-p)
+    (comment-dwim nil)
+    (let ((-lbp (line-beginning-position))
+  	  (-lep (line-end-position)))
+      (if (eq -lbp -lep)
+  	  (progn
+  	    (comment-dwim nil))
+  	(if (eq (point) -lep)
+  	    (progn
+  	      (comment-dwim nil))
+  	  (progn
+  	    (comment-or-uncomment-region -lbp -lep)
+  	    (forward-line )))))))
+
+(global-set-key (kbd "C-;") 'comment-dwim-mod) 
 
 ;; Multi-cursor
 (require 'multiple-cursors)
@@ -157,51 +220,44 @@ arg lines up."
       company-minimum-prefix-length 2
       company-tooltip-limit 10)
 
-;; Quick help show up in a popup
-(company-quickhelp-mode 1)
-(setq company-quickhelp-delay 1)
+;; Press <F1> to show the documentation buffer and press C-<F1> to jump to it
+(defun my/company-show-doc-buffer ()
+  "Temporarily show the documentation buffer for the selection."
+  (interactive)
+  (let* ((selected (nth company-selection company-candidates))
+	 (doc-buffer (or (company-call-backend 'doc-buffer selected)
+			 (error "No documentation available"))))
+    (with-current-buffer doc-buffer
+      (goto-char (point-min)))
+    (display-buffer doc-buffer t)))
 
-;; Math backend, this will input math symbols everywhere except in 
+(define-key company-active-map (kbd "C-<f1>") #'my/company-show-doc-buffer)
+
+;; math backend, this will input math symbols everywhere except in 
 ;; LaTeX math evironments
 (require 'company-math)
 (add-to-list 'company-backends 'company-math-symbols-unicode)
 
-;; Auto-revert mode
-(global-auto-revert-mode 1)
-(setq auto-revert-interval 0.5)
+;; Make scroll bar more visible
+(set-face-attribute 'company-scrollbar-bg nil :background "tan")
+(set-face-attribute 'company-scrollbar-fg nil :background "darkred")
+(set-face-attribute 'company-tooltip nil :background "#f9f5d7" :foreground "#1d2021")
+(set-face-attribute 'company-tooltip-selection nil 
+  		    :background "#b57614" :foreground "#1d2021" :weight 'bold)
+(set-face-attribute 'company-tooltip-common nil :foreground "#458588" :weight 'bold :underline nil)
+(set-face-attribute 'company-tooltip-common-selection nil :foreground "#f9f5d7" 
+  		    :weight 'bold :underline nil)
+(set-face-attribute 'company-preview-common nil
+  		    :foreground "#1d2021" :background "#f9f5d7" :weight 'bold)
 
+;; Quick help show up in a popup
+;; (company-quickhelp-mode 1)
+;; (setq company-quickhelp-delay nil)(set-face-attribute 'company-tooltip-annotation nil :foreground "#504945")
+;; (setq company-quickhelp-color-background "#f9f5d7")
+;; (setq company-quickhelp-color-foreground "#1d2021")
 
-
-
-;; Backup stored in /tmp
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
-
-;; Delete old backup
-(message "Deleting old backup files...")
-(let ((week (* 60 60 24 7))
-      (current (float-time (current-time))))
-  (dolist (file (directory-files temporary-file-directory t))
-    (when (and (backup-file-name-p file)
-	       (> (- current (float-time (fifth (file-attributes file))))
-		  week))
-      (message "%s" file)
-      (delete-file file))))
-
-
-
-
-;; Startup
-(add-hook 'after-init-hook 
-	  (lambda () 
-	    (find-file (format "%s/%s" config-directory "init.org"))))
-
-
-;; Information settings
-(setq user-full-name "Nguyễn Đức Hiếu"
-      user-mail-address "hieunguyen31371@gmail.com")
+;; (eval-after-load 'company
+;; '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
 
 ;; Enable Yasnippets
 (require 'yasnippet)
@@ -229,6 +285,7 @@ arg lines up."
     (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
 			  "green" "#ffffaf"))))
 (add-hook 'post-command-hook 'yasnippet-can-fire-p)
+
 
 (yas-reload-all)
 ;; With backquote warnings:
@@ -372,12 +429,14 @@ arg lines up."
 (define-key yas-keymap [(control tab)] 'yas-next-field)
 (define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)
 
+;; Omit the headline-asterisks except the last one:
+(setq org-hide-leading-stars t)
+
 ;; Auto indent normally
 (setq org-src-tab-acts-natively t)
 
 ;; Enable shift selection
 (setq org-support-shift-select t)
-
 
 ;; fontify code in code blocks
 (setq org-src-fontify-natively t)
@@ -388,7 +447,6 @@ arg lines up."
 
 (require 'ess-site)
 (require 'ess-rutils)
-
 
 ;; Describe object
 ;; (setq ess-R-describe-object-at-point-commands
@@ -579,9 +637,6 @@ arg lines up."
 (require 'shx)
 (add-hook 'shell-mode-hook #'shx-mode)
 
-;; Make comint promts read-only
-(add-hook 'shx-mode-hook (lambda () (setq comint-prompt-read-only t)))
-
 ;; Keybinding for terminal
 (global-set-key [f2] 'shell)
 
@@ -604,5 +659,7 @@ arg lines up."
       TeX-view-program-selection '((output-pdf "PDF Tools"))
       pdf-view-midnight-colors '("#fffff8" . "#111111"))
 
+;; Set magit-status to F9
+(global-set-key (kbd "<f9>") 'magit-status)
 ;; Currently magit cause some error when auto revert mode is on
 (setq magit-auto-revert-mode nil)
