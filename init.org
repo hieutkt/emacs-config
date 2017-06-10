@@ -538,6 +538,17 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 #+END_SRC
 
+** Org-babel
+Babel is Org-mode's ability to execute source code within Org-mode documents.
+
+#+BEGIN_SRC emacs-lisp
+  ;; Active Babel languages:
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((R . t)
+     (emacs-lisp . nil)
+     ))
+#+END_SRC
 
 * =ESS= for =R= programming
 ** Setting up
@@ -615,14 +626,15 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
   ;; Hot key C-S-m for pipe operator in ESS
   ;; Temporary removed and use Yasnippet instead
-  ;; (defun then_R_operator ()
-  ;;   "R - %>% operator or 'then' pipe operator"
-  ;;   (interactive)
-  ;;   (just-one-space 1)
-  ;;   (insert "%>%")
-  ;;   (just-one-space 1))
-  ;; (define-key ess-mode-map (kbd "C-S-m") 'then_R_operator)
-  ;; (define-key inferior-ess-mode-map (kbd "C-S-m") 'then_R_operator)
+  (defun then_R_operator ()
+    "R - %>% operator or 'then' pipe operator"
+    (interactive)
+    (just-one-space 1)
+    (insert "%>%")
+    (just-one-space 1))
+
+  (define-key ess-mode-map (kbd "C-S-m") 'then_R_operator)
+  (define-key inferior-ess-mode-map (kbd "C-S-m") 'then_R_operator)
 
 
 
@@ -786,14 +798,6 @@ I may expand this later to expand this along with org-mode
   ;; automatically open files ending with .gp or .gnuplot in gnuplot mode
   (setq auto-mode-alist 
 	(append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
-#+END_SRC
-
-
-* Web Developments
-#+BEGIN_SRC emacs-lisp
-  ;; Rainbow mode
-  (add-hook 'html-mode-hook 'rainbow-mode)
-  (add-hook 'css-mode-hook 'rainbow-mode)
 #+END_SRC
 
 

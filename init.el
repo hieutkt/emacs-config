@@ -445,6 +445,13 @@ arg lines up."
 (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
 (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
+;; Active Babel languages:
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((R . t)
+   (emacs-lisp . nil)
+   ))
+
 (require 'ess-site)
 (require 'ess-rutils)
 
@@ -504,14 +511,15 @@ arg lines up."
 
 ;; Hot key C-S-m for pipe operator in ESS
 ;; Temporary removed and use Yasnippet instead
-;; (defun then_R_operator ()
-;;   "R - %>% operator or 'then' pipe operator"
-;;   (interactive)
-;;   (just-one-space 1)
-;;   (insert "%>%")
-;;   (just-one-space 1))
-;; (define-key ess-mode-map (kbd "C-S-m") 'then_R_operator)
-;; (define-key inferior-ess-mode-map (kbd "C-S-m") 'then_R_operator)
+(defun then_R_operator ()
+  "R - %>% operator or 'then' pipe operator"
+  (interactive)
+  (just-one-space 1)
+  (insert "%>%")
+  (just-one-space 1))
+
+(define-key ess-mode-map (kbd "C-S-m") 'then_R_operator)
+(define-key inferior-ess-mode-map (kbd "C-S-m") 'then_R_operator)
 
 
 
@@ -647,10 +655,6 @@ arg lines up."
 ;; automatically open files ending with .gp or .gnuplot in gnuplot mode
 (setq auto-mode-alist 
       (append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
-
-;; Rainbow mode
-(add-hook 'html-mode-hook 'rainbow-mode)
-(add-hook 'css-mode-hook 'rainbow-mode)
 
 (pdf-tools-install)
 (setq pdf-view-display-size "fit-page"
