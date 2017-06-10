@@ -58,7 +58,6 @@
 ;; Set themes
 (load-theme 'gruvbox t)
 (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
-;; (set-face-attribute 'default nil :foreground "#ffffff")
 (set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
 
 ;; Set background face for color string
@@ -341,6 +340,20 @@ arg lines up."
      (define-key company-mode-map (kbd "C-:") 'helm-company)
      (define-key company-active-map (kbd "C-:") 'helm-company)))
 
+(require 'ag)
+
+;; Truncate long results
+(add-hook 'ag-mode-hook (lambda () (setq truncate-lines t)))
+
+;; Add highlighting
+(setq ag-highlight-search t)
+(set-face-attribute 'ag-match-face nil 
+		    :weight 'bold
+		    :foreground "#fabd2f")
+
+;; Set ag to reuse the same buffer
+(setq ag-reuse-buffers 't)
+
 (require 'polymode)
 (require 'poly-R)
 (require 'poly-markdown)
@@ -608,11 +621,6 @@ arg lines up."
     (python-shell-completion-native-get-completions
      (get-buffer-process (current-buffer))
      nil "_")))
-
-;; (require 'ein)
-;; (require 'ein-loaddefs)
-;; (require 'ein-notebook)
-;; (require 'ein-subpackages)
 
 (load "auctex.el" nil t t)
 

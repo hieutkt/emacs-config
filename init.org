@@ -92,7 +92,6 @@ General config for emacs with no major mode involved
   ;; Set themes
   (load-theme 'gruvbox t)
   (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
-  ;; (set-face-attribute 'default nil :foreground "#ffffff")
   (set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
 
   ;; Set background face for color string
@@ -409,6 +408,27 @@ May combind this with yasnippet
 
 #+END_SRC
 
+** Ag
+An Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/latest/][(Documentation)]]
+
+#+BEGIN_SRC emacs-lisp
+
+  (require 'ag)
+
+  ;; Truncate long results
+  (add-hook 'ag-mode-hook (lambda () (setq truncate-lines t)))
+
+  ;; Add highlighting
+  (setq ag-highlight-search t)
+  (set-face-attribute 'ag-match-face nil 
+		      :weight 'bold
+		      :foreground "#fabd2f")
+
+  ;; Set ag to reuse the same buffer
+  (setq ag-reuse-buffers 't)
+
+#+END_SRC
+
 ** Polymode
 
 #+BEGIN_SRC emacs-lisp
@@ -518,6 +538,9 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 
 * Org-mode
+Org mode is for keeping notes, maintaining TODO lists, planning projects, and authoring documents with a fast and effective plain-text system.
+See [[http://orgmode.org/][here]].
+** Setting up
 
 #+BEGIN_SRC emacs-lisp
   ;; Omit the headline-asterisks except the last one:
@@ -529,10 +552,10 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
   ;; Enable shift selection
   (setq org-support-shift-select t)
 
-  ;; fontify code in code blocks
+  ;; Fontification
   (setq org-src-fontify-natively t)
-  (set-face-attribute 'org-block nil :foreground "#ffffff")
-  
+  (set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
+  (set-face-attribute 'org-block nil :foreground "#ffffff")  
   (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
   (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
@@ -549,6 +572,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
      (emacs-lisp . nil)
      ))
 #+END_SRC
+
 
 * =ESS= for =R= programming
 ** Setting up
@@ -688,7 +712,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 
 * =python= programming
-** =ELPY=
+
 #+BEGIN_SRC emacs-lisp
   (elpy-enable)				
   (with-eval-after-load 'elpy (flymake-mode -1))
@@ -727,20 +751,10 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 	  (python-shell-completion-native-output-timeout
 	   python-shell-completion-native-try-output-timeout))
       (python-shell-completion-native-get-completions
-       (get-buffer-process (current-buffer))
+c       (get-buffer-process (current-buffer))
        nil "_")))
 
 #+END_SRC
-
-** =EIN=
-
-#+BEGIN_SRC emacs-lisp
-  ;; (require 'ein)
-  ;; (require 'ein-loaddefs)
-  ;; (require 'ein-notebook)
-  ;; (require 'ein-subpackages)
-#+END_SRC
-
 
 * =AUCTeX= for \LaTeX{} programming
 #+BEGIN_SRC emacs-lisp
@@ -824,51 +838,9 @@ I may expand this later to expand this along with org-mode
   ;; Currently magit cause some error when auto revert mode is on
   (setq magit-auto-revert-mode nil)
 
-#+END_SRC
+#+END_SRC  
 
 
 * Draft
 Settings in this section are not yet organized but are being used
-
-
-* TODO
-** Add special face to latex default font
-
-\begin{verbatim}
-regex for everything
-((.|\n)*)
-"\\(.\\|\\\n\\)*"
-
-regex for special command:
-(\\\w+(\*|)|\{(|.+?)\}|\[(|.+?)\]|[^\\]%(.+|)|<<(.|\n)*?@)
-"\\(\\\\\\([A-Za-z]*\\)\\|{\\(.\\|\\\n\\)*?}\\|\\[\\(.\\|\\\n\\)*?\\]\\|<<\\(.\\|\\\n\\)*?@\\)"
-
-\end{verbatim}
-** Add special font to all TODO keywords in all modes
-Through something like:
-
-\begin{verbatim}
-
-(add-hook 'tex-mode-hook
-  (lambda ()
-   (font-lock-add-keywords nil
-    '(("\\<\\(FIXME\\):" 1 'font-lock-warning-face prepend)
-      ("\\<\\(and\\|or\\|not\\)\\>" .
-       'font-lock-keyword-face)))))
-
-
-\end{verbatim}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
