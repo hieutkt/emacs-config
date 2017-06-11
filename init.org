@@ -5,18 +5,20 @@
 #+LATEX_CLASS: article
 #+LATEX_HEADER: \usepackage[utf8]{vietnam}
 
-* Configurations
+
+* Preface
 The whole thing is driven by the following =.emacs=
 
 #+begin_example emacs-lisp :eval no
   (require 'org)
 
-  (setq config-directory "/media/Logical_Drive/Emacs/emacs-config/")
+  (setq config-directory "/home/hieu/Emacs/emacs-config/")
   (org-babel-load-file
     (expand-file-name "init.org" config-directory))		   
 #+end_example
  
-** Initiation and Personal Settings
+
+* Initiation
 
 #+BEGIN_SRC emacs-lisp
 
@@ -60,13 +62,14 @@ The whole thing is driven by the following =.emacs=
   (setq user-full-name "Nguyễn Đức Hiếu"
 	user-mail-address "hieunguyen31371@gmail.com")
 
-  
+
 
 #+END_SRC
 
 
 * Appearence
-** GUI
+** Interface
+
 #+BEGIN_SRC emacs-lisp
 
   ;; Initialize Emacs full screen 
@@ -584,7 +587,6 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
      ))
 #+END_SRC
 
-
 ** Pdf-tools 
 PDF Tools is, among other things, a replacement of DocView for PDF files. 
 The key difference is, that pages are not pre-rendered by e.g. ghostscript and stored in the file-system, but rather created on-demand and stored in memory.
@@ -612,7 +614,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
   (setq magit-auto-revert-mode nil)
 
 #+END_SRC  
-
 
 * Languages
 ** R
@@ -863,3 +864,9 @@ I may expand this later to expand this along with org-mode
 * Draft
 Settings in this section are not yet organized but are being used
 
+** Helpful
+[[https://github.com/Wilfred/helpful][Helpful]] is an alternative to the built-in Emacs help that provides much more contextual information.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'helpful)
+#+END_SRC
