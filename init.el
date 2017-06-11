@@ -28,9 +28,6 @@
       (message "%s" file)
       (delete-file file))))
 
-
-
-
 ;; Startup
 (add-hook 'after-init-hook 
 	  (lambda () 
@@ -50,20 +47,6 @@
 ;; Cursor type
 (setq-default cursor-type 'bar)
 
-
-;; Default font
-(require 'unicode-fonts)
-(unicode-fonts-setup)
-(set-frame-font "DejaVu Sans Mono 10" nil t)
-;; Set themes
-(load-theme 'gruvbox t)
-(set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
-(set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
-
-;; Set background face for color string
-(add-hook 'prog-mode-hook 'rainbow-mode)
-
-
 ;; Global font-lock mode
 (setq global-font-lock-mode t)
 
@@ -79,6 +62,15 @@
 ;; Paren mode
 (show-paren-mode t)
 (setq show-paren-delay 0)
+
+;; Default font
+(require 'unicode-fonts)
+(unicode-fonts-setup)
+(set-frame-font "DejaVu Sans Mono 10" nil t)
+;; Set themes
+(load-theme 'gruvbox t)
+(set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
+(set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
 
 ;; Ignore disabled command
 (setq disabled-command-function 'ignore)
@@ -150,6 +142,14 @@ Version 2016-10-25"
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-N") 'mc/insert-numbers)
+
+;; In case commands behavior is messy with multiple-cursors,
+;; check your ~/.emacs.d/.mc-lists.el
+(defun mc/check-command-behavior ()
+  "Open ~/.emacs.d/.mc-lists.el 
+So you can fix the list for run-once and run-for-all multiple-cursors commands."
+  (interactive)
+  (find-file "~/.emacs.d/.mc-lists.el"))
 
 ;; Define function: fill character to 80
 (defun fill-to-end (char)
@@ -442,6 +442,9 @@ arg lines up."
 (define-key yas-keymap [(control tab)] 'yas-next-field)
 (define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)
 
+;; Word-wrap
+(add-hook 'org-mode-hook (lambda () (setq word-wrap t)))
+
 ;; Omit the headline-asterisks except the last one:
 (setq org-hide-leading-stars t)
 
@@ -451,10 +454,11 @@ arg lines up."
 ;; Enable shift selection
 (setq org-support-shift-select t)
 
-;; fontify code in code blocks
+;; Fontification
 (setq org-src-fontify-natively t)
-(set-face-attribute 'org-block nil :foreground "#ffffff")
-
+(set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
+(set-face-attribute 'org-level-2 nil :weight 'bold)
+(set-face-attribute 'org-block nil :foreground "#ffffff")  
 (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
 (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
@@ -464,6 +468,18 @@ arg lines up."
  '((R . t)
    (emacs-lisp . nil)
    ))
+
+(pdf-tools-install)
+(setq pdf-view-display-size "fit-page"
+      auto-revert-interval 0
+      ess-pdf-viewer-pref "emacsclient"
+      TeX-view-program-selection '((output-pdf "PDF Tools"))
+      pdf-view-midnight-colors '("#fffff8" . "#111111"))
+
+;; Set magit-status to F9
+(global-set-key (kbd "<f9>") 'magit-status)
+;; Currently magit cause some error when auto revert mode is on
+(setq magit-auto-revert-mode nil)
 
 (require 'ess-site)
 (require 'ess-rutils)
@@ -582,6 +598,11 @@ arg lines up."
 
 (define-key polymode-mode-map "\M-nr" 'ess-rshiny)
 
+(require 'elpy)
+;; Do not enable elpy snippets for now
+(delete 'elpy-module-yasnippet elpy-modules)
+
+;; Enable elpy
 (elpy-enable)				
 (with-eval-after-load 'elpy (flymake-mode -1))
 (setq elpy-rpc-python-command "python3")
@@ -663,15 +684,3 @@ arg lines up."
 ;; automatically open files ending with .gp or .gnuplot in gnuplot mode
 (setq auto-mode-alist 
       (append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
-
-(pdf-tools-install)
-(setq pdf-view-display-size "fit-page"
-      auto-revert-interval 0
-      ess-pdf-viewer-pref "emacsclient"
-      TeX-view-program-selection '((output-pdf "PDF Tools"))
-      pdf-view-midnight-colors '("#fffff8" . "#111111"))
-
-;; Set magit-status to F9
-(global-set-key (kbd "<f9>") 'magit-status)
-;; Currently magit cause some error when auto revert mode is on
-(setq magit-auto-revert-mode nil)

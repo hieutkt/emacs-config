@@ -5,8 +5,7 @@
 #+LATEX_CLASS: article
 #+LATEX_HEADER: \usepackage[utf8]{vietnam}
 
-* Information
-  
+* Configurations
 The whole thing is driven by the following =.emacs=
 
 #+begin_example emacs-lisp :eval no
@@ -16,11 +15,8 @@ The whole thing is driven by the following =.emacs=
   (org-babel-load-file
     (expand-file-name "init.org" config-directory))		   
 #+end_example
-
-
-* General
-General config for emacs with no major mode involved
-** Configurations
+ 
+** Initiation and Personal Settings
 
 #+BEGIN_SRC emacs-lisp
 
@@ -54,9 +50,6 @@ General config for emacs with no major mode involved
 	(message "%s" file)
 	(delete-file file))))
 
-
-
-
   ;; Startup
   (add-hook 'after-init-hook 
 	    (lambda () 
@@ -71,8 +64,9 @@ General config for emacs with no major mode involved
 
 #+END_SRC
 
-** Appearence
-   
+
+* Appearence
+** GUI
 #+BEGIN_SRC emacs-lisp
 
   ;; Initialize Emacs full screen 
@@ -83,20 +77,6 @@ General config for emacs with no major mode involved
 
   ;; Cursor type
   (setq-default cursor-type 'bar)
-
-
-  ;; Default font
-  (require 'unicode-fonts)
-  (unicode-fonts-setup)
-  (set-frame-font "DejaVu Sans Mono 10" nil t)
-  ;; Set themes
-  (load-theme 'gruvbox t)
-  (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
-  (set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
-
-  ;; Set background face for color string
-  (add-hook 'prog-mode-hook 'rainbow-mode)
-
 
   ;; Global font-lock mode
   (setq global-font-lock-mode t)
@@ -114,10 +94,28 @@ General config for emacs with no major mode involved
   (show-paren-mode t)
   (setq show-paren-delay 0)
 
+  
+#+END_SRC
+
+** Theme and Faces
+
+#+BEGIN_SRC emacs-lisp
+
+  ;; Default font
+  (require 'unicode-fonts)
+  (unicode-fonts-setup)
+  (set-frame-font "DejaVu Sans Mono 10" nil t)
+  ;; Set themes
+  (load-theme 'gruvbox t)
+  (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
+  (set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
+
 
 #+END_SRC
 
-** Editing
+
+* Editing
+** General
 
 #+BEGIN_SRC emacs-lisp
   ;; Ignore disabled command
@@ -191,6 +189,14 @@ General config for emacs with no major mode involved
   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
   (global-set-key (kbd "C-N") 'mc/insert-numbers)
 
+  ;; In case commands behavior is messy with multiple-cursors,
+  ;; check your ~/.emacs.d/.mc-lists.el
+  (defun mc/check-command-behavior ()
+    "Open ~/.emacs.d/.mc-lists.el 
+  So you can fix the list for run-once and run-for-all multiple-cursors commands."
+    (interactive)
+    (find-file "~/.emacs.d/.mc-lists.el"))
+
   ;; Define function: fill character to 80
   (defun fill-to-end (char)
     (interactive "cFill Character:")
@@ -253,7 +259,7 @@ General config for emacs with no major mode involved
 #+END_SRC
 
 ** Company
-Company is a completion mechanism that is very flexible
+Company is a completion mechanism that is very flexible 
 
 #+BEGIN_SRC emacs-lisp
   ;; Code completion
@@ -537,12 +543,16 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 #+END_SRC
 
 
-* Org-mode
+* Utilities
+** Org-mode
 Org mode is for keeping notes, maintaining TODO lists, planning projects, and authoring documents with a fast and effective plain-text system.
 See [[http://orgmode.org/][here]].
-** Setting up
+*** Setting up
 
 #+BEGIN_SRC emacs-lisp
+  ;; Word-wrap
+  (add-hook 'org-mode-hook (lambda () (setq word-wrap t)))
+
   ;; Omit the headline-asterisks except the last one:
   (setq org-hide-leading-stars t)
 
@@ -555,13 +565,14 @@ See [[http://orgmode.org/][here]].
   ;; Fontification
   (setq org-src-fontify-natively t)
   (set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
+  (set-face-attribute 'org-level-2 nil :weight 'bold)
   (set-face-attribute 'org-block nil :foreground "#ffffff")  
   (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
   (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
 #+END_SRC
 
-** Org-babel
+*** Org-babel
 Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 #+BEGIN_SRC emacs-lisp
@@ -574,8 +585,38 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 #+END_SRC
 
 
-* =ESS= for =R= programming
-** Setting up
+** Pdf-tools 
+PDF Tools is, among other things, a replacement of DocView for PDF files. 
+The key difference is, that pages are not pre-rendered by e.g. ghostscript and stored in the file-system, but rather created on-demand and stored in memory.
+
+#+BEGIN_SRC emacs-lisp
+  
+  (pdf-tools-install)
+  (setq pdf-view-display-size "fit-page"
+	auto-revert-interval 0
+	ess-pdf-viewer-pref "emacsclient"
+	TeX-view-program-selection '((output-pdf "PDF Tools"))
+	pdf-view-midnight-colors '("#fffff8" . "#111111"))
+
+#+END_SRC
+
+** Magit
+Magit is an interface to the version control system Git, implemented as an Emacs package. 
+Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
+
+#+BEGIN_SRC emacs-lisp
+
+  ;; Set magit-status to F9
+  (global-set-key (kbd "<f9>") 'magit-status)
+  ;; Currently magit cause some error when auto revert mode is on
+  (setq magit-auto-revert-mode nil)
+
+#+END_SRC  
+
+
+* Languages
+** R
+*** Setting up
 #+BEGIN_SRC emacs-lisp
 
   (require 'ess-site)
@@ -589,7 +630,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 #+END_SRC
 
-** Appearance
+*** Appearance
 #+BEGIN_SRC emacs-lisp
 
   ;; Truncate long lines
@@ -621,7 +662,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 	)
 
 #+END_SRC
-** Code completion
+*** Code completion
 #+BEGIN_SRC emacs-lisp
   ;; Eldoc mode for function arguments hints
   (require 'ess-eldoc)  
@@ -632,7 +673,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 #+END_SRC
 
-** Functions and key bindind
+*** Functions and key bindind
 #+BEGIN_SRC emacs-lisp
   ;; Returm C-c h as prefix to Helm"
   (defun ess-map-control-h-to-helm ()
@@ -710,10 +751,14 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 #+END_SRC
 
-
-* =python= programming
+** Python
 
 #+BEGIN_SRC emacs-lisp
+  (require 'elpy)
+  ;; Do not enable elpy snippets for now
+  (delete 'elpy-module-yasnippet elpy-modules)
+
+  ;; Enable elpy
   (elpy-enable)				
   (with-eval-after-load 'elpy (flymake-mode -1))
   (setq elpy-rpc-python-command "python3")
@@ -751,12 +796,12 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 	  (python-shell-completion-native-output-timeout
 	   python-shell-completion-native-try-output-timeout))
       (python-shell-completion-native-get-completions
-c       (get-buffer-process (current-buffer))
+       (get-buffer-process (current-buffer))
        nil "_")))
 
 #+END_SRC
 
-* =AUCTeX= for \LaTeX{} programming
+** \LaTeX{}
 #+BEGIN_SRC emacs-lisp
   (load "auctex.el" nil t t)
 
@@ -788,8 +833,8 @@ c       (get-buffer-process (current-buffer))
 
 #+END_SRC
 
+** Shell
 
-* Terminal
 #+BEGIN_SRC emacs-lisp
 
   (require 'shx)
@@ -803,8 +848,7 @@ c       (get-buffer-process (current-buffer))
 
 #+END_SRC
 
-
-* GNUplot-mode
+** GNUplot
 I may expand this later to expand this along with org-mode
 
 #+BEGIN_SRC emacs-lisp
@@ -814,31 +858,6 @@ I may expand this later to expand this along with org-mode
 	(append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
 #+END_SRC
 
-
-* Pdf-tools 
-
-#+BEGIN_SRC emacs-lisp
-  
-  (pdf-tools-install)
-  (setq pdf-view-display-size "fit-page"
-	auto-revert-interval 0
-	ess-pdf-viewer-pref "emacsclient"
-	TeX-view-program-selection '((output-pdf "PDF Tools"))
-	pdf-view-midnight-colors '("#fffff8" . "#111111"))
-
-#+END_SRC
-
-
-* Magit
-
-#+BEGIN_SRC emacs-lisp
-
-  ;; Set magit-status to F9
-  (global-set-key (kbd "<f9>") 'magit-status)
-  ;; Currently magit cause some error when auto revert mode is on
-  (setq magit-auto-revert-mode nil)
-
-#+END_SRC  
 
 
 * Draft

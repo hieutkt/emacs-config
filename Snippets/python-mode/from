@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: from
+# key: from
+# --
+from ${1:module} import ${2:symbol} as ${3:alias$$(when yas-moving-away-p 
+       		      		       (if yas-modified-p ()
+				       	   (delete-forward-char 5)
+					   (delete-backward-char 4)))}
+$0

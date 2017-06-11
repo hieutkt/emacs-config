@@ -1,0 +1,8 @@
+# name: import
+# key: imp
+# --
+import ${1:module} as ${2:alias$$(when yas-moving-away-p 
+       		      		       (if yas-modified-p ()
+				       	   (delete-forward-char 5)
+					   (delete-backward-char 4)))}
+$0
