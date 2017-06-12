@@ -3,9 +3,17 @@
 (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
 (package-initialize)
 
+;; Use use-package to reduce load time
+(eval-when-compile
+  (require 'use-package))
+(require 'diminish)                ;; if you use :diminish
+(require 'bind-key)                ;; if you use any :bind variant
+
 ;; Requice common-lisp library
 (require 'cl-lib)
 (require 'bind-key)
+
+
 
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -38,8 +46,14 @@
 (setq user-full-name "Nguyễn Đức Hiếu"
       user-mail-address "hieunguyen31371@gmail.com")
 
+;; Startup screen
+(require 'dashboard)
+(dashboard-setup-startup-hook)
+(setq dashboard-startup-banner 'logo)
+
 ;; Initialize Emacs full screen 
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
+(global-set-key (kbd "<f11>") 'toggle-frame-maximized)
 
 ;; No startup messages on *scratch* buffer
 (setq initial-scratch-message "")
@@ -441,6 +455,10 @@ arg lines up."
 (define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
 (define-key yas-keymap [(control tab)] 'yas-next-field)
 (define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)
+
+(use-package focus
+  :ensure t
+  :bind ("<f4>" . focus-mode))
 
 ;; Word-wrap
 (add-hook 'org-mode-hook (lambda () (setq word-wrap t)))

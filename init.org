@@ -21,15 +21,23 @@ The whole thing is driven by the following =.emacs=
 * Initiation
 
 #+BEGIN_SRC emacs-lisp
-
+  
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
   (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
   (package-initialize)
-
+  
+  ;; Use use-package to reduce load time
+  (eval-when-compile
+    (require 'use-package))
+  (require 'diminish)                ;; if you use :diminish
+  (require 'bind-key)                ;; if you use any :bind variant
+  
   ;; Requice common-lisp library
   (require 'cl-lib)
   (require 'bind-key)
+  
+  
 
   ;; Auto-revert mode
   (global-auto-revert-mode 1)
@@ -71,9 +79,14 @@ The whole thing is driven by the following =.emacs=
 ** Interface
 
 #+BEGIN_SRC emacs-lisp
+  ;; Startup screen
+  (require 'dashboard)
+  (dashboard-setup-startup-hook)
+  (setq dashboard-startup-banner 'logo)
 
   ;; Initialize Emacs full screen 
   (add-to-list 'initial-frame-alist '(fullscreen . maximized))
+  (global-set-key (kbd "<f11>") 'toggle-frame-maximized)
 
   ;; No startup messages on *scratch* buffer
   (setq initial-scratch-message "")
@@ -99,6 +112,7 @@ The whole thing is driven by the following =.emacs=
 
   
 #+END_SRC
+
 
 ** Theme and Faces
 
@@ -545,7 +559,16 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 #+END_SRC
 
+** Focus
+[[https://github.com/larstvei/Focus][Focus]] provides focus-mode that dims the text of surrounding sections
+#+BEGIN_SRC emacs-lisp
 
+(use-package focus
+  :ensure t
+  :bind ("<f4>" . focus-mode))
+
+
+#+END_SRC
 * Utilities
 ** Org-mode
 Org mode is for keeping notes, maintaining TODO lists, planning projects, and authoring documents with a fast and effective plain-text system.
@@ -850,7 +873,8 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 #+END_SRC
 
 ** GNUplot
-I may expand this later to expand this along with org-mode
+Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms.
+/I may expand this later to use with org-mode/
 
 #+BEGIN_SRC emacs-lisp
   (require 'gnuplot-mode)
@@ -862,7 +886,7 @@ I may expand this later to expand this along with org-mode
 
 
 * Draft
-Settings in this section are not yet organized but are being used
+Settings in this section are not yet organized but are being used, mostly for testing purposes
 
 ** Helpful
 [[https://github.com/Wilfred/helpful][Helpful]] is an alternative to the built-in Emacs help that provides much more contextual information.
@@ -870,3 +894,5 @@ Settings in this section are not yet organized but are being used
 #+BEGIN_SRC emacs-lisp
   (require 'helpful)
 #+END_SRC
+** Use-package
+The [[https://github.com/jwiegley/use-package][use-package]] macro allows you to isolate package configuration in your .emacs file in a way that is both performance-oriented and, well, tidy.
