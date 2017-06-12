@@ -719,7 +719,8 @@ arg lines up."
      (get-buffer-process (current-buffer))
      nil "_")))
 
-(load "auctex.el" nil t t)
+(use-package tex 
+  :ensure auctex)
 
 ;; Appearance
 (require 'font-latex)
@@ -741,7 +742,7 @@ arg lines up."
       font-latex-fontify-script nil)    
 
 ;; Word-wrap
-(add-hook 'TeX-mode-hook (lambda () (setq word-wrap t)))
+ (add-hook 'TeX-mode-hook (lambda () (setq word-wrap t)))
 
 
 ;; Completion

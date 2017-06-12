@@ -82,6 +82,7 @@ The whole thing is driven by the following =.emacs=
 ** Interface
 
 #+BEGIN_SRC emacs-lisp
+
   ;; Startup screen
   (use-package dashboard
     :ensure t
@@ -118,7 +119,6 @@ The whole thing is driven by the following =.emacs=
 
   
 #+END_SRC
-
 
 ** Theme and Faces
 
@@ -660,11 +660,13 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 #+BEGIN_SRC emacs-lisp
   
   ;; Active Babel languages:
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((R . t)
-     (emacs-lisp . nil)
-     ))
+  (setq org-babel-load-languages
+	'((R . t)
+	  (emacs-lisp . t)
+	  ))
+
+  ;; Show inline images
+  (setq 'org-startup-with-inline-images t)
 
 #+END_SRC
 
@@ -891,7 +893,8 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 ** \LaTeX{}
 #+BEGIN_SRC emacs-lisp
 
-  (load "auctex.el" nil t t)
+  (use-package tex 
+    :ensure auctex)
 
   ;; Appearance
   (require 'font-latex)
@@ -913,7 +916,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 	font-latex-fontify-script nil)    
 
   ;; Word-wrap
-  (add-hook 'TeX-mode-hook (lambda () (setq word-wrap t)))
+   (add-hook 'TeX-mode-hook (lambda () (setq word-wrap t)))
 
 
   ;; Completion
