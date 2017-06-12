@@ -3,6 +3,11 @@
 (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
 (package-initialize)
 
+;; Bootstrap `use-package'
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
 ;; Use use-package to reduce load time
 (eval-when-compile
   (require 'use-package))
@@ -12,8 +17,6 @@
 ;; Requice common-lisp library
 (require 'cl-lib)
 (require 'bind-key)
-
-
 
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -47,9 +50,12 @@
       user-mail-address "hieunguyen31371@gmail.com")
 
 ;; Startup screen
-(require 'dashboard)
-(dashboard-setup-startup-hook)
-(setq dashboard-startup-banner 'logo)
+(use-package dashboard
+  :ensure t
+  :init 
+  (dashboard-setup-startup-hook)
+  :config 
+  (setq dashboard-startup-banner 'logo))
 
 ;; Initialize Emacs full screen 
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
@@ -78,13 +84,21 @@
 (setq show-paren-delay 0)
 
 ;; Default font
-(require 'unicode-fonts)
-(unicode-fonts-setup)
-(set-frame-font "DejaVu Sans Mono 10" nil t)
+(use-package unicode-fonts
+  :ensure t
+  :init
+  (unicode-fonts-setup)
+  :config
+  (set-frame-font "DejaVu Sans Mono 10" nil t))
 ;; Set themes
-(load-theme 'gruvbox t)
-(set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
-(set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
+(use-package gruvbox-theme
+  :ensure t
+  :init
+  (load-theme 'gruvbox t)
+  :config
+  (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
+  (set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
+  )
 
 ;; Ignore disabled command
 (setq disabled-command-function 'ignore)
@@ -120,13 +134,8 @@
 ;; Bound undo to C-z
 (global-set-key (kbd "C-z") 'undo)
 
-;; Expand region with C-' and return to original position with C-g
-(require 'expand-region)
-(global-set-key (kbd "C-'") 'er/expand-region)
 
-(defadvice keyboard-quit (before collapse-region activate)
-  (when (memq last-command '(er/expand-region er/contract-region))
-    (er/contract-region 0)))
+
 
 ;; Comment Do-What-I-Mean
 (defun comment-dwim-mod ()	       	
@@ -150,20 +159,37 @@ Version 2016-10-25"
 
 (global-set-key (kbd "C-;") 'comment-dwim-mod) 
 
-;; Multi-cursor
-(require 'multiple-cursors)
-(global-set-key (kbd "C-?") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-N") 'mc/insert-numbers)
+;; Expand region with C-' and return to original position with C-g
+(use-package expand-region
+  :ensure t
+  :init
+  (defadvice keyboard-quit (before collapse-region activate)
+    (when (memq last-command '(er/expand-region er/contract-region))
+      (er/contract-region 0)))
+  :bind 
+  ("C-'" . er/expand-region)
+  )
 
-;; In case commands behavior is messy with multiple-cursors,
-;; check your ~/.emacs.d/.mc-lists.el
-(defun mc/check-command-behavior ()
-  "Open ~/.emacs.d/.mc-lists.el 
+;; Multi-cursor
+(use-package multiple-cursors
+  :ensure t
+  :init
+  ;; In case commands behavior is messy with multiple-cursors,
+  ;; check your ~/.emacs.d/.mc-lists.el
+  (defun mc/check-command-behavior ()
+    "Open ~/.emacs.d/.mc-lists.el. 
 So you can fix the list for run-once and run-for-all multiple-cursors commands."
-  (interactive)
-  (find-file "~/.emacs.d/.mc-lists.el"))
+    (interactive)
+    (find-file "~/.emacs.d/.mc-lists.el"))  
+  :bind
+  ("C-?" . mc/edit-lines)
+  ("C->" . mc/mark-next-like-this)
+  ("C-<" . mc/mark-previous-like-this)
+  ("C-N" . mc/insert-numbers)
+  )
+
+
+
 
 ;; Define function: fill character to 80
 (defun fill-to-end (char)
@@ -220,48 +246,61 @@ arg lines up."
 (global-set-key [\M-down] 'move-text-down)
 
 ;; Srink whitespace, simple but useful
-(require 'shrink-whitespace)
-(global-set-key (kbd "C-SPC") 'shrink-whitespace)
+(use-package shrink-whitespace
+  :ensure t
+  :bind
+  ("C-SPC" . shrink-whitespace)
+  )
 
-;; Code completion
-(require 'company)
-(add-hook 'after-init-hook 'global-company-mode)
+(use-package company
+  :ensure t
+  :init
+  ;; Activate globally
+  (add-hook 'after-init-hook 'global-company-mode)
 
-(setq company-selection-wrap-around t
-      company-tooltip-align-annotations t
-      company-idle-delay 0.36
-      company-minimum-prefix-length 2
-      company-tooltip-limit 10)
+  ;; Press <F1> to show the documentation buffer and press C-<F1> to jump to it
+  (defun my/company-show-doc-buffer ()
+    "Temporarily show the documentation buffer for the selection."
+    (interactive)
+    (let* ((selected (nth company-selection company-candidates))
+	   (doc-buffer (or (company-call-backend 'doc-buffer selected)
+			   (error "No documentation available"))))
+      (with-current-buffer doc-buffer
+	(goto-char (point-min)))
+      (display-buffer doc-buffer t)))  
 
-;; Press <F1> to show the documentation buffer and press C-<F1> to jump to it
-(defun my/company-show-doc-buffer ()
-  "Temporarily show the documentation buffer for the selection."
-  (interactive)
-  (let* ((selected (nth company-selection company-candidates))
-	 (doc-buffer (or (company-call-backend 'doc-buffer selected)
-			 (error "No documentation available"))))
-    (with-current-buffer doc-buffer
-      (goto-char (point-min)))
-    (display-buffer doc-buffer t)))
-
-(define-key company-active-map (kbd "C-<f1>") #'my/company-show-doc-buffer)
+  :config
+  ;; Some useful configs
+  (setq company-selection-wrap-around t
+  	company-tooltip-align-annotations t
+  	company-idle-delay 0.36
+  	company-minimum-prefix-length 2
+  	company-tooltip-limit 10)
+  ;; Make scroll bar more visible
+  (set-face-attribute 'company-scrollbar-bg nil :background "tan")
+  (set-face-attribute 'company-scrollbar-fg nil :background "darkred")
+  (set-face-attribute 'company-tooltip nil :background "#f9f5d7" :foreground "#1d2021")
+  (set-face-attribute 'company-tooltip-selection nil 
+		      :background "#b57614" :foreground "#1d2021" :weight 'bold)
+  (set-face-attribute 'company-tooltip-common nil :foreground "#458588" :weight 'bold :underline nil)
+  (set-face-attribute 'company-tooltip-common-selection nil :foreground "#f9f5d7" 
+		      :weight 'bold :underline nil)
+  (set-face-attribute 'company-preview-common nil
+		      :foreground "#1d2021" :background "#f9f5d7" :weight 'bold)
+  :bind 
+  (:map company-active-map
+	("C-<f1>" . my/company-show-doc-buffer)
+	)
+  )
 
 ;; math backend, this will input math symbols everywhere except in 
 ;; LaTeX math evironments
-(require 'company-math)
-(add-to-list 'company-backends 'company-math-symbols-unicode)
+(use-package company-math
+  :ensure t
+  :config
+  (add-to-list 'company-backends 'company-math-symbols-unicode)
+  )
 
-;; Make scroll bar more visible
-(set-face-attribute 'company-scrollbar-bg nil :background "tan")
-(set-face-attribute 'company-scrollbar-fg nil :background "darkred")
-(set-face-attribute 'company-tooltip nil :background "#f9f5d7" :foreground "#1d2021")
-(set-face-attribute 'company-tooltip-selection nil 
-  		    :background "#b57614" :foreground "#1d2021" :weight 'bold)
-(set-face-attribute 'company-tooltip-common nil :foreground "#458588" :weight 'bold :underline nil)
-(set-face-attribute 'company-tooltip-common-selection nil :foreground "#f9f5d7" 
-  		    :weight 'bold :underline nil)
-(set-face-attribute 'company-preview-common nil
-  		    :foreground "#1d2021" :background "#f9f5d7" :weight 'bold)
 
 ;; Quick help show up in a popup
 ;; (company-quickhelp-mode 1)
@@ -273,116 +312,130 @@ arg lines up."
 ;; '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
 
 ;; Enable Yasnippets
-(require 'yasnippet)
-(setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
+(use-package yasnippet
+  :ensure t
+  :init
+  ;; It will test whether it can expand, if yes, cursor color -> green.
+  (defun yasnippet-can-fire-p (&optional field)
+    (interactive)
+    (setq yas--condition-cache-timestamp (current-time))
+    (let (templates-and-pos)
+      (unless (and yas-expand-only-for-last-commands
+		   (not (member last-command yas-expand-only-for-last-commands)))
+	(setq templates-and-pos (if field
+				    (save-restriction
+				      (narrow-to-region (yas--field-start field)
+							(yas--field-end field))
+				      (yas--templates-for-key-at-point))
+				  (yas--templates-for-key-at-point))))
 
-(yas-global-mode 1)
+      (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
+			    "green" "#ffffaf"))))
+  (add-hook 'post-command-hook 'yasnippet-can-fire-p)  
 
-(global-set-key (kbd "<C-tab>") 'yas-insert-snippet)
+  (yas-global-mode 1)
 
+  (yas-reload-all)
+  :config
+  (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
+  :bind
+  ("<C-tab>" . yas-insert-snippet)
+  )
 
-;; It will test whether it can expand, if yes, cursor color -> green.
-(defun yasnippet-can-fire-p (&optional field)
-  (interactive)
-  (setq yas--condition-cache-timestamp (current-time))
-  (let (templates-and-pos)
-    (unless (and yas-expand-only-for-last-commands
-		 (not (member last-command yas-expand-only-for-last-commands)))
-      (setq templates-and-pos (if field
-				  (save-restriction
-				    (narrow-to-region (yas--field-start field)
-						      (yas--field-end field))
-				    (yas--templates-for-key-at-point))
-				(yas--templates-for-key-at-point))))
-
-    (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
-			  "green" "#ffffaf"))))
-(add-hook 'post-command-hook 'yasnippet-can-fire-p)
-
-
-(yas-reload-all)
 ;; With backquote warnings:
 ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
 
-(require 'key-chord)
-(key-chord-define-global "??" 'mc/mark-all-like-this)
-(key-chord-mode +1)
+(use-package key-chord
+  :ensure t
+  :init
+  (key-chord-define-global "??" 'mc/mark-all-like-this)
+  (key-chord-mode +1)
+  )
 
-(require 'helm)
-(require 'helm-config)
-
-;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
-;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
-;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-(bind-key* (kbd "C-c h") 'helm-command-prefix)
-(global-unset-key (kbd "C-x c"))
-
-(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)   ; make TAB work in terminal
-(define-key helm-map (kbd "C-z")  'helm-select-action)              ; list actions using C-z
-
-(when (executable-find "curl")
-  (setq helm-google-suggest-use-curl-p t))
-
-(setq 
- helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
- helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
- helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
- helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
- helm-ff-file-name-history-use-recentf t
- helm-echo-input-in-header-line        t)
+(use-package helm
+  :ensure t
+  :init
+  (helm-mode 1)
+  :config
+  (require 'helm-config)
+  (global-unset-key (kbd "C-x c"))
 
 
-(setq helm-autoresize-max-height 0)
-(setq helm-autoresize-min-height 30)
-(helm-autoresize-mode 1)
+  (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+	helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source	.	
+	helm-ff-(save-excursion )arch-library-in-sexp        t ; search for library in `require' and `declare-function' sexp		.	
+	helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+	helm-ff-file-name-history-use-recentf t
+	helm-echo-input-in-header-line t 
+	helm-M-x-fuzzy-match t
+	helm-autoresize-max-height 0
+	helm-autoresize-min-height 30)
 
-(helm-mode 1)
+  (helm-autoresize-mode 1)
 
-;; Use helm for some common task
-(global-set-key (kbd "C-x b") 'helm-buffers-list)
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-(setq helm-M-x-fuzzy-match t)
+  :bind-keymap
+  ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+  ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+  ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+  ("C-c h" . helm-command-prefix)  
+  :bind (
+ 	 ("C-x b" . helm-buffers-list)
+ 	 ("M-x" . helm-M-x)
+ 	 ("C-x C-f" . helm-find-files)
+ 	 ("M-y" . helm-show-kill-ring)
+ 	 :map helm-map
+ 	 ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
+ 	 ("C-i" . helm-execute-persistent-action)   ; make TAB work in terminal
+ 	 ("C-z" . helm-select-action)              ; list actions using C-z    
+ 	 )
+  )
 
 
-;; Use "C-:" to switch to Helm interface during companying
-(require 'helm-company)
-(eval-after-load 'company
-  '(progn
-     (define-key company-mode-map (kbd "C-:") 'helm-company)
-     (define-key company-active-map (kbd "C-:") 'helm-company)))
+;; Use "C-:" to switch to Helm interface during company-ing
+(use-package helm-company
+  :ensure t
+  :config
+  (eval-after-load 'company
+    '(progn
+       (define-key company-mode-map (kbd "C-:") 'helm-company)
+       (define-key company-active-map (kbd "C-:") 'helm-company)))    
+  )
 
-(require 'ag)
+(use-package ag
+  :ensure t
+  :init
+  ;; Truncate long results
+  (add-hook 'ag-mode-hook (lambda () (setq truncate-lines t)))
 
-;; Truncate long results
-(add-hook 'ag-mode-hook (lambda () (setq truncate-lines t)))
+  :config
+  ;; Add highlighting
+  (setq ag-highlight-search t)
+  (set-face-attribute 'ag-match-face nil 
+		      :weight 'bold
+		      :foreground "#fabd2f")
 
-;; Add highlighting
-(setq ag-highlight-search t)
-(set-face-attribute 'ag-match-face nil 
-		    :weight 'bold
-		    :foreground "#fabd2f")
+  ;; Set ag to reuse the same buffer
+  (setq ag-reuse-buffers 't)
+  )
 
-;; Set ag to reuse the same buffer
-(setq ag-reuse-buffers 't)
+(use-package polymode
+  :ensure t
+  :init 
+  (require 'poly-R)
+  (require 'poly-markdown)
+  (require 'poly-org)
 
-(require 'polymode)
-(require 'poly-R)
-(require 'poly-markdown)
-(require 'poly-org)
-
-(add-to-list 'auto-mode-alist '("\\.org" . poly-org-mode))
-(add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.Snw$" . poly-noweb+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rnw$" . poly-noweb+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown+r-mode))
-(add-to-list 'auto-mode-alist '("\\.rapport$" . poly-rapport-mode))
-(add-to-list 'auto-mode-alist '("\\.Rhtml$" . poly-html+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rbrew$" . poly-brew+r-mode))
-(add-to-list 'auto-mode-alist '("\\.Rcpp$" . poly-r+c++-mode))
-(add-to-list 'auto-mode-alist '("\\.cppR$" . poly-c++r-mode))
+  (add-to-list 'auto-mode-alist '("\\.org" . poly-org-mode))
+  (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.Snw$" . poly-noweb+r-mode))
+  (add-to-list 'auto-mode-alist '("\\.Rnw$" . poly-noweb+r-mode))
+  (add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown+r-mode))
+  (add-to-list 'auto-mode-alist '("\\.rapport$" . poly-rapport-mode))
+  (add-to-list 'auto-mode-alist '("\\.Rhtml$" . poly-html+r-mode))
+  (add-to-list 'auto-mode-alist '("\\.Rbrew$" . poly-brew+r-mode))
+  (add-to-list 'auto-mode-alist '("\\.Rcpp$" . poly-r+c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.cppR$" . poly-c++r-mode))
+  )
 
 (defun check-expansion ()
   (save-excursion
@@ -487,26 +540,35 @@ arg lines up."
    (emacs-lisp . nil)
    ))
 
-(pdf-tools-install)
-(setq pdf-view-display-size "fit-page"
-      auto-revert-interval 0
-      ess-pdf-viewer-pref "emacsclient"
-      TeX-view-program-selection '((output-pdf "PDF Tools"))
-      pdf-view-midnight-colors '("#fffff8" . "#111111"))
+(use-package pdf-tools
+  :ensure t
+  :init 
+  (pdf-tools-install)
+  :config
+  (setq pdf-view-display-size "fit-page"
+	auto-revert-interval 0
+	ess-pdf-viewer-pref "emacsclient"
+	TeX-view-program-selection '((output-pdf "PDF Tools"))
+	pdf-view-midnight-colors '("#fffff8" . "#111111"))
+  )
 
-;; Set magit-status to F9
-(global-set-key (kbd "<f9>") 'magit-status)
-;; Currently magit cause some error when auto revert mode is on
-(setq magit-auto-revert-mode nil)
+(use-package magit
+  :ensure t
+  :bind
+  ;; Set magit-status to F9
+  ("<f9>" . magit-status)
+  )
 
-(require 'ess-site)
-(require 'ess-rutils)
+  ;; Currently magit cause some error when auto revert mode is on
+  (setq magit-auto-revert-mode nil)
 
-;; Describe object
-;; (setq ess-R-describe-object-at-point-commands
-;; 	'(("str(%s)")
-;; 	  ("print(%s)")
-;; 	  ("summary(%s, maxsum = 20)")))
+(use-package ess
+  :ensure t
+  :config
+  (require 'ess-site)
+  (require 'ess-rutils)
+  (require 'ess-eldoc)  
+  )
 
 ;; Truncate long lines
 (add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
@@ -536,11 +598,15 @@ arg lines up."
 	)
       )
 
-;; Eldoc mode for function arguments hints
-(require 'ess-eldoc)  
-
 (setq ess-use-company 'script-only)
 (setq ess-tab-complete-in-script t)	;; Press <tab> inside functions for completions
+
+;; Describe object
+;; (setq ess-R-describe-object-at-point-commands
+;; 	'(("str(%s)")
+;; 	  ("print(%s)")
+;; 	  ("summary(%s, maxsum = 20)")))
+
 
 ;; Returm C-c h as prefix to Helm"
 (defun ess-map-control-h-to-helm ()
@@ -616,38 +682,30 @@ arg lines up."
 
 (define-key polymode-mode-map "\M-nr" 'ess-rshiny)
 
-(require 'elpy)
-;; Do not enable elpy snippets for now
-(delete 'elpy-module-yasnippet elpy-modules)
+(use-package elpy
+  :ensure t
+  :init
+  ;; Enable company
+  (add-hook 'python-mode-hook 'company-mode)
+  (add-hook 'inferior-python-mode-hook 'company-mode)
 
-;; Enable elpy
-(elpy-enable)				
-(with-eval-after-load 'elpy (flymake-mode -1))
-(setq elpy-rpc-python-command "python3")
-(elpy-use-cpython "python3")
-(setq elpy-rpc-backend "jedi")
+  ;; Enable elpy
+  (elpy-enable)
+  :config
+  ;; Do not enable elpy snippets for now
+  (delete 'elpy-module-yasnippet elpy-modules)
 
+  (flymake-mode -1)
+  (elpy-use-cpython "python3")
+  (setq elpy-rpc-python-command "python3")
+  (setq elpy-rpc-backend "jedi")
 
-;; Enable company
-(add-hook 'python-mode-hook 'company-mode)
-(add-hook 'inferior-python-mode-hook 'company-mode)
-
-;; Keybinding
-(define-key python-mode-map (kbd "C-c C-c") 'elpy-shell-send-current-statement)
-(define-key python-mode-map (kbd "C-c <RET>") 'elpy-shell-send-region-or-buffer)
-
-;; Ill put flycheck configurations here temporary
-;; (with-eval-after-load 'flycheck
-;; (flycheck-pos-tip-mode))
-
-;; (defun flymake-to-flycheck ()
-;;    "Change from flymake to flycheck when flymake is on."
-;;    (interactive)
-;;    (flymake-mode-off)
-;;    (flycheck-mode 1))
-
-;; (add-hook 'python-mode-hook 'flymake-to-flycheck)
-
+  :bind(
+	:map python-mode-map
+	     ("C-c C-c" . elpy-shell-send-current-statement)
+	     ("C-c <RET>" . elpy-shell-send-region-or-buffer)
+	     )
+  )	       
 
 ;; Fix:Calling ‘run-python’ with ‘python-shell-interpreter’ set to "python3"
 ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24401
@@ -685,22 +743,37 @@ arg lines up."
 ;; Word-wrap
 (add-hook 'TeX-mode-hook (lambda () (setq word-wrap t)))
 
-;; Completion
-(require 'company-auctex)
-(company-auctex-init)
 
-(require 'shx)
-(add-hook 'shell-mode-hook #'shx-mode)
+;; Completion
+(use-package company-auctex
+  :ensure t
+  :init
+  (company-auctex-init)
+  )
+
+(use-package shx
+  :ensure t
+  :init
+  (add-hook 'shell-mode-hook #'shx-mode)
+  )
 
 ;; Keybinding for terminal
 (global-set-key [f2] 'shell)
 
 ;; Company
-(add-to-list 'company-backends '(company-shell company-shell-env company-fish-shell))
+(use-package company-shell
+  :ensure t
+  :config
+  (add-to-list 'company-backends '(company-shell company-shell-env company-fish-shell))
+  )
 
-(require 'gnuplot-mode)
-;; automatically open files ending with .gp or .gnuplot in gnuplot mode
-(setq auto-mode-alist 
-      (append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
+(use-package gnuplot-mode
+  :ensure t
+  :config
+  ;; automatically open files ending with .gp or .gnuplot in gnuplot mode
+  (setq auto-mode-alist 
+	(append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))    
+  )
 
-(require 'helpful)
+(use-package helpful
+  :ensure t)
