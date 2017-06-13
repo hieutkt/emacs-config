@@ -534,11 +534,13 @@ arg lines up."
 (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
 ;; Active Babel languages:
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((R . t)
-   (emacs-lisp . nil)
-   ))
+(setq org-babel-load-languages
+      '((R . t)
+	(emacs-lisp . t)
+	))
+
+;; Show inline images
+(setq org-startup-with-inline-images t)
 
 (use-package pdf-tools
   :ensure t

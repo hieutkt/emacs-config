@@ -666,7 +666,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 	  ))
 
   ;; Show inline images
-  (setq 'org-startup-with-inline-images t)
+  (setq org-startup-with-inline-images t)
 
 #+END_SRC
 
