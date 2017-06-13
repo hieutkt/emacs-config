@@ -16,7 +16,6 @@
 
 ;; Requice common-lisp library
 (require 'cl-lib)
-(require 'bind-key)
 
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -135,9 +134,6 @@
 ;; Bound undo to C-z
 (global-set-key (kbd "C-z") 'undo)
 
-
-
-
 ;; Comment Do-What-I-Mean
 (defun comment-dwim-mod ()	       	
   "Like `comment-dwim', but toggle comment if cursor is not at end of line.
@@ -158,7 +154,13 @@ Version 2016-10-25"
   	    (comment-or-uncomment-region -lbp -lep)
   	    (forward-line )))))))
 
-(global-set-key (kbd "C-;") 'comment-dwim-mod) 
+(global-set-key (kbd "M-;") 'comment-dwim-mod) 
+
+;; Bind comment-line to C-;
+(global-set-key (kbd "C-;") 'comment-line)
+
+;; Set comment style
+(setq comment-style "plain")
 
 ;; Expand region with C-' and return to original position with C-g
 (use-package expand-region
@@ -808,3 +810,12 @@ arg lines up."
 
 (use-package helpful
   :ensure t)
+
+(use-package evil
+  :ensure t
+  :init
+  :config
+  (evil-set-initial-state 'help-mode 'emacs)
+  (evil-set-initial-state 'dashboard-mode 'emacs)
+  (evil-set-initial-state 'org-mode 'emacs)
+  (evil-mode 1))
