@@ -1,0 +1,26 @@
+# -*- mode: snippet -*-
+# name: My customised datatable
+# key: datatable
+# --
+DT::datatable(
+	extensions = 'Buttons',
+      	options = list(dom = "Btip",
+                     scrollX = TRUE,
+                     language = list(
+                       sZeroRecords =  "Không tìm thấy dòng nào phù hợp",
+                       sInfo = "_START_ đến _END_ trong tổng số _TOTAL_ mục",
+                       sInfoEmpty = "Không có mục nào",
+                       oPaginate = list(
+                         sFirst =    "Đầu",
+                         sPrevious = "Trước",
+                         sNext =     "Tiếp",
+                         sLast =     "Cuối"
+                       )
+                     ),
+                     buttons = c('csv', 'excel', 'pdf', 'copy', 'print'),
+                     initComplete = JS(
+                       "function(settings, json) {",
+                       "\$(this.api().table().header()).css({'background-color': '#3498db', 'color': '#fff'});",
+                       "}")
+                     )
+    )

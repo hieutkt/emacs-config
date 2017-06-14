@@ -16,7 +16,6 @@
 
 ;; Requice common-lisp library
 (require 'cl-lib)
-(require 'bind-key)
 
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
@@ -49,13 +48,17 @@
 (setq user-full-name "Nguyễn Đức Hiếu"
       user-mail-address "hieunguyen31371@gmail.com")
 
+;; Set emacs as a client
+;; (server-start)
+
 ;; Startup screen
 (use-package dashboard
   :ensure t
   :init 
   (dashboard-setup-startup-hook)
   :config 
-  (setq dashboard-startup-banner 'logo))
+  (setq dashboard-startup-banner 'logo)
+  )
 
 ;; Initialize Emacs full screen 
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
@@ -134,9 +137,6 @@
 ;; Bound undo to C-z
 (global-set-key (kbd "C-z") 'undo)
 
-
-
-
 ;; Comment Do-What-I-Mean
 (defun comment-dwim-mod ()	       	
   "Like `comment-dwim', but toggle comment if cursor is not at end of line.
@@ -157,7 +157,13 @@ Version 2016-10-25"
   	    (comment-or-uncomment-region -lbp -lep)
   	    (forward-line )))))))
 
-(global-set-key (kbd "C-;") 'comment-dwim-mod) 
+(global-set-key (kbd "M-;") 'comment-dwim-mod) 
+
+;; Bind comment-line to C-;
+(global-set-key (kbd "C-;") 'comment-line)
+
+;; Set comment style
+(setq comment-style "plain")
 
 ;; Expand region with C-' and return to original position with C-g
 (use-package expand-region
@@ -193,7 +199,7 @@ So you can fix the list for run-once and run-for-all multiple-cursors commands."
 
 ;; Define function: fill character to 80
 (defun fill-to-end (char)
-  (interactive "cFill Character:")
+  (interactive "HcFill Character:")
   (save-excursion
     (end-of-line)
     (while (< (current-column) 80)
@@ -330,7 +336,7 @@ arg lines up."
 				  (yas--templates-for-key-at-point))))
 
       (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
-			    "green" "#ffffaf"))))
+			    "green" "#f9f5d7"))))
   (add-hook 'post-command-hook 'yasnippet-can-fire-p)  
 
   (yas-global-mode 1)
@@ -514,7 +520,7 @@ arg lines up."
   :bind ("<f4>" . focus-mode))
 
 ;; Word-wrap
-(add-hook 'org-mode-hook (lambda () (setq word-wrap t)))
+(add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
 
 ;; Omit the headline-asterisks except the last one:
 (setq org-hide-leading-stars t)
@@ -525,6 +531,9 @@ arg lines up."
 ;; Enable shift selection
 (setq org-support-shift-select t)
 
+;; Org keyword
+(setq org-todo-keywords
+    '((sequence "TODO" "DONE" "CANCELED")))
 ;; Fontification
 (setq org-src-fontify-natively t)
 (set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
@@ -533,11 +542,21 @@ arg lines up."
 (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
 (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
+;; Org agenda folders
+(setq org-agenda-files '("/home/hieu/Dropbox/org"))
+
+;; Set monday as the start of the week
+(setq org-agenda-start-on-weekday 1)
+
 ;; Active Babel languages:
-(setq org-babel-load-languages
-      '((R . t)
-	(emacs-lisp . t)
-	))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((R . t)
+   (emacs-lisp . t)
+   (gnuplot . t)
+   (plantuml . t)
+   ))
+
 
 ;; Show inline images
 (setq org-startup-with-inline-images t)
@@ -582,6 +601,9 @@ arg lines up."
 
 ;; Disable syntax highlight in inferior buffer
 (add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
+
+;; Right now read-only comints cause some errors
+(add-hook 'inferior-ess-mode-hook (lambda () (setq-local comint-prompt-read-only nil)))
 
 ;; ESS syntax highlight  
 (setq ess-R-font-lock-keywords 
@@ -744,7 +766,7 @@ arg lines up."
       font-latex-fontify-script nil)    
 
 ;; Word-wrap
- (add-hook 'TeX-mode-hook (lambda () (setq word-wrap t)))
+ (add-hook 'TeX-mode-hook (lambda () (visual-line-mode 1)))
 
 
 ;; Completion
@@ -776,6 +798,17 @@ arg lines up."
   ;; automatically open files ending with .gp or .gnuplot in gnuplot mode
   (setq auto-mode-alist 
 	(append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))    
+  )
+
+(use-package plantuml-mode
+  :ensure t
+  :config
+  ;; Recognize plantuml files
+  (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
+  ;; Path to jar file, remember to put it in the right folder
+  (setq plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
+  ;; Add to org-plantuml
+  (setq org-plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
   )
 
 (use-package helpful

@@ -40,8 +40,7 @@ The whole thing is driven by the following =.emacs=
   
   ;; Requice common-lisp library
   (require 'cl-lib)
-  (require 'bind-key)
-  
+
   ;; Auto-revert mode
   (global-auto-revert-mode 1)
   (setq auto-revert-interval 0.5)
@@ -72,8 +71,9 @@ The whole thing is driven by the following =.emacs=
   ;; Information settings
   (setq user-full-name "Nguyễn Đức Hiếu"
 	user-mail-address "hieunguyen31371@gmail.com")
-
-
+  
+  ;; Set emacs as a client
+  ;; (server-start)
 
 #+END_SRC
 
@@ -89,7 +89,8 @@ The whole thing is driven by the following =.emacs=
     :init 
     (dashboard-setup-startup-hook)
     :config 
-    (setq dashboard-startup-banner 'logo))
+    (setq dashboard-startup-banner 'logo)
+    )
   
   ;; Initialize Emacs full screen 
   (add-to-list 'initial-frame-alist '(fullscreen . maximized))
@@ -182,9 +183,6 @@ The whole thing is driven by the following =.emacs=
 
   ;; Bound undo to C-z
   (global-set-key (kbd "C-z") 'undo)
-
-  
-  
   
   ;; Comment Do-What-I-Mean
   (defun comment-dwim-mod ()	       	
@@ -206,7 +204,13 @@ The whole thing is driven by the following =.emacs=
   	      (comment-or-uncomment-region -lbp -lep)
   	      (forward-line )))))))
   
-  (global-set-key (kbd "C-;") 'comment-dwim-mod) 
+  (global-set-key (kbd "M-;") 'comment-dwim-mod) 
+
+  ;; Bind comment-line to C-;
+  (global-set-key (kbd "C-;") 'comment-line)
+
+  ;; Set comment style
+  (setq comment-style "plain")
   
   ;; Expand region with C-' and return to original position with C-g
   (use-package expand-region
@@ -242,7 +246,7 @@ The whole thing is driven by the following =.emacs=
 
   ;; Define function: fill character to 80
   (defun fill-to-end (char)
-    (interactive "cFill Character:")
+    (interactive "HcFill Character:")
     (save-excursion
       (end-of-line)
       (while (< (current-column) 80)
@@ -393,7 +397,7 @@ Company is a completion mechanism that is very flexible
 				    (yas--templates-for-key-at-point))))
 
 	(set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
-			      "green" "#ffffaf"))))
+			      "green" "#f9f5d7"))))
     (add-hook 'post-command-hook 'yasnippet-can-fire-p)  
     
     (yas-global-mode 1)
@@ -633,7 +637,7 @@ See [[http://orgmode.org/][here]].
 
 #+BEGIN_SRC emacs-lisp
   ;; Word-wrap
-  (add-hook 'org-mode-hook (lambda () (setq word-wrap t)))
+  (add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
 
   ;; Omit the headline-asterisks except the last one:
   (setq org-hide-leading-stars t)
@@ -644,6 +648,9 @@ See [[http://orgmode.org/][here]].
   ;; Enable shift selection
   (setq org-support-shift-select t)
 
+  ;; Org keyword
+  (setq org-todo-keywords
+      '((sequence "TODO" "DONE" "CANCELED")))
   ;; Fontification
   (setq org-src-fontify-natively t)
   (set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
@@ -654,16 +661,28 @@ See [[http://orgmode.org/][here]].
 
 #+END_SRC
 
+*** Agenda
+#+BEGIN_SRC emacs-lisp
+  ;; Org agenda folders
+  (setq org-agenda-files '("/home/hieu/Dropbox/org"))
+
+  ;; Set monday as the start of the week
+  (setq org-agenda-start-on-weekday 1)
+#+END_SRC
 *** Org-babel
 Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 #+BEGIN_SRC emacs-lisp
-  
+ 
   ;; Active Babel languages:
-  (setq org-babel-load-languages
-	'((R . t)
-	  (emacs-lisp . t)
-	  ))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((R . t)
+     (emacs-lisp . t)
+     (gnuplot . t)
+     (plantuml . t)
+     ))
+
 
   ;; Show inline images
   (setq org-startup-with-inline-images t)
@@ -735,7 +754,10 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
   ;; Disable syntax highlight in inferior buffer
   (add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
-    
+
+  ;; Right now read-only comints cause some errors
+  (add-hook 'inferior-ess-mode-hook (lambda () (setq-local comint-prompt-read-only nil)))
+
   ;; ESS syntax highlight  
   (setq ess-R-font-lock-keywords 
 	'((ess-R-fl-keyword:modifiers . t)
@@ -916,7 +938,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 	font-latex-fontify-script nil)    
 
   ;; Word-wrap
-   (add-hook 'TeX-mode-hook (lambda () (setq word-wrap t)))
+   (add-hook 'TeX-mode-hook (lambda () (visual-line-mode 1)))
 
 
   ;; Completion
@@ -952,7 +974,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 ** GNUplot
 Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms.
-/I may expand this later to use with org-mode/
+
 
 #+BEGIN_SRC emacs-lisp
   (use-package gnuplot-mode
@@ -965,8 +987,22 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 
 #+END_SRC
 
+** Plantuml
+[[http://plantuml.com/][PlantUML]] is a component that allows to quickly write different kinds of diagrams
 
+#+BEGIN_SRC emacs-lisp
+  (use-package plantuml-mode
+    :ensure t
+    :config
+    ;; Recognize plantuml files
+    (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
+    ;; Path to jar file, remember to put it in the right folder
+    (setq plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
+    ;; Add to org-plantuml
+    (setq org-plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
+    )
 
+#+END_SRC
 * Draft
 Settings in this section are not yet organized but are being used, mostly for testing purposes
 
@@ -977,5 +1013,28 @@ Settings in this section are not yet organized but are being used, mostly for te
   (use-package helpful
     :ensure t)
 #+END_SRC
-** Use-package
-   The [[https://github.com/jwiegley/use-package][use-package]] macro allows you to isolate package configuration in your .emacs file in a way that is both performance-oriented and, well, tidy.
+** Evil
+[[https://github.com/emacs-evil/evil][Evil]] is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions.
+Currently disabled, I will test this later when I'm more familiar with emacs.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+
+
+  (use-package evil
+    :ensure t
+    :init
+    :config
+    (evil-set-initial-state 'help-mode 'emacs)
+    (evil-set-initial-state 'dashboard-mode 'emacs)
+    ;; Bypassing clipboard
+    (setq select-enable-primary t
+	  select-enable-clipboard t
+	  save-interprogram-paste-before-kill t
+	  kill-do-not-save-duplicates t)
+    ;; Cursor color
+    (setq evil-insert-state-cursor '(bar "yellow")
+	  evil-normal-state-cursor '(bar "purple"))
+    (evil-mode 1)
+    )
+
+#+END_SRC
