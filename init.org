@@ -6,7 +6,7 @@
 #+LATEX_HEADER: \usepackage[utf8]{vietnam}
 
 
-* Preface
+* Prerequisite
 The whole thing is driven by the following =.emacs=
 
 #+begin_example emacs-lisp :eval no
@@ -374,6 +374,18 @@ Company is a completion mechanism that is very flexible
 
 #+END_SRC
 
+** Electric operator
+[[https://github.com/davidshepherd7/electric-operator][Electric Operator]] is an emacs minor-mode to automatically add spacing around operators.
+#+BEGIN_SRC emacs-lisp
+  (use-package electric-operator
+    :ensure t
+    :config
+    (setq electric-operator-R-named-argument-style 'spaced)
+    (add-hook 'ess-mode-hook #'electric-operator-mode)
+    (add-hook 'python-mode-hook #'electric-operator-mode)
+    )
+
+#+END_SRC
 ** Yasnippets
 
 #+BEGIN_SRC emacs-lisp
@@ -648,9 +660,6 @@ See [[http://orgmode.org/][here]].
   ;; Enable shift selection
   (setq org-support-shift-select t)
 
-  ;; Org keyword
-  (setq org-todo-keywords
-      '((sequence "TODO" "DONE" "CANCELED")))
   ;; Fontification
   (setq org-src-fontify-natively t)
   (set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
@@ -668,6 +677,25 @@ See [[http://orgmode.org/][here]].
 
   ;; Set monday as the start of the week
   (setq org-agenda-start-on-weekday 1)
+
+  ;; Org keyword
+  (setq org-todo-keywords
+	'((sequence "TODO" "|" "DONE" "CANCELLED")
+	  (sequence "PLANNING" "|" "OVER")
+	  ))
+  
+  (setq org-todo-keyword-faces
+	'(("TODO" . "yellow") ("DONE" . "green") ("CANCELLED" . "gray50")
+	  ("PLANNING" . "light blue") ("OVER" . "slate gray")))
+
+  ;; Agenda summary 
+  (setq org-agenda-custom-commands
+	'(("c" "Simple agenda view"
+	   ((agenda "")
+	    (alltodo "")))))
+  ;; And bind it to <f8>
+  (global-set-key (kbd "<f8>") 'org-agenda)
+  
 #+END_SRC
 *** Org-babel
 Babel is Org-mode's ability to execute source code within Org-mode documents.
@@ -972,6 +1000,32 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+END_SRC
 
+** Web
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package web-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (setq web-mode-enable-css-colorization t)
+  (setq web-mode-enable-current-element-highlight t)
+  (set-face-attribute 'web-mode-current-element-highlight-face nil
+		      :weight 'bold
+		      :background "#665c54")
+  )
+
+(use-package web-beautify
+  :ensure t
+  :config
+  (eval-after-load 'web-mode
+    '(define-key web-mode-map (kbd "C-c b") 'web-beautify-html))
+  (eval-after-load 'css-mode
+    '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
+
+  )
+
+#+END_SRC
 ** GNUplot
 Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms.
 
@@ -1024,17 +1078,18 @@ Currently disabled, I will test this later when I'm more familiar with emacs.
     :ensure t
     :init
     :config
-    (evil-set-initial-state 'help-mode 'emacs)
-    (evil-set-initial-state 'dashboard-mode 'emacs)
+    ;; Set insert state as default
+    (setq evil-default-state 'emacs)
     ;; Bypassing clipboard
     (setq select-enable-primary t
 	  select-enable-clipboard t
 	  save-interprogram-paste-before-kill t
 	  kill-do-not-save-duplicates t)
-    ;; Cursor color
-    (setq evil-insert-state-cursor '(bar "yellow")
-	  evil-normal-state-cursor '(bar "purple"))
     (evil-mode 1)
+    ;; cursor
+    (setq evil-insert-state-cursor 'bar
+	  evil-normal-state-cursor 'box)
     )
 
 #+END_SRC
+

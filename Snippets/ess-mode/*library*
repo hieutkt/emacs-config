@@ -1,0 +1,5 @@
+# key: lib
+# name: library
+# --
+library(${1:name})
+$0

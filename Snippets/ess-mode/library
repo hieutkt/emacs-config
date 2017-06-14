@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: library
+# key: lib
+# --
+library(${1:library-name})
+$0

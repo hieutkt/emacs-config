@@ -317,6 +317,14 @@ arg lines up."
 ;; (eval-after-load 'company
 ;; '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
 
+(use-package electric-operator
+  :ensure t
+  :config
+  (setq electric-operator-R-named-argument-style 'spaced)
+  (add-hook 'ess-mode-hook #'electric-operator-mode)
+  (add-hook 'python-mode-hook #'electric-operator-mode)
+  )
+
 ;; Enable Yasnippets
 (use-package yasnippet
   :ensure t
@@ -531,9 +539,6 @@ arg lines up."
 ;; Enable shift selection
 (setq org-support-shift-select t)
 
-;; Org keyword
-(setq org-todo-keywords
-    '((sequence "TODO" "DONE" "CANCELED")))
 ;; Fontification
 (setq org-src-fontify-natively t)
 (set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
@@ -547,6 +552,24 @@ arg lines up."
 
 ;; Set monday as the start of the week
 (setq org-agenda-start-on-weekday 1)
+
+;; Org keyword
+(setq org-todo-keywords
+      '((sequence "TODO" "|" "DONE" "CANCELLED")
+	(sequence "PLANNING" "|" "OVER")
+	))
+
+(setq org-todo-keyword-faces
+      '(("TODO" . "yellow") ("DONE" . "green") ("CANCELLED" . "gray50")
+	("PLANNING" . "light blue") ("OVER" . "slate gray")))
+
+;; Agenda summary 
+(setq org-agenda-custom-commands
+      '(("c" "Simple agenda view"
+	 ((agenda "")
+	  (alltodo "")))))
+;; And bind it to <f8>
+(global-set-key (kbd "<f8>") 'org-agenda)
 
 ;; Active Babel languages:
 (org-babel-do-load-languages
@@ -790,6 +813,27 @@ arg lines up."
   :ensure t
   :config
   (add-to-list 'company-backends '(company-shell company-shell-env company-fish-shell))
+  )
+
+(use-package web-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (setq web-mode-enable-css-colorization t)
+  (setq web-mode-enable-current-element-highlight t)
+  (set-face-attribute 'web-mode-current-element-highlight-face nil
+		      :weight 'bold
+		      :background "#665c54")
+  )
+
+(use-package web-beautify
+  :ensure t
+  :config
+  (eval-after-load 'web-mode
+    '(define-key web-mode-map (kbd "C-c b") 'web-beautify-html))
+  (eval-after-load 'css-mode
+    '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
+
   )
 
 (use-package gnuplot-mode
