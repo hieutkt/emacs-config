@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: tryCatch
+# key: tryCatch
+# --
+tryCatch({
+${1:`yas-selected-text`}
+}${2:,})$0

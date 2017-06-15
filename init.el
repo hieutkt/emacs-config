@@ -191,7 +191,7 @@ So you can fix the list for run-once and run-for-all multiple-cursors commands."
   ("C-?" . mc/edit-lines)
   ("C->" . mc/mark-next-like-this)
   ("C-<" . mc/mark-previous-like-this)
-  ("C-N" . mc/insert-numbers)
+  ("C-S-n" . mc/insert-numbers)
   )
 
 
@@ -296,6 +296,8 @@ arg lines up."
   :bind 
   (:map company-active-map
 	("C-<f1>" . my/company-show-doc-buffer)
+	("C-n" . company-select-next)
+	("C-p" . company-select-previous)
 	)
   )
 
@@ -413,6 +415,25 @@ arg lines up."
     '(progn
        (define-key company-mode-map (kbd "C-:") 'helm-company)
        (define-key company-active-map (kbd "C-:") 'helm-company)))    
+  )
+
+;; Helm-bibtex
+(use-package helm-bibtex
+  :ensure t
+  :config
+  ;; Set bib folder
+  (setq bibtex-completion-bibliography
+	(expand-file-name "~/Dropbox/references.bib"))
+  (setq bibtex-completion-library-path 
+	(expand-file-name "~/Dropbox/pdf"))
+  ;; Set layout for different references formats
+  (setq bibtex-completion-display-formats
+	'((article       . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${journal:40}")
+	  (inbook        . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
+	  (incollection  . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
+	  (inproceedings . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
+	  (t             . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*}")))
+
   )
 
 (use-package ag
@@ -555,12 +576,12 @@ arg lines up."
 
 ;; Org keyword
 (setq org-todo-keywords
-      '((sequence "TODO" "|" "DONE" "CANCELLED")
+      '((sequence "TODO" "|" "DONE" "SUSPENDED")
 	(sequence "PLANNING" "|" "OVER")
 	))
 
 (setq org-todo-keyword-faces
-      '(("TODO" . "yellow") ("DONE" . "green") ("CANCELLED" . "gray50")
+      '(("TODO" . "yellow") ("DONE" . "green") ("SUSPENDED" . "gray50")
 	("PLANNING" . "light blue") ("OVER" . "slate gray")))
 
 ;; Agenda summary 
