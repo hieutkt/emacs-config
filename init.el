@@ -51,6 +51,21 @@
 ;; Set emacs as a client
 ;; (server-start)
 
+(defun expand-subfolder (dir)
+  "Expand a folder to a list of itself and its subfolder"
+  (interactive)
+  (let ((base (expand-file-name dir)))
+    (setq lib-arg nil)
+    (add-to-list 'lib-arg base)
+    (dolist (f (directory-files base))
+      (let ((name (concat base "/" f)))
+	(when (and (file-directory-p name) 
+		   (not (equal f "..."))
+		   (not (equal f ".."))
+		   (not (equal f ".")))
+	  (add-to-list 'lib-arg name)))))
+  lib-arg)
+
 ;; Startup screen
 (use-package dashboard
   :ensure t
@@ -424,33 +439,20 @@ arg lines up."
   ;; Set bib folder
   (setq bibtex-completion-bibliography
 	(expand-file-name "~/Dropbox/references.bib"))
-  (setq bibtex-completion-library-path 
-	(expand-file-name "~/Dropbox/pdf"))
-  ;; Set layout for different references formats
+  (setq bibtex-completion-library-path
+	(append (expand-subfolder "~/Dropbox/pdf")
+		(expand-subfolder "~/Documents")))
+  ;; Set display format    
   (setq bibtex-completion-display-formats
 	'((article       . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${journal:40}")
 	  (inbook        . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
 	  (incollection  . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
 	  (inproceedings . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
 	  (t             . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*}")))
-
-  )
-
-(use-package ag
-  :ensure t
-  :init
-  ;; Truncate long results
-  (add-hook 'ag-mode-hook (lambda () (setq truncate-lines t)))
-
-  :config
-  ;; Add highlighting
-  (setq ag-highlight-search t)
-  (set-face-attribute 'ag-match-face nil 
-		      :weight 'bold
-		      :foreground "#fabd2f")
-
-  ;; Set ag to reuse the same buffer
-  (setq ag-reuse-buffers 't)
+  :bind(
+	:map helm-command-map
+	     ("b" . helm-bibtex)
+	     )
   )
 
 (use-package polymode
@@ -547,6 +549,42 @@ arg lines up."
 (use-package focus
   :ensure t
   :bind ("<f4>" . focus-mode))
+
+(use-package dired+
+  :ensure t
+  :config
+  (set-face-attribute 'diredp-dir-name nil :foreground "#fe8019")
+  (set-face-attribute 'diredp-number nil :foreground "#8ec07c")
+  (setq dired-listing-switches "-alh")
+  )
+
+(use-package ag
+  :ensure t
+  :init
+  ;; Truncate long results
+  (add-hook 'ag-mode-hook (lambda () (setq truncate-lines t)))
+
+  :config
+  ;; Add highlighting
+  (setq ag-highlight-search t)
+  (set-face-attribute 'ag-match-face nil 
+		      :weight 'bold
+		      :foreground "#fabd2f")
+
+  ;; Set ag to reuse the same buffer
+  (setq ag-reuse-buffers 't)
+  )
+
+
+(use-package wgrep
+  :ensure t
+  :config
+  ;; wgrep-ag allows you to edit a ag buffer and apply those changes to
+  ;; the file buffer. 
+  (autoload 'wgrep-ag-setup "wgrep-ag")
+  (setq wgrep-auto-save-buffer t)
+  (add-hook 'ag-mode-hook 'wgrep-ag-setup)
+  )
 
 ;; Word-wrap
 (add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
@@ -665,6 +703,8 @@ arg lines up."
 	(ess-R-fl-keyword:%op% . t)
 	)
       )
+
+(set-face-attribute 'ess-numbers-face nil :foreground "#8ec07c")
 
 (setq ess-use-company 'script-only)
 (setq ess-tab-complete-in-script t)	;; Press <tab> inside functions for completions

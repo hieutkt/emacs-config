@@ -19,7 +19,7 @@ The whole thing is driven by the following =.emacs=
  
 
 * Initiation
-
+** Setup and bootstrap
 #+BEGIN_SRC emacs-lisp
   
   (require 'package)
@@ -76,7 +76,25 @@ The whole thing is driven by the following =.emacs=
   ;; (server-start)
 
 #+END_SRC
+** Defined functions
+#+BEGIN_SRC emacs-lisp
 
+  (defun expand-subfolder (dir)
+    "Expand a folder to a list of itself and its subfolder"
+    (interactive)
+    (let ((base (expand-file-name dir)))
+      (setq lib-arg nil)
+      (add-to-list 'lib-arg base)
+      (dolist (f (directory-files base))
+	(let ((name (concat base "/" f)))
+	  (when (and (file-directory-p name) 
+		     (not (equal f "..."))
+		     (not (equal f ".."))
+		     (not (equal f ".")))
+	    (add-to-list 'lib-arg name)))))
+    lib-arg)
+
+#+END_SRC
 
 * Appearence
 ** Interface
@@ -502,42 +520,21 @@ May combind this with yasnippet
     ;; Set bib folder
     (setq bibtex-completion-bibliography
 	  (expand-file-name "~/Dropbox/references.bib"))
-    (setq bibtex-completion-library-path 
-	  (expand-file-name "~/Dropbox/pdf"))
-    ;; Set layout for different references formats
+    (setq bibtex-completion-library-path
+	  (append (expand-subfolder "~/Dropbox/pdf")
+		  (expand-subfolder "~/Documents")))
+    ;; Set display format    
     (setq bibtex-completion-display-formats
 	  '((article       . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${journal:40}")
 	    (inbook        . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
 	    (incollection  . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
 	    (inproceedings . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
 	    (t             . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*}")))
-
+    :bind(
+	  :map helm-command-map
+	       ("b" . helm-bibtex)
+	       )
     )
-
-#+END_SRC
-
-** Ag
-An Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/latest/][(Documentation)]]
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package ag
-    :ensure t
-    :init
-    ;; Truncate long results
-    (add-hook 'ag-mode-hook (lambda () (setq truncate-lines t)))
-  
-    :config
-    ;; Add highlighting
-    (setq ag-highlight-search t)
-    (set-face-attribute 'ag-match-face nil 
-			:weight 'bold
-			:foreground "#fabd2f")
-
-    ;; Set ag to reuse the same buffer
-    (setq ag-reuse-buffers 't)
-    )
-  
 
 #+END_SRC
 
@@ -661,6 +658,55 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
 
 #+END_SRC
+
+
+* Directories and Files
+** Dired
+#+BEGIN_SRC emacs-lisp
+  (use-package dired+
+    :ensure t
+    :config
+    (set-face-attribute 'diredp-dir-name nil :foreground "#fe8019")
+    (set-face-attribute 'diredp-number nil :foreground "#8ec07c")
+    (setq dired-listing-switches "-alh")
+    )
+#+END_SRC
+** Ag and Wgrep
+Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/latest/][(Documentation)]]
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package ag
+    :ensure t
+    :init
+    ;; Truncate long results
+    (add-hook 'ag-mode-hook (lambda () (setq truncate-lines t)))
+  
+    :config
+    ;; Add highlighting
+    (setq ag-highlight-search t)
+    (set-face-attribute 'ag-match-face nil 
+			:weight 'bold
+			:foreground "#fabd2f")
+
+    ;; Set ag to reuse the same buffer
+    (setq ag-reuse-buffers 't)
+    )
+  
+
+  (use-package wgrep
+    :ensure t
+    :config
+    ;; wgrep-ag allows you to edit a ag buffer and apply those changes to
+    ;; the file buffer. 
+    (autoload 'wgrep-ag-setup "wgrep-ag")
+    (setq wgrep-auto-save-buffer t)
+    (add-hook 'ag-mode-hook 'wgrep-ag-setup)
+    )
+
+#+END_SRC
+
+
 * Utilities
 ** Org-mode
 Org mode is for keeping notes, maintaining TODO lists, planning projects, and authoring documents with a fast and effective plain-text system.
@@ -822,6 +868,9 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 	  (ess-R-fl-keyword:%op% . t)
 	  )
 	)
+  
+  (set-face-attribute 'ess-numbers-face nil :foreground "#8ec07c")
+
 
 #+END_SRC
 *** Code completion
@@ -1087,7 +1136,7 @@ Settings in this section are not yet organized but are being used, mostly for te
   (use-package helpful
     :ensure t)
 #+END_SRC
-** Evil
+** SUSPENDED Evil
 [[https://github.com/emacs-evil/evil][Evil]] is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions.
 Currently disabled, I will test this later when I'm more familiar with emacs.
 
@@ -1112,4 +1161,5 @@ Currently disabled, I will test this later when I'm more familiar with emacs.
     )
 
 #+END_SRC
+** TODO Change face for dired+
 
