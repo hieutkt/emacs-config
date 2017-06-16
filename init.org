@@ -41,6 +41,8 @@ The whole thing is driven by the following =.emacs=
   ;; Requice common-lisp library
   (require 'cl-lib)
 
+  ;; Files searching
+  (require 'f)
   ;; Auto-revert mode
   (global-auto-revert-mode 1)
   (setq auto-revert-interval 0.5)
@@ -74,25 +76,6 @@ The whole thing is driven by the following =.emacs=
   
   ;; Set emacs as a client
   ;; (server-start)
-
-#+END_SRC
-** Defined functions
-#+BEGIN_SRC emacs-lisp
-
-  (defun expand-subfolder (dir)
-    "Expand a folder to a list of itself and its subfolder"
-    (interactive)
-    (let ((base (expand-file-name dir)))
-      (setq lib-arg nil)
-      (add-to-list 'lib-arg base)
-      (dolist (f (directory-files base))
-	(let ((name (concat base "/" f)))
-	  (when (and (file-directory-p name) 
-		     (not (equal f "..."))
-		     (not (equal f ".."))
-		     (not (equal f ".")))
-	    (add-to-list 'lib-arg name)))))
-    lib-arg)
 
 #+END_SRC
 
@@ -521,8 +504,8 @@ May combind this with yasnippet
     (setq bibtex-completion-bibliography
 	  (expand-file-name "~/Dropbox/references.bib"))
     (setq bibtex-completion-library-path
-	  (append (expand-subfolder "~/Dropbox/pdf")
-		  (expand-subfolder "~/Documents")))
+	  (append (f-directories "~/Dropbox" nil t)
+		  (f-directories "~/Documents" nil t)))
     ;; Set display format    
     (setq bibtex-completion-display-formats
 	  '((article       . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${journal:40}")
@@ -694,7 +677,7 @@ Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/
     )
   
 
-  (use-package wgrep
+  (use-package wgrep-ag
     :ensure t
     :config
     ;; wgrep-ag allows you to edit a ag buffer and apply those changes to

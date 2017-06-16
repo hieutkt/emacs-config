@@ -17,6 +17,8 @@
 ;; Requice common-lisp library
 (require 'cl-lib)
 
+;; Files searching
+(require 'f)
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
 (setq auto-revert-interval 0.5)
@@ -59,8 +61,7 @@
     (add-to-list 'lib-arg base)
     (dolist (f (directory-files base))
       (let ((name (concat base "/" f)))
-	(when (and (file-directory-p name) 
-		   (not (equal f "..."))
+	(when (and (file-directory-p name)
 		   (not (equal f ".."))
 		   (not (equal f ".")))
 	  (add-to-list 'lib-arg name)))))
@@ -440,8 +441,8 @@ arg lines up."
   (setq bibtex-completion-bibliography
 	(expand-file-name "~/Dropbox/references.bib"))
   (setq bibtex-completion-library-path
-	(append (expand-subfolder "~/Dropbox/pdf")
-		(expand-subfolder "~/Documents")))
+	(append (f-directories "~/Dropbox" nil t)
+		(f-directories "~/Documents" nil t)))
   ;; Set display format    
   (setq bibtex-completion-display-formats
 	'((article       . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${journal:40}")
