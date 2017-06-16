@@ -555,12 +555,12 @@ arg lines up."
 
 ;; Org keyword
 (setq org-todo-keywords
-      '((sequence "TODO" "|" "DONE" "CANCELLED")
+      '((sequence "TODO" "|" "DONE" "SUSPENDED")
 	(sequence "PLANNING" "|" "OVER")
 	))
 
 (setq org-todo-keyword-faces
-      '(("TODO" . "yellow") ("DONE" . "green") ("CANCELLED" . "gray50")
+      '(("TODO" . "yellow") ("DONE" . "green") ("SUSPENDED" . "gray50")
 	("PLANNING" . "light blue") ("OVER" . "slate gray")))
 
 ;; Agenda summary 
