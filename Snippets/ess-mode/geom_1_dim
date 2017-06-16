@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: geom(...1 dimension...)
-# key: geom_
-# --
-geom_${1:$$(yas/choose-value '("bar" "histogram"))}(aes(x = $2)$3)
