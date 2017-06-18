@@ -53,20 +53,6 @@
 ;; Set emacs as a client
 ;; (server-start)
 
-(defun expand-subfolder (dir)
-  "Expand a folder to a list of itself and its subfolder"
-  (interactive)
-  (let ((base (expand-file-name dir)))
-    (setq lib-arg nil)
-    (add-to-list 'lib-arg base)
-    (dolist (f (directory-files base))
-      (let ((name (concat base "/" f)))
-	(when (and (file-directory-p name)
-		   (not (equal f ".."))
-		   (not (equal f ".")))
-	  (add-to-list 'lib-arg name)))))
-  lib-arg)
-
 ;; Startup screen
 (use-package dashboard
   :ensure t
@@ -577,7 +563,7 @@ arg lines up."
   )
 
 
-(use-package wgrep
+(use-package wgrep-ag
   :ensure t
   :config
   ;; wgrep-ag allows you to edit a ag buffer and apply those changes to
@@ -801,32 +787,63 @@ arg lines up."
   ;; Enable elpy
   (elpy-enable)
   :config
-  ;; Do not enable elpy snippets for now
-  (delete 'elpy-module-yasnippet elpy-modules)
+  ;; Do not enable elpy flymake for now
+  (remove-hook 'elpy-modules 'elpy-module-flymake)
 
-  (flymake-mode -1)
+  ;; Use python3
   (elpy-use-cpython "python3")
   (setq elpy-rpc-python-command "python3")
-  (setq elpy-rpc-backend "jedi")
+
+  ;; Completion backend
+  (setq elpy-rpc-backend "rope")
+
+  ;; Function: send block to elpy: bound to C-c C-c
+  (defun forward-block (&optional n)
+    (interactive "p")
+    (let ((n (if (null n) 1 n)))
+      (search-forward-regexp "\n[\t\n ]*\n+" nil "NOERROR" n)))
+
+  (defun elpy-shell-send-current-block ()
+    "Send current block to Python shell."
+    (interactive)
+    (beginning-of-line)
+    (push-mark)
+    (forward-block)
+    (elpy-shell-send-region-or-buffer)
+    (display-buffer (process-buffer (elpy-shell-get-or-create-process))
+		    nil
+		    'visible))
+  ;; Truncate lines
+  (add-hook 'inferior-python-mode-hook (lambda () (setq truncate-lines t)))
+
+  ;; Font-lock
+  (add-hook 'python-mode-hook
+    '(lambda()
+       (font-lock-add-keywords
+        nil
+        '(("\\<\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*(" 1
+	   font-lock-function-name-face) ; highlight function names
+	  ))))
 
   :bind(
-	:map python-mode-map
-	     ("C-c C-c" . elpy-shell-send-current-statement)
 	     ("C-c <RET>" . elpy-shell-send-region-or-buffer)
+	:map python-mode-map
+	     ("C-c C-c" . elpy-send-current-block)
 	     )
-  )	       
+  )
 
 ;; Fix:Calling ‘run-python’ with ‘python-shell-interpreter’ set to "python3"
 ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24401
 ;; This will be fixed in the next version of Emacs
-(defun python-shell-completion-native-try ()
-  "Return non-nil if can trigger native completion."
-  (let ((python-shell-completion-native-enable t)
-	(python-shell-completion-native-output-timeout
-	 python-shell-completion-native-try-output-timeout))
-    (python-shell-completion-native-get-completions
-     (get-buffer-process (current-buffer))
-     nil "_")))
+(with-eval-after-load 'python3
+  (defun python-shell-completion-native-try ()
+    "Return non-nil if can trigger native completion."
+    (let ((python-shell-completion-native-enable t)
+	  (python-shell-completion-native-output-timeout
+	   python-shell-completion-native-try-output-timeout))
+      (python-shell-completion-native-get-completions
+       (get-buffer-process (current-buffer))
+       nil "_"))))
 
 (use-package tex 
   :ensure auctex)
@@ -919,3 +936,34 @@ arg lines up."
 
 (use-package helpful
   :ensure t)
+
+(use-package ibuffer
+  :ensure t
+  :config
+  (setq ibuffer-saved-filter-groups
+	(quote (("Default"
+		 ("Dired" (mode . dired-mode))
+		 ("Org" (name . "^.*org$"))
+		 ("Process" (or (mode . inferior-ess-mode)
+				(mode . shell-mode)))
+		 ("Programming" (or
+				 (mode . ess-mode)
+				 (mode . python-mode)
+				 (mode . c++-mode)))
+		 ("Helm" (mode . Hmm-mode))
+		 ("Emacs" (or
+			   (name . "^\\*scratch\\*$")
+			   (name . "^\\*Messages\\*$")
+			   (name . "^\\*dashboard\\*$")))
+		 ))))
+
+  (add-hook 'ibuffer-mode-hook
+	    (lambda ()
+	      (ibuffer-auto-mode 1)
+	      (ibuffer-switch-to-saved-filter-groups "default")))
+
+  ;; Don't show filter groups if there are no buffers in that group
+  (setq ibuffer-show-empty-filter-groups nil)
+
+  :bind
+  ("C-x C-b" . ibuffer))
