@@ -967,8 +967,8 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     (remove-hook 'elpy-modules 'elpy-module-flymake)
     
     ;; Use python3
-    (elpy-use-cpython "python3")
-    (setq elpy-rpc-python-command "python3")
+;;     (elpy-use-cpython "python3")
+;;     (setq elpy-rpc-python-command "ipython")
 
     ;; Completion backend
     (setq elpy-rpc-backend "rope")
@@ -980,9 +980,9 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 	(search-forward-regexp "\n[\t\n ]*\n+" nil "NOERROR" n)))
 
     (defun elpy-shell-send-current-block ()
-      "Send current block to Python shell."
       (interactive)
       (beginning-of-line)
+      "Send current block to Python shell."
       (push-mark)
       (forward-block)
       (elpy-shell-send-region-or-buffer)
@@ -1207,5 +1207,20 @@ Currently disabled, I will test this later when I'm more familiar with emacs.
     (setq evil-insert-state-cursor 'bar
 	  evil-normal-state-cursor 'box)
     )
+
+#+END_SRC
+** Python: Ipython
+
+#+BEGIN_SRC emacs-lisp
+
+(when (executable-find "ipython3")
+    (setq python-shell-interpreter "ipython3"
+          python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+          python-shell-prompt-block-regexp "\\.\\.\\.\\.: "
+          python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+          python-shell-completion-setup-code
+          "from IPython.core.completerlib import module_completion"
+          python-shell-completion-string-code
+          "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
 
 #+END_SRC
