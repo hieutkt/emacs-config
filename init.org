@@ -953,6 +953,9 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 ** Python
 
 #+BEGIN_SRC emacs-lisp
+  
+  (setq python-shell-interpreter "ipython3")
+
   (use-package elpy
     :ensure t
     :init
@@ -967,8 +970,9 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     (remove-hook 'elpy-modules 'elpy-module-flymake)
     
     ;; Use python3
-;;     (elpy-use-cpython "python3")
-;;     (setq elpy-rpc-python-command "ipython")
+    (elpy-use-ipython "ipython3")
+    ;;     (setq python-shell-interpreter-args "--simple-prompt --pprint")
+    (setq elpy-rpc-python-command "python3")
 
     ;; Completion backend
     (setq elpy-rpc-backend "rope")
@@ -989,8 +993,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
       (display-buffer (process-buffer (elpy-shell-get-or-create-process))
 		      nil
 		      'visible))
-    ;; Truncate lines
-    (add-hook 'inferior-python-mode-hook (lambda () (setq truncate-lines t)))
 
     ;; Font-lock
     (add-hook 'python-mode-hook
@@ -1008,18 +1010,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 	       )
     )
   
-  ;; Fix:Calling ‘run-python’ with ‘python-shell-interpreter’ set to "python3"
-  ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24401
-  ;; This will be fixed in the next version of Emacs
-  (with-eval-after-load 'python3
-    (defun python-shell-completion-native-try ()
-      "Return non-nil if can trigger native completion."
-      (let ((python-shell-completion-native-enable t)
-	    (python-shell-completion-native-output-timeout
-	     python-shell-completion-native-try-output-timeout))
-	(python-shell-completion-native-get-completions
-	 (get-buffer-process (current-buffer))
-	 nil "_"))))
+
 #+END_SRC
 
 ** \LaTeX{}
@@ -1209,18 +1200,4 @@ Currently disabled, I will test this later when I'm more familiar with emacs.
     )
 
 #+END_SRC
-** Python: Ipython
 
-#+BEGIN_SRC emacs-lisp
-
-(when (executable-find "ipython3")
-    (setq python-shell-interpreter "ipython3"
-          python-shell-prompt-regexp "In \\[[0-9]+\\]: "
-          python-shell-prompt-block-regexp "\\.\\.\\.\\.: "
-          python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
-          python-shell-completion-setup-code
-          "from IPython.core.completerlib import module_completion"
-          python-shell-completion-string-code
-          "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
-
-#+END_SRC

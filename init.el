@@ -777,73 +777,61 @@ arg lines up."
 
 (define-key polymode-mode-map "\M-nr" 'ess-rshiny)
 
+(setq python-shell-interpreter "ipython3")
+
 (use-package elpy
-    :ensure t
-    :init
-    ;; Enable company
-    (add-hook 'python-mode-hook 'company-mode)
-    (add-hook 'inferior-python-mode-hook 'company-mode)
-    
-    ;; Enable elpy
-    (elpy-enable)
-    :config
-    ;; Do not enable elpy flymake for now
-    (remove-hook 'elpy-modules 'elpy-module-flymake)
-    
-    ;; Use python3
-;;     (elpy-use-cpython "python3")
-;;     (setq elpy-rpc-python-command "ipython")
+  :ensure t
+  :init
+  ;; Enable company
+  (add-hook 'python-mode-hook 'company-mode)
+  (add-hook 'inferior-python-mode-hook 'company-mode)
 
-    ;; Completion backend
-    (setq elpy-rpc-backend "rope")
+  ;; Enable elpy
+  (elpy-enable)
+  :config
+  ;; Do not enable elpy flymake for now
+  (remove-hook 'elpy-modules 'elpy-module-flymake)
 
-    ;; Function: send block to elpy: bound to C-c C-c
-    (defun forward-block (&optional n)
-      (interactive "p")
-      (let ((n (if (null n) 1 n)))
-	(search-forward-regexp "\n[\t\n ]*\n+" nil "NOERROR" n)))
+  ;; Use python3
+  (elpy-use-ipython "ipython3")
+  ;;     (setq python-shell-interpreter-args "--simple-prompt --pprint")
+  (setq elpy-rpc-python-command "python3")
 
-    (defun elpy-shell-send-current-block ()
-      (interactive)
-      (beginning-of-line)
-      "Send current block to Python shell."
-      (push-mark)
-      (forward-block)
-      (elpy-shell-send-region-or-buffer)
-      (display-buffer (process-buffer (elpy-shell-get-or-create-process))
-		      nil
-		      'visible))
-    ;; Truncate lines
-    (add-hook 'inferior-python-mode-hook (lambda () (setq truncate-lines t)))
+  ;; Completion backend
+  (setq elpy-rpc-backend "rope")
 
-    ;; Font-lock
-    (add-hook 'python-mode-hook
-      '(lambda()
-         (font-lock-add-keywords
-          nil
-          '(("\\<\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*(" 1
-	     font-lock-function-name-face) ; highlight function names
-	    ))))
+  ;; Function: send block to elpy: bound to C-c C-c
+  (defun forward-block (&optional n)
+    (interactive "p")
+    (let ((n (if (null n) 1 n)))
+      (search-forward-regexp "\n[\t\n ]*\n+" nil "NOERROR" n)))
 
-    :bind(
-	       ("C-c <RET>" . elpy-shell-send-region-or-buffer)
-	  :map python-mode-map
-	       ("C-c C-c" . elpy-send-current-block)
-	       )
-    )
-  
-  ;; Fix:Calling ‘run-python’ with ‘python-shell-interpreter’ set to "python3"
-  ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24401
-  ;; This will be fixed in the next version of Emacs
-  (with-eval-after-load 'python3
-    (defun python-shell-completion-native-try ()
-      "Return non-nil if can trigger native completion."
-      (let ((python-shell-completion-native-enable t)
-	    (python-shell-completion-native-output-timeout
-	     python-shell-completion-native-try-output-timeout))
-	(python-shell-completion-native-get-completions
-	 (get-buffer-process (current-buffer))
-	 nil "_"))))
+  (defun elpy-shell-send-current-block ()
+    (interactive)
+    (beginning-of-line)
+    "Send current block to Python shell."
+    (push-mark)
+    (forward-block)
+    (elpy-shell-send-region-or-buffer)
+    (display-buffer (process-buffer (elpy-shell-get-or-create-process))
+		    nil
+		    'visible))
+
+  ;; Font-lock
+  (add-hook 'python-mode-hook
+    '(lambda()
+       (font-lock-add-keywords
+        nil
+        '(("\\<\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*(" 1
+	   font-lock-function-name-face) ; highlight function names
+	  ))))
+
+  :bind(
+	     ("C-c <RET>" . elpy-shell-send-region-or-buffer)
+	:map python-mode-map
+	     ("C-c C-c" . elpy-send-current-block)
+	     )
+  )
 
 (use-package tex 
   :ensure auctex)
@@ -967,13 +955,3 @@ arg lines up."
 
   :bind
   ("C-x C-b" . ibuffer))
-
-(when (executable-find "ipython3")
-    (setq python-shell-interpreter "ipython3"
-          python-shell-prompt-regexp "In \\[[0-9]+\\]: "
-          python-shell-prompt-block-regexp "\\.\\.\\.\\.: "
-          python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
-          python-shell-completion-setup-code
-          "from IPython.core.completerlib import module_completion"
-          python-shell-completion-string-code
-          "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
