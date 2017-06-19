@@ -53,20 +53,6 @@
 ;; Set emacs as a client
 ;; (server-start)
 
-(defun expand-subfolder (dir)
-  "Expand a folder to a list of itself and its subfolder"
-  (interactive)
-  (let ((base (expand-file-name dir)))
-    (setq lib-arg nil)
-    (add-to-list 'lib-arg base)
-    (dolist (f (directory-files base))
-      (let ((name (concat base "/" f)))
-	(when (and (file-directory-p name)
-		   (not (equal f ".."))
-		   (not (equal f ".")))
-	  (add-to-list 'lib-arg name)))))
-  lib-arg)
-
 ;; Startup screen
 (use-package dashboard
   :ensure t
@@ -577,7 +563,7 @@ arg lines up."
   )
 
 
-(use-package wgrep
+(use-package wgrep-ag
   :ensure t
   :config
   ;; wgrep-ag allows you to edit a ag buffer and apply those changes to
