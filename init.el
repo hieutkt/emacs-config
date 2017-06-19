@@ -358,6 +358,7 @@ arg lines up."
   (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
   :bind
   ("<C-tab>" . yas-insert-snippet)
+  :diminish company-mode
   )
 
 ;; With backquote warnings:
@@ -406,6 +407,7 @@ arg lines up."
  	 ("C-i" . helm-execute-persistent-action)   ; make TAB work in terminal
  	 ("C-z" . helm-select-action)              ; list actions using C-z    
  	 )
+  :diminish helm-mode
   )
 
 
@@ -449,16 +451,16 @@ arg lines up."
   (require 'poly-markdown)
   (require 'poly-org)
 
-  (add-to-list 'auto-mode-alist '("\\.org" . poly-org-mode))
-  (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.Snw$" . poly-noweb+r-mode))
-  (add-to-list 'auto-mode-alist '("\\.Rnw$" . poly-noweb+r-mode))
-  (add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown+r-mode))
-  (add-to-list 'auto-mode-alist '("\\.rapport$" . poly-rapport-mode))
-  (add-to-list 'auto-mode-alist '("\\.Rhtml$" . poly-html+r-mode))
-  (add-to-list 'auto-mode-alist '("\\.Rbrew$" . poly-brew+r-mode))
-  (add-to-list 'auto-mode-alist '("\\.Rcpp$" . poly-r+c++-mode))
-  (add-to-list 'auto-mode-alist '("\\.cppR$" . poly-c++r-mode))
+  :mode (("\\.org" . poly-org-mode)
+	 ("\\.md" . poly-markdown-mode)
+	 ("\\.Snw$" . poly-noweb+r-mode)
+	 ("\\.Rnw$" . poly-noweb+r-mode)
+	 ("\\.Rmd$" . poly-markdown+r-mode)
+	 ("\\.rapport$" . poly-rapport-mode)
+	 ("\\.Rhtml$" . poly-html+r-mode)
+	 ("\\.Rbrew$" . poly-brew+r-mode)
+	 ("\\.Rcpp$" . poly-r+c++-mode)
+	 ("\\.cppR$" . poly-c++r-mode))
   )
 
 (defun check-expansion ()
@@ -652,6 +654,37 @@ arg lines up."
   ;; Currently magit cause some error when auto revert mode is on
   (setq magit-auto-revert-mode nil)
 
+(use-package ibuffer
+  :ensure t
+  :config
+  (setq ibuffer-saved-filter-groups
+	(quote (("Default"
+		 ("Dired" (mode . dired-mode))
+		 ("Org" (name . "^.*org$"))
+		 ("Process" (or (mode . inferior-ess-mode)
+				(mode . shell-mode)))
+		 ("Programming" (or
+				 (mode . ess-mode)
+				 (mode . python-mode)
+				 (mode . c++-mode)))
+		 ("Helm" (mode . Hmm-mode))
+		 ("Emacs" (or
+			   (name . "^\\*scratch\\*$")
+			   (name . "^\\*Messages\\*$")
+			   (name . "^\\*dashboard\\*$")))
+		 ))))
+
+  (add-hook 'ibuffer-mode-hook
+	    (lambda ()
+	      (ibuffer-auto-mode 1)
+	      (ibuffer-switch-to-saved-filter-groups "default")))
+
+  ;; Don't show filter groups if there are no buffers in that group
+  (setq ibuffer-show-empty-filter-groups nil)
+
+  :bind
+  ("C-x C-b" . ibuffer))
+
 (use-package ess
   :ensure t
   :config
@@ -822,7 +855,7 @@ arg lines up."
     '(lambda()
        (font-lock-add-keywords
         nil
-        '(("\\<\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*(" 1
+        '(("\\<\\([_A-Za-z0-9]*\\)(" 1
 	   font-lock-function-name-face) ; highlight function names
 	  ))))
 
@@ -866,6 +899,14 @@ arg lines up."
   (company-auctex-init)
   )
 
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
+
 (use-package shx
   :ensure t
   :init
@@ -884,8 +925,8 @@ arg lines up."
 
 (use-package web-mode
   :ensure t
+  :mode (("\\.html?\\'" . web-mode))
   :config
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
   (setq web-mode-enable-css-colorization t)
   (setq web-mode-enable-current-element-highlight t)
   (set-face-attribute 'web-mode-current-element-highlight-face nil
@@ -905,17 +946,13 @@ arg lines up."
 
 (use-package gnuplot-mode
   :ensure t
-  :config
-  ;; automatically open files ending with .gp or .gnuplot in gnuplot mode
-  (setq auto-mode-alist 
-	(append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))    
+  :mode ("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)
   )
 
 (use-package plantuml-mode
   :ensure t
+  :mode ("\\.plantuml\\'" . plantuml-mode)
   :config
-  ;; Recognize plantuml files
-  (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
   ;; Path to jar file, remember to put it in the right folder
   (setq plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
   ;; Add to org-plantuml
@@ -924,34 +961,3 @@ arg lines up."
 
 (use-package helpful
   :ensure t)
-
-(use-package ibuffer
-  :ensure t
-  :config
-  (setq ibuffer-saved-filter-groups
-	(quote (("Default"
-		 ("Dired" (mode . dired-mode))
-		 ("Org" (name . "^.*org$"))
-		 ("Process" (or (mode . inferior-ess-mode)
-				(mode . shell-mode)))
-		 ("Programming" (or
-				 (mode . ess-mode)
-				 (mode . python-mode)
-				 (mode . c++-mode)))
-		 ("Helm" (mode . Hmm-mode))
-		 ("Emacs" (or
-			   (name . "^\\*scratch\\*$")
-			   (name . "^\\*Messages\\*$")
-			   (name . "^\\*dashboard\\*$")))
-		 ))))
-
-  (add-hook 'ibuffer-mode-hook
-	    (lambda ()
-	      (ibuffer-auto-mode 1)
-	      (ibuffer-switch-to-saved-filter-groups "default")))
-
-  ;; Don't show filter groups if there are no buffers in that group
-  (setq ibuffer-show-empty-filter-groups nil)
-
-  :bind
-  ("C-x C-b" . ibuffer))

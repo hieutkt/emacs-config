@@ -1,4 +1,4 @@
-an#+TITLE: Emacs Configuration
+#+TITLE: Emacs Configuration
 #+AUTHOR: Nguyễn Đức Hiếu
 #+STARTUP: content
 #+OPTIONS: num:3 ^:nil toc:nil
@@ -422,6 +422,7 @@ Company is a completion mechanism that is very flexible
     (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
     :bind
     ("<C-tab>" . yas-insert-snippet)
+    :diminish company-mode
     )
   
   ;; With backquote warnings:
@@ -483,6 +484,7 @@ May combind this with yasnippet
  	   ("C-i" . helm-execute-persistent-action)   ; make TAB work in terminal
  	   ("C-z" . helm-select-action)              ; list actions using C-z    
  	   )
+    :diminish helm-mode
     )
   
   
@@ -532,16 +534,16 @@ May combind this with yasnippet
     (require 'poly-markdown)
     (require 'poly-org)
     
-    (add-to-list 'auto-mode-alist '("\\.org" . poly-org-mode))
-    (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-    (add-to-list 'auto-mode-alist '("\\.Snw$" . poly-noweb+r-mode))
-    (add-to-list 'auto-mode-alist '("\\.Rnw$" . poly-noweb+r-mode))
-    (add-to-list 'auto-mode-alist '("\\.Rmd$" . poly-markdown+r-mode))
-    (add-to-list 'auto-mode-alist '("\\.rapport$" . poly-rapport-mode))
-    (add-to-list 'auto-mode-alist '("\\.Rhtml$" . poly-html+r-mode))
-    (add-to-list 'auto-mode-alist '("\\.Rbrew$" . poly-brew+r-mode))
-    (add-to-list 'auto-mode-alist '("\\.Rcpp$" . poly-r+c++-mode))
-    (add-to-list 'auto-mode-alist '("\\.cppR$" . poly-c++r-mode))
+    :mode (("\\.org" . poly-org-mode)
+	   ("\\.md" . poly-markdown-mode)
+	   ("\\.Snw$" . poly-noweb+r-mode)
+	   ("\\.Rnw$" . poly-noweb+r-mode)
+	   ("\\.Rmd$" . poly-markdown+r-mode)
+	   ("\\.rapport$" . poly-rapport-mode)
+	   ("\\.Rhtml$" . poly-html+r-mode)
+	   ("\\.Rbrew$" . poly-brew+r-mode)
+	   ("\\.Rcpp$" . poly-r+c++-mode)
+	   ("\\.cppR$" . poly-c++r-mode))
     )
   
 #+END_SRC
@@ -654,7 +656,7 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
     (setq dired-listing-switches "-alh")
     )
 #+END_SRC
-** Ag and Wgrep
+** Ag and Wgrfpep
 Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/latest/][(Documentation)]]
 
 #+BEGIN_SRC emacs-lisp
@@ -803,6 +805,41 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+END_SRC  
 
+** Ibuffer
+Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buffers much in the same manner as Dired.
+#+BEGIN_SRC emacs-lisp
+ (use-package ibuffer
+   :ensure t
+   :config
+   (setq ibuffer-saved-filter-groups
+	 (quote (("Default"
+		  ("Dired" (mode . dired-mode))
+		  ("Org" (name . "^.*org$"))
+		  ("Process" (or (mode . inferior-ess-mode)
+				 (mode . shell-mode)))
+		  ("Programming" (or
+				  (mode . ess-mode)
+				  (mode . python-mode)
+				  (mode . c++-mode)))
+		  ("Helm" (mode . Hmm-mode))
+		  ("Emacs" (or
+			    (name . "^\\*scratch\\*$")
+			    (name . "^\\*Messages\\*$")
+			    (name . "^\\*dashboard\\*$")))
+		  ))))
+   
+   (add-hook 'ibuffer-mode-hook
+	     (lambda ()
+	       (ibuffer-auto-mode 1)
+	       (ibuffer-switch-to-saved-filter-groups "default")))
+
+   ;; Don't show filter groups if there are no buffers in that group
+   (setq ibuffer-show-empty-filter-groups nil)
+
+   :bind
+   ("C-x C-b" . ibuffer))
+
+#+END_SRC
 * Languages
 ** R
 *** Setting up
@@ -999,7 +1036,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
       '(lambda()
          (font-lock-add-keywords
           nil
-          '(("\\<\\([.A-Za-z][._A-Za-z0-9]*\\)[\n[:blank:]]*(" 1
+          '(("\\<\\([_A-Za-z0-9]*\\)(" 1
 	     font-lock-function-name-face) ; highlight function names
 	    ))))
 
@@ -1051,6 +1088,21 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+END_SRC
 
+** Markdown
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
+
+
+
+#+END_SRC
 ** Shell
 
 #+BEGIN_SRC emacs-lisp
@@ -1077,26 +1129,26 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package web-mode
-  :ensure t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (setq web-mode-enable-css-colorization t)
-  (setq web-mode-enable-current-element-highlight t)
-  (set-face-attribute 'web-mode-current-element-highlight-face nil
-		      :weight 'bold
-		      :background "#665c54")
-  )
+  (use-package web-mode
+    :ensure t
+    :mode (("\\.html?\\'" . web-mode))
+    :config
+    (setq web-mode-enable-css-colorization t)
+    (setq web-mode-enable-current-element-highlight t)
+    (set-face-attribute 'web-mode-current-element-highlight-face nil
+			:weight 'bold
+			:background "#665c54")
+    )
 
-(use-package web-beautify
-  :ensure t
-  :config
-  (eval-after-load 'web-mode
-    '(define-key web-mode-map (kbd "C-c b") 'web-beautify-html))
-  (eval-after-load 'css-mode
-    '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
+  (use-package web-beautify
+    :ensure t
+    :config
+    (eval-after-load 'web-mode
+      '(define-key web-mode-map (kbd "C-c b") 'web-beautify-html))
+    (eval-after-load 'css-mode
+      '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
 
-  )
+    )
 
 #+END_SRC
 ** GNUplot
@@ -1104,12 +1156,10 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 
 
 #+BEGIN_SRC emacs-lisp
+
   (use-package gnuplot-mode
     :ensure t
-    :config
-    ;; automatically open files ending with .gp or .gnuplot in gnuplot mode
-    (setq auto-mode-alist 
-	  (append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))    
+    :mode ("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)
     )
 
 #+END_SRC
@@ -1120,9 +1170,8 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 #+BEGIN_SRC emacs-lisp
   (use-package plantuml-mode
     :ensure t
+    :mode ("\\.plantuml\\'" . plantuml-mode)
     :config
-    ;; Recognize plantuml files
-    (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
     ;; Path to jar file, remember to put it in the right folder
     (setq plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
     ;; Add to org-plantuml
@@ -1139,41 +1188,6 @@ Settings in this section are not yet organized but are being used, mostly for te
 #+BEGIN_SRC emacs-lisp
   (use-package helpful
     :ensure t)
-#+END_SRC
-** Ibuffer
-Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buffers much in the same manner as Dired.
-#+BEGIN_SRC emacs-lisp
- (use-package ibuffer
-   :ensure t
-   :config
-   (setq ibuffer-saved-filter-groups
-	 (quote (("Default"
-		  ("Dired" (mode . dired-mode))
-		  ("Org" (name . "^.*org$"))
-		  ("Process" (or (mode . inferior-ess-mode)
-				 (mode . shell-mode)))
-		  ("Programming" (or
-				  (mode . ess-mode)
-				  (mode . python-mode)
-				  (mode . c++-mode)))
-		  ("Helm" (mode . Hmm-mode))
-		  ("Emacs" (or
-			    (name . "^\\*scratch\\*$")
-			    (name . "^\\*Messages\\*$")
-			    (name . "^\\*dashboard\\*$")))
-		  ))))
-   
-   (add-hook 'ibuffer-mode-hook
-	     (lambda ()
-	       (ibuffer-auto-mode 1)
-	       (ibuffer-switch-to-saved-filter-groups "default")))
-
-   ;; Don't show filter groups if there are no buffers in that group
-   (setq ibuffer-show-empty-filter-groups nil)
-
-   :bind
-   ("C-x C-b" . ibuffer))
-
 #+END_SRC
 ** SUSPENDED Evil
 [[https://github.com/emacs-evil/evil][Evil]] is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions.
