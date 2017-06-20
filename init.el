@@ -380,7 +380,6 @@ arg lines up."
 
   (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
 	helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source	.	
-	helm-ff-(save-excursion )arch-library-in-sexp        t ; search for library in `require' and `declare-function' sexp		.	
 	helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
 	helm-ff-file-name-history-use-recentf t
 	helm-echo-input-in-header-line t 
@@ -923,6 +922,21 @@ arg lines up."
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
+(use-package highlight-defined
+   :ensure t
+   :config
+   (add-hook 'emacs-lisp-mode-hook 'highlight-defined-mode)
+;;     (set-face-attribute 'highlight-defined-builtin-function-name-face nil
+;; 			:inherit 'font-lock-builtin-face)
+    )
+ 
+ (use-package highlight-quoted
+   :ensure t
+   :config
+   (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode)
+   (set-face-attribute 'highlight-quoted-symbol nil
+		       :inherit 'font-lock-string-face))
+
 (use-package shx
   :ensure t
   :init
@@ -953,11 +967,10 @@ arg lines up."
 (use-package web-beautify
   :ensure t
   :config
-  (eval-after-load 'web-mode
-    '(define-key web-mode-map (kbd "C-c b") 'web-beautify-html))
-  (eval-after-load 'css-mode
-    '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
-
+  :bind (:map web-mode-map
+	      ("C-c b" . web-beautify-html)
+	 :map css-mode-map
+	      ("C-c b". web-beautify-css))
   )
 
 (use-package gnuplot-mode
