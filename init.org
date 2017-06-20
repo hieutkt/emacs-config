@@ -1,4 +1,4 @@
-#+TITLE: Emacs Configuration
+q#+TITLE: Emacs Configuration
 #+AUTHOR: Nguyễn Đức Hiếu
 #+STARTUP: content
 #+OPTIONS: num:3 ^:nil toc:nil
@@ -35,9 +35,13 @@ The whole thing is driven by the following =.emacs=
   ;; Use use-package to reduce load time
   (eval-when-compile
     (require 'use-package))
+  (use-package use-package-chords
+    :ensure t
+    :config (key-chord-mode 1))
   (require 'diminish)                ;; if you use :diminish
   (require 'bind-key)                ;; if you use any :bind variant
-  
+  (require 'key-chord)
+
   ;; Requice common-lisp library
   (require 'cl-lib)
 
@@ -222,6 +226,7 @@ The whole thing is driven by the following =.emacs=
 	(er/contract-region 0)))
     :bind 
     ("C-'" . er/expand-region)
+    :chords ("??" . mc/mark-all-like-this)
     )
 
   ;; Multi-cursor
@@ -430,20 +435,6 @@ Company is a completion mechanism that is very flexible
 
 #+END_SRC
 
-** Key Chord
-Im currently testing this for command that is too good but lack a good keybinding
-May combind this with yasnippet
-
-#+BEGIN_SRC emacs-lisp
-  
-  (use-package key-chord
-    :ensure t
-    :init
-    (key-chord-define-global "??" 'mc/mark-all-like-this)
-    (key-chord-mode +1)
-    )
-
-#+END_SRC
 
 ** Helm
 #+BEGIN_SRC emacs-lisp
@@ -486,8 +477,9 @@ May combind this with yasnippet
  	   )
     :diminish helm-mode
     )
+
   
-  
+  (setq helm-full-frame nil)
   ;; Use "C-:" to switch to Helm interface during company-ing
   (use-package helm-company
     :ensure t
@@ -521,6 +513,29 @@ May combind this with yasnippet
 	       )
     )
 
+  (helm-autoresize-mode t)
+
+
+#+end_SRC
+
+** Projectile
+
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-global-mode)
+    (setq projectile-completion-system 'helm)
+    )
+
+  ;; Helm-projectile
+  (use-package helm-projectile
+    :ensure t
+    :config 
+    (helm-projectile-on))
+
+
+  
 #+END_SRC
 
 ** Polymode
@@ -656,7 +671,7 @@ Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
     (setq dired-listing-switches "-alh")
     )
 #+END_SRC
-** Ag and Wgrfpep
+** Ag and Wgrep
 Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/latest/][(Documentation)]]
 
 #+BEGIN_SRC emacs-lisp
@@ -849,7 +864,7 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
     :config
     (require 'ess-site)
     (require 'ess-rutils)
-    (require 'ess-eldoc)  
+    (require 'ess-eldoc)
     )
 
 
@@ -910,6 +925,8 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
   ;; 	  ("print(%s)")
   ;; 	  ("summary(%s, maxsum = 20)")))
 
+  (define-key ess-doc-map (kbd "C-r") 'ess-rdired)
+  (define-key ess-doc-map (kbd "r") 'ess-rdired)
 
   ;; Returm C-c h as prefix to Helm"
   (defun ess-map-control-h-to-helm ()
@@ -1215,3 +1232,18 @@ Currently disabled, I will test this later when I'm more familiar with emacs.
 
 #+END_SRC
 
+** Quick searching in buffer
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package helm-swoop
+    :ensure t
+    :bind (:map helm-command-map
+	   ("s" . helm-swoop))
+    :init
+    :config
+    ;; Face name is `helm-swoop-line-number-face`
+    (setq helm-swoop-use-line-number-face t)
+    )
+
+#+END_SRC

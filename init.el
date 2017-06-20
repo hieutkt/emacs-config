@@ -11,8 +11,12 @@
 ;; Use use-package to reduce load time
 (eval-when-compile
   (require 'use-package))
+(use-package use-package-chords
+  :ensure t
+  :config (key-chord-mode 1))
 (require 'diminish)                ;; if you use :diminish
 (require 'bind-key)                ;; if you use any :bind variant
+(require 'key-chord)
 
 ;; Requice common-lisp library
 (require 'cl-lib)
@@ -176,6 +180,7 @@ Version 2016-10-25"
       (er/contract-region 0)))
   :bind 
   ("C-'" . er/expand-region)
+  :chords ("??" . mc/mark-all-like-this)
   )
 
 ;; Multi-cursor
@@ -364,13 +369,6 @@ arg lines up."
 ;; With backquote warnings:
 ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
 
-(use-package key-chord
-  :ensure t
-  :init
-  (key-chord-define-global "??" 'mc/mark-all-like-this)
-  (key-chord-mode +1)
-  )
-
 (use-package helm
   :ensure t
   :init
@@ -411,6 +409,7 @@ arg lines up."
   )
 
 
+(setq helm-full-frame nil)
 ;; Use "C-:" to switch to Helm interface during company-ing
 (use-package helm-company
   :ensure t
@@ -443,6 +442,21 @@ arg lines up."
 	     ("b" . helm-bibtex)
 	     )
   )
+
+(helm-autoresize-mode t)
+
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-global-mode)
+  (setq projectile-completion-system 'helm)
+  )
+
+;; Helm-projectile
+(use-package helm-projectile
+  :ensure t
+  :config 
+  (helm-projectile-on))
 
 (use-package polymode
   :ensure t
@@ -690,7 +704,7 @@ arg lines up."
   :config
   (require 'ess-site)
   (require 'ess-rutils)
-  (require 'ess-eldoc)  
+  (require 'ess-eldoc)
   )
 
 ;; Truncate long lines
@@ -735,6 +749,8 @@ arg lines up."
 ;; 	  ("print(%s)")
 ;; 	  ("summary(%s, maxsum = 20)")))
 
+(define-key ess-doc-map (kbd "C-r") 'ess-rdired)
+(define-key ess-doc-map (kbd "r") 'ess-rdired)
 
 ;; Returm C-c h as prefix to Helm"
 (defun ess-map-control-h-to-helm ()
@@ -961,3 +977,13 @@ arg lines up."
 
 (use-package helpful
   :ensure t)
+
+(use-package helm-swoop
+  :ensure t
+  :bind (:map helm-command-map
+	 ("s" . helm-swoop))
+  :init
+  :config
+  ;; Face name is `helm-swoop-line-number-face`
+  (setq helm-swoop-use-line-number-face t)
+  )
