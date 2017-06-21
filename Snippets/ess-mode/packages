@@ -2,5 +2,5 @@
 # name: packages
 # key: pkgs
 # --
-pkgs <- c($1)
+pkgs <- c(${1:"readr", "dplyr", "tidyr"})
 sapply(pkgs, require, character.only = TRUE)

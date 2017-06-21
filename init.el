@@ -316,12 +316,18 @@ arg lines up."
   (add-to-list 'company-backends 'company-math-symbols-unicode)
   )
 
+(use-package company-quickhelp
+  :ensure t
+  :config
+  (company-quickhelp-mode 1)
+  (setq company-quickhelp-delay 1)
+  (set-face-attribute 'company-tooltip-annotation nil :foreground "#504945")
+  (setq company-quickhelp-color-background "#f9f5d7")
+  (setq company-quickhelp-color-foreground "#1d2021")
+  )
 
 ;; Quick help show up in a popup
 ;; (company-quickhelp-mode 1)
-;; (setq company-quickhelp-delay nil)(set-face-attribute 'company-tooltip-annotation nil :foreground "#504945")
-;; (setq company-quickhelp-color-background "#f9f5d7")
-;; (setq company-quickhelp-color-foreground "#1d2021")
 
 ;; (eval-after-load 'company
 ;; '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
@@ -332,6 +338,10 @@ arg lines up."
   (setq electric-operator-R-named-argument-style 'spaced)
   (add-hook 'ess-mode-hook #'electric-operator-mode)
   (add-hook 'python-mode-hook #'electric-operator-mode)
+
+  (electric-operator-add-rules-for-mode 'ess-mode
+					(cons ":=" " := ")
+					(cons "%in%" " %in% "))
   )
 
 ;; Enable Yasnippets
@@ -574,7 +584,7 @@ arg lines up."
 		      :foreground "#fabd2f")
 
   ;; Set ag to reuse the same buffer
-  (setq ag-reuse-buffers 't)
+  (setq ag-reuse-buffers nil)
   )
 
 
@@ -704,6 +714,7 @@ arg lines up."
   (require 'ess-site)
   (require 'ess-rutils)
   (require 'ess-eldoc)
+  (require 'ess-help)
   )
 
 ;; Truncate long lines
@@ -722,7 +733,7 @@ arg lines up."
 
 ;; ESS syntax highlight  
 (setq ess-R-font-lock-keywords 
-      '((ess-R-fl-keyword:modifiers . t)
+      '((ess-R-fl-keyword:modifiers . nil)
 	(ess-R-fl-keyword:fun-defs . t)
 	(ess-R-fl-keyword:keywords . t)
 	(ess-R-fl-keyword:assign-ops . t)
@@ -738,6 +749,9 @@ arg lines up."
       )
 
 (set-face-attribute 'ess-numbers-face nil :foreground "#8ec07c")
+
+;; Disable IDO so helm is used instead
+(setq ess-use-ido nil)
 
 (setq ess-use-company 'script-only)
 (setq ess-tab-complete-in-script t)	;; Press <tab> inside functions for completions
@@ -826,6 +840,7 @@ arg lines up."
 (define-key polymode-mode-map "\M-nr" 'ess-rshiny)
 
 (setq python-shell-interpreter "ipython3")
+(setq python-shell-interpreter-args "--pprint")
 
 (use-package elpy
   :ensure t
@@ -833,7 +848,9 @@ arg lines up."
   ;; Enable company
   (add-hook 'python-mode-hook 'company-mode)
   (add-hook 'inferior-python-mode-hook 'company-mode)
-
+  ;; Enable highlight indentation
+  (add-hook 'highlight-indentation-mode-hook 
+	    'highlight-indentation-current-column-mode)
   ;; Enable elpy
   (elpy-enable)
   :config
@@ -923,19 +940,17 @@ arg lines up."
   :init (setq markdown-command "multimarkdown"))
 
 (use-package highlight-defined
-   :ensure t
-   :config
-   (add-hook 'emacs-lisp-mode-hook 'highlight-defined-mode)
-;;     (set-face-attribute 'highlight-defined-builtin-function-name-face nil
-;; 			:inherit 'font-lock-builtin-face)
-    )
- 
- (use-package highlight-quoted
-   :ensure t
-   :config
-   (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode)
-   (set-face-attribute 'highlight-quoted-symbol nil
-		       :inherit 'font-lock-string-face))
+  :ensure t
+  :config
+  (add-hook 'emacs-lisp-mode-hook 'highlight-defined-mode)
+   )
+
+(use-package highlight-quoted
+  :ensure t
+  :config
+  (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode)
+  (set-face-attribute 'highlight-quoted-symbol nil
+		      :inherit 'font-lock-string-face))
 
 (use-package shx
   :ensure t
@@ -993,10 +1008,14 @@ arg lines up."
 
 (use-package helm-swoop
   :ensure t
-  :bind (:map helm-command-map
-	 ("s" . helm-swoop))
+  :bind ([remap isearch-forward] . helm-swoop)
   :init
   :config
   ;; Face name is `helm-swoop-line-number-face`
-  (setq helm-swoop-use-line-number-face t)
-  )
+  (setq-default
+   helm-swoop-use-line-number-face t
+   helm-swoop-move-to-line-cycle nil)
+  (set-face-attribute 'helm-swoop-target-word-face nil
+		      :background 'unspecified
+		      :foreground 'unspecified
+		      :inherit 'isearch))

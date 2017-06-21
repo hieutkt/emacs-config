@@ -324,7 +324,7 @@ Company is a completion mechanism that is very flexible
     :init
     ;; Activate globally
     (add-hook 'after-init-hook 'global-company-mode)
-
+   
     ;; Press <F1> to show the documentation buffer and press C-<F1> to jump to it
     (defun my/company-show-doc-buffer ()
       "Temporarily show the documentation buffer for the selection."
@@ -370,12 +370,18 @@ Company is a completion mechanism that is very flexible
     (add-to-list 'company-backends 'company-math-symbols-unicode)
     )
   
+  (use-package company-quickhelp
+    :ensure t
+    :config
+    (company-quickhelp-mode 1)
+    (setq company-quickhelp-delay 1)
+    (set-face-attribute 'company-tooltip-annotation nil :foreground "#504945")
+    (setq company-quickhelp-color-background "#f9f5d7")
+    (setq company-quickhelp-color-foreground "#1d2021")
+    )
   
   ;; Quick help show up in a popup
   ;; (company-quickhelp-mode 1)
-  ;; (setq company-quickhelp-delay nil)(set-face-attribute 'company-tooltip-annotation nil :foreground "#504945")
-  ;; (setq company-quickhelp-color-background "#f9f5d7")
-  ;; (setq company-quickhelp-color-foreground "#1d2021")
 
   ;; (eval-after-load 'company
   ;; '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
@@ -391,6 +397,10 @@ Company is a completion mechanism that is very flexible
     (setq electric-operator-R-named-argument-style 'spaced)
     (add-hook 'ess-mode-hook #'electric-operator-mode)
     (add-hook 'python-mode-hook #'electric-operator-mode)
+    
+    (electric-operator-add-rules-for-mode 'ess-mode
+					  (cons ":=" " := ")
+					  (cons "%in%" " %in% "))
     )
 
 #+END_SRC
@@ -688,7 +698,7 @@ Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/
 			:foreground "#fabd2f")
 
     ;; Set ag to reuse the same buffer
-    (setq ag-reuse-buffers 't)
+    (setq ag-reuse-buffers nil)
     )
   
 
@@ -863,6 +873,7 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
     (require 'ess-site)
     (require 'ess-rutils)
     (require 'ess-eldoc)
+    (require 'ess-help)
     )
 
 
@@ -887,7 +898,7 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 
   ;; ESS syntax highlight  
   (setq ess-R-font-lock-keywords 
-	'((ess-R-fl-keyword:modifiers . t)
+	'((ess-R-fl-keyword:modifiers . nil)
 	  (ess-R-fl-keyword:fun-defs . t)
 	  (ess-R-fl-keyword:keywords . t)
 	  (ess-R-fl-keyword:assign-ops . t)
@@ -904,6 +915,8 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
   
   (set-face-attribute 'ess-numbers-face nil :foreground "#8ec07c")
 
+  ;; Disable IDO so helm is used instead
+  (setq ess-use-ido nil)
 
 #+END_SRC
 *** Code completion
@@ -1007,6 +1020,7 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 #+BEGIN_SRC emacs-lisp
   
   (setq python-shell-interpreter "ipython3")
+  (setq python-shell-interpreter-args "--pprint")
 
   (use-package elpy
     :ensure t
@@ -1014,7 +1028,9 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
     ;; Enable company
     (add-hook 'python-mode-hook 'company-mode)
     (add-hook 'inferior-python-mode-hook 'company-mode)
-    
+    ;; Enable highlight indentation
+    (add-hook 'highlight-indentation-mode-hook 
+	      'highlight-indentation-current-column-mode)
     ;; Enable elpy
     (elpy-enable)
     :config
@@ -1126,8 +1142,6 @@ Customisation to emacs-lisp itself, this is mainly highlighting
    :ensure t
    :config
    (add-hook 'emacs-lisp-mode-hook 'highlight-defined-mode)
-;;     (set-face-attribute 'highlight-defined-builtin-function-name-face nil
-;; 			:inherit 'font-lock-builtin-face)
     )
  
  (use-package highlight-quoted
@@ -1255,12 +1269,16 @@ Currently disabled, I will test this later when I'm more familiar with emacs.
 
   (use-package helm-swoop
     :ensure t
-    :bind (:map helm-command-map
-	   ("s" . helm-swoop))
+    :bind ([remap isearch-forward] . helm-swoop)
     :init
     :config
     ;; Face name is `helm-swoop-line-number-face`
-    (setq helm-swoop-use-line-number-face t)
-    )
+    (setq-default
+     helm-swoop-use-line-number-face t
+     helm-swoop-move-to-line-cycle nil)
+    (set-face-attribute 'helm-swoop-target-word-face nil
+			:background 'unspecified
+			:foreground 'unspecified
+			:inherit 'isearch))
 
 #+END_SRC
