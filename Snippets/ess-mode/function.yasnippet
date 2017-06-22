@@ -1,8 +1,5 @@
 # -*- mode: snippet -*-
-# name: FUNC <- function(...) { ... }
-# key: func
-# contributor: jrnold <jeffrey.arnold@gmail.com>
+# name: function(...) { ... }
+# key: fun
 # --
-${1:name} <- function(${2:args}) {
-`yas/selected-text`$0
-}
+function (${1:args}) {`yas/selected-text`$2}$0

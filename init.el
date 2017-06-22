@@ -143,33 +143,6 @@
 ;; Bound undo to C-z
 (global-set-key (kbd "C-z") 'undo)
 
-;; Comment Do-What-I-Mean
-(defun comment-dwim-mod ()	       	
-  "Like `comment-dwim', but toggle comment if cursor is not at end of line.
-URL `http://ergoemacs.org/emacs/emacs_toggle_comment_by_line.html'
-Version 2016-10-25"
-  (interactive)
-  (if (region-active-p)
-    (comment-dwim nil)
-    (let ((-lbp (line-beginning-position))
-  	  (-lep (line-end-position)))
-      (if (eq -lbp -lep)
-  	  (progn
-  	    (comment-dwim nil))
-  	(if (eq (point) -lep)
-  	    (progn
-  	      (comment-dwim nil))
-  	  (progn
-  	    (comment-or-uncomment-region -lbp -lep)
-  	    (forward-line )))))))
-
-(global-set-key (kbd "M-;") 'comment-dwim-mod) 
-
-;; Bind comment-line to C-;
-(global-set-key (kbd "C-;") 'comment-line)
-
-;; Set comment style
-(setq comment-style "plain")
 
 ;; Expand region with C-' and return to original position with C-g
 (use-package expand-region
@@ -180,7 +153,6 @@ Version 2016-10-25"
       (er/contract-region 0)))
   :bind 
   ("C-'" . er/expand-region)
-  :chords ("??" . mc/mark-all-like-this)
   )
 
 ;; Multi-cursor
@@ -194,11 +166,13 @@ Version 2016-10-25"
 So you can fix the list for run-once and run-for-all multiple-cursors commands."
     (interactive)
     (find-file "~/.emacs.d/.mc-lists.el"))  
-  :bind
-  ("C-?" . mc/edit-lines)
-  ("C->" . mc/mark-next-like-this)
-  ("C-<" . mc/mark-previous-like-this)
-  ("C-S-n" . mc/insert-numbers)
+  ;; :bind
+  ;;; Testing to replace with hydra
+  ;; ("C-?" . mc/edit-lines)
+  ;; ("C->" . mc/mark-next-like-this)
+  ;; ("C-<" . mc/mark-previous-like-this)
+  ;; ("C-S-n" . mc/insert-numbers)
+  ;; :chords ("??" . mc/mark-all-like-this)
   )
 
 
@@ -257,13 +231,6 @@ arg lines up."
 
 (global-set-key [\M-up] 'move-text-up)
 (global-set-key [\M-down] 'move-text-down)
-
-;; Srink whitespace, simple but useful
-(use-package shrink-whitespace
-  :ensure t
-  :bind
-  ("C-SPC" . shrink-whitespace)
-  )
 
 (use-package company
   :ensure t
@@ -412,7 +379,7 @@ arg lines up."
  	 :map helm-map
  	 ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
  	 ("C-i" . helm-execute-persistent-action)   ; make TAB work in terminal
- 	 ("C-z" . helm-select-action)              ; list actions using C-z    
+ 	 ("M-x" . helm-select-action)              ; list actions using C-z    
  	 )
   :diminish helm-mode
   )
@@ -720,10 +687,10 @@ arg lines up."
 ;; Truncate long lines
 (add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
 (add-hook 'inferior-ess-mode-hook (lambda () (setq truncate-lines t)))
-
+(add-hook 'ess-mode-hook (lambda () (setq truncate-lines t)))
 
 ;; Indentation style
-(setq ess-default-style 'RStudio)
+(setq ess-default-style 'RRR)
 
 ;; Disable syntax highlight in inferior buffer
 (add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
@@ -845,6 +812,8 @@ arg lines up."
 (use-package elpy
   :ensure t
   :init
+  ;; Truncate long line in inferior mode
+  (add-hook 'inferior-python-mode-hook (lambda () (setq truncate-lines t)))
   ;; Enable company
   (add-hook 'python-mode-hook 'company-mode)
   (add-hook 'inferior-python-mode-hook 'company-mode)
@@ -1019,3 +988,44 @@ arg lines up."
 		      :background 'unspecified
 		      :foreground 'unspecified
 		      :inherit 'isearch))
+
+(use-package helm-rhythmbox
+  :ensure t
+  :bind 
+  (:map helm-command-map
+	("r" . helm-rhythmbox)))
+
+(use-package hydra
+  :ensure t)
+
+(defhydra multiple-cursors-hydra (:columns 3 :idle 1.0)
+"Multiple cursors"
+("l" mc/edit-lines "Edit lines in region" :exit t)
+("b" mc/edit-beginnings-of-lines "Edit beginnings of lines in region" :exit t)
+("e" mc/edit-ends-of-lines "Edit ends of lines in region" :exit t)
+("a" mc/mark-all-like-this "Mark all like this" :exit t)
+("S" mc/mark-all-symbols-like-this "Mark all symbols likes this" :exit t)
+("w" mc/mark-all-words-like-this "Mark all words like this" :exit t)
+("r" mc/mark-all-in-region "Mark all in region" :exit t)
+("R" mc/mark-all-in-region-regexp "Mark all in region (regexp)" :exit t)
+("i" (lambda (n) 
+       (interactive "nInsert initial number:") 
+       (mc/insert-numbers n)) 
+ "Insert numbers" :exit t)
+("s" mc/sort-regions "Sort regions")
+("v" mc/reverse-regions "Reverse order")
+("d" mc/mark-all-dwim "Mark all dwim")
+("n" mc/mark-next-like-this "Mark next like this")
+("N" mc/skip-to-next-like-this "Skip to next like this")
+("M-n" mc/unmark-next-like-this "Unmark next like this")
+("p" mc/mark-previous-like-this "Mark previous like this")
+("P" mc/skip-to-previous-like-this "Skip to previous like this")
+("M-p" mc/unmark-previous-like-this "Unmark previous like this")
+("q" nil "Quit" :exit t))
+
+(global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
+
+(use-package org-table-sticky-header
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook 'org-table-sticky-header-mode))

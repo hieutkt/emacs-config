@@ -1,0 +1,6 @@
+# name: FUNC <- function(...) { ... }
+# key: def
+# --
+${1:name} <- function(${2:args}) {
+`yas/selected-text`$0
+}

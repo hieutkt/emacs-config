@@ -188,35 +188,8 @@ The whole thing is driven by the following =.emacs=
 
   ;; Bound undo to C-z
   (global-set-key (kbd "C-z") 'undo)
-  
-  ;; Comment Do-What-I-Mean
-  (defun comment-dwim-mod ()	       	
-    "Like `comment-dwim', but toggle comment if cursor is not at end of line.
-  URL `http://ergoemacs.org/emacs/emacs_toggle_comment_by_line.html'
-  Version 2016-10-25"
-    (interactive)
-    (if (region-active-p)
-      (comment-dwim nil)
-      (let ((-lbp (line-beginning-position))
-  	    (-lep (line-end-position)))
-  	(if (eq -lbp -lep)
-  	    (progn
-  	      (comment-dwim nil))
-  	  (if (eq (point) -lep)
-  	      (progn
-  		(comment-dwim nil))
-  	    (progn
-  	      (comment-or-uncomment-region -lbp -lep)
-  	      (forward-line )))))))
-  
-  (global-set-key (kbd "M-;") 'comment-dwim-mod) 
 
-  ;; Bind comment-line to C-;
-  (global-set-key (kbd "C-;") 'comment-line)
 
-  ;; Set comment style
-  (setq comment-style "plain")
-  
   ;; Expand region with C-' and return to original position with C-g
   (use-package expand-region
     :ensure t
@@ -226,7 +199,6 @@ The whole thing is driven by the following =.emacs=
 	(er/contract-region 0)))
     :bind 
     ("C-'" . er/expand-region)
-    :chords ("??" . mc/mark-all-like-this)
     )
 
   ;; Multi-cursor
@@ -240,15 +212,17 @@ The whole thing is driven by the following =.emacs=
   So you can fix the list for run-once and run-for-all multiple-cursors commands."
       (interactive)
       (find-file "~/.emacs.d/.mc-lists.el"))  
-    :bind
-    ("C-?" . mc/edit-lines)
-    ("C->" . mc/mark-next-like-this)
-    ("C-<" . mc/mark-previous-like-this)
-    ("C-S-n" . mc/insert-numbers)
+    ;; :bind
+    ;;; Testing to replace with hydra
+    ;; ("C-?" . mc/edit-lines)
+    ;; ("C->" . mc/mark-next-like-this)
+    ;; ("C-<" . mc/mark-previous-like-this)
+    ;; ("C-S-n" . mc/insert-numbers)
+    ;; :chords ("??" . mc/mark-all-like-this)
     )
-  
-  
-  
+
+
+
 
   ;; Define function: fill character to 80
   (defun fill-to-end (char)
@@ -288,29 +262,22 @@ The whole thing is driven by the following =.emacs=
 	(when (or (< arg 0) (not (eobp)))
 	  (transpose-lines arg))
 	(forward-line -1)))))
-  
+
   (defun move-text-down (arg)
     "Move region (transient-mark-mode active) or current line
   arg lines down."
     (interactive "*p")
     (move-text-internal arg))
-  
+
   (defun move-text-up (arg)
     "Move region (transient-mark-mode active) or current line
   arg lines up."
     (interactive "*p")
     (move-text-internal (- arg)))
-  
+
   (global-set-key [\M-up] 'move-text-up)
   (global-set-key [\M-down] 'move-text-down)
-  
-  ;; Srink whitespace, simple but useful
-  (use-package shrink-whitespace
-    :ensure t
-    :bind
-    ("C-SPC" . shrink-whitespace)
-    )
-  
+
 
 #+END_SRC
 
@@ -481,7 +448,7 @@ Company is a completion mechanism that is very flexible
  	   :map helm-map
  	   ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
  	   ("C-i" . helm-execute-persistent-action)   ; make TAB work in terminal
- 	   ("C-z" . helm-select-action)              ; list actions using C-z    
+ 	   ("M-x" . helm-select-action)              ; list actions using C-z    
  	   )
     :diminish helm-mode
     )
@@ -885,10 +852,10 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
   ;; Truncate long lines
   (add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
   (add-hook 'inferior-ess-mode-hook (lambda () (setq truncate-lines t)))
-
+  (add-hook 'ess-mode-hook (lambda () (setq truncate-lines t)))
 
   ;; Indentation style
-  (setq ess-default-style 'RStudio)
+  (setq ess-default-style 'RRR)
 
   ;; Disable syntax highlight in inferior buffer
   (add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
@@ -1025,6 +992,8 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
   (use-package elpy
     :ensure t
     :init
+    ;; Truncate long line in inferior mode
+    (add-hook 'inferior-python-mode-hook (lambda () (setq truncate-lines t)))
     ;; Enable company
     (add-hook 'python-mode-hook 'company-mode)
     (add-hook 'inferior-python-mode-hook 'company-mode)
@@ -1280,5 +1249,158 @@ Currently disabled, I will test this later when I'm more familiar with emacs.
 			:background 'unspecified
 			:foreground 'unspecified
 			:inherit 'isearch))
+
+#+END_SRC
+** Helm-rhythmbox
+
+#+BEGIN_SRC emacs-lisp
+  
+  (use-package helm-rhythmbox
+    :ensure t
+    :bind 
+    (:map helm-command-map
+	  ("r" . helm-rhythmbox)))
+
+#+END_SRC
+** Hydra
+[[https://github.com/abo-abo/hydra][Hydra]] is an interesting packages and I will spend time testing around with it.
+
+The following hydras are draft
+#+BEGIN_SRC emacs-lisp :tangle no
+
+  
+  (defhydra hydra-projectile (:color teal
+				     :hint nil)
+    "
+     PROJECTILE: %(projectile-project-root)
+
+     Find File            Search/Tags          Buffers                Cache
+  ------------------------------------------------------------------------------------------
+_s-f_: file            _a_: ag                _i_: Ibuffer           _c_: cache clear
+ _ff_: file dwim       _g_: update gtags      _b_: switch to buffer  _x_: remove known project
+ _fd_: file curr dir   _o_: multi-occur     _s-k_: Kill all buffers  _X_: cleanup non-existing
+  _r_: recent file                                               ^^^^_z_: cache current
+  _d_: dir
+
+  "
+    ("a"   projectile-ag)
+    ("b"   projectile-switch-to-buffer)
+    ("c"   projectile-invalidate-cache)
+    ("d"   projectile-find-dir)
+    ("s-f" projectile-find-file)
+    ("ff"  projectile-find-file-dwim)
+    ("fd"  projectile-find-file-in-directory)
+    ("g"   ggtags-update-tags)
+    ("s-g" ggtags-update-tags)
+    ("i"   projectile-ibuffer)
+    ("K"   projectile-kill-buffers)
+    ("s-k" projectile-kill-buffers)
+    ("m"   projectile-multi-occur)
+    ("o"   projectile-multi-occur)
+    ("s-p" projectile-switch-project "switch project")
+    ("p"   projectile-switch-project)
+    ("s"   projectile-switch-project)
+    ("r"   projectile-recentf)
+    ("x"   projectile-remove-known-project)
+    ("X"   projectile-cleanup-known-projects)
+    ("z"   projectile-cache-current-file)
+    ("`"   hydra-projectile-other-window/body "other window")
+    ("q"   nil "cancel" :color blue))
+
+  (defhydra hydra-ag (:exit t
+			    :columns 2
+			    :idle 1.0)
+    "Ag Search"
+    ("c" helm-ag "Current directory")
+    ("d" (lambda ()
+	   (interactive)
+	   (let ((current-prefix-arg '(4)))
+	     (call-interactively 'helm-ag))) "Select directory")
+    ("D" helm-do-ag "Select directory (interactive)")
+    ("f" helm-ag-this-file "Current file")
+    ("F" helm-do-ag-this-file "Current file (interactive)")
+    ("p" helm-ag-project-root "Project")
+    ("b" helm-ag-buffers "Buffers")
+    ("B" helm-do-ag-buffers "Buffers (interactive)"))
+
+
+  (global-set-key
+   (kbd "C-n")
+   (defhydra hydra-move
+     (:body-pre (next-line))
+     "move"
+     ("n" next-line)
+     ("p" previous-line)
+     ("f" forward-char)
+     ("b" backward-char)
+     ("a" beginning-of-line)
+     ("e" move-end-of-line)
+     ("v" scroll-up-command)
+     ;; Converting M-v to V here by analogy.
+     ("V" scroll-down-command)
+     ("l" recenter-top-bottom)
+     ("q" nil "cancel")))
+
+
+  ;; Multiple cursor
+  (defhydra cqql-multiple-cursors-hydra (:hint nil)
+    "
+     ^Up^            ^Down^        ^Miscellaneous^
+  ----------------------------------------------
+  [_p_]   Next :tangle no    [_n_]   Next :tangle no    [_l_] Edit lines
+  [_P_]   Skip    [_N_]   Skip    [_a_] Mark all
+  [_M-p_] Unmark  [_M-n_] Unmark  [_q_] Quit"
+    ("l" mc/edit-lines :exit t)
+    ("a" mc/mark-all-like-this :exit t)
+    ("n" mc/mark-next-like-this)
+    ("N" mc/skip-to-next-like-this)
+    ("M-n" mc/unmark-next-like-this)
+    ("p" mc/mark-previous-like-this)
+    ("P" mc/skip-to-previous-like-this)
+    ("M-p" mc/unmark-previous-like-this)
+    ("q" nil))
+
+#+END_SRC
+
+Hydras that are being tested:
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package hydra
+    :ensure t)
+
+  (defhydra multiple-cursors-hydra (:columns 3 :idle 1.0)
+  "Multiple cursors"
+  ("l" mc/edit-lines "Edit lines in region" :exit t)
+  ("b" mc/edit-beginnings-of-lines "Edit beginnings of lines in region" :exit t)
+  ("e" mc/edit-ends-of-lines "Edit ends of lines in region" :exit t)
+  ("a" mc/mark-all-like-this "Mark all like this" :exit t)
+  ("S" mc/mark-all-symbols-like-this "Mark all symbols likes this" :exit t)
+  ("w" mc/mark-all-words-like-this "Mark all words like this" :exit t)
+  ("r" mc/mark-all-in-region "Mark all in region" :exit t)
+  ("R" mc/mark-all-in-region-regexp "Mark all in region (regexp)" :exit t)
+  ("i" (lambda (n) 
+	 (interactive "nInsert initial number:") 
+	 (mc/insert-numbers n)) 
+   "Insert numbers" :exit t)
+  ("s" mc/sort-regions "Sort regions")
+  ("v" mc/reverse-regions "Reverse order")
+  ("d" mc/mark-all-dwim "Mark all dwim")
+  ("n" mc/mark-next-like-this "Mark next like this")
+  ("N" mc/skip-to-next-like-this "Skip to next like this")
+  ("M-n" mc/unmark-next-like-this "Unmark next like this")
+  ("p" mc/mark-previous-like-this "Mark previous like this")
+  ("P" mc/skip-to-previous-like-this "Skip to previous like this")
+  ("M-p" mc/unmark-previous-like-this "Unmark previous like this")
+  ("q" nil "Quit" :exit t))
+
+  (global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
+#+END_SRC
+
+** Replace Helm with Ivy
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(setq ivy-use-virtual-buffers t)
+(setq ivy-count-format "(%d/%d) ")
 
 #+END_SRC
