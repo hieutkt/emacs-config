@@ -98,7 +98,11 @@
   :init
   (unicode-fonts-setup)
   :config
-  (set-frame-font "DejaVu Sans Mono 10" nil t))
+  (set-frame-font "Noto Mono 10" nil t))
+
+(set-face-attribute 'variable-pitch nil :family "Noto Sans")
+
+
 ;; Set themes
 (use-package gruvbox-theme
   :ensure t
@@ -825,6 +829,7 @@ arg lines up."
   :config
   ;; Do not enable elpy flymake for now
   (remove-hook 'elpy-modules 'elpy-module-flymake)
+  (remove-hook 'elpy-modules 'elpy-module-highlight-indentation)
 
   ;; Use python3
   (elpy-use-ipython "ipython3")
@@ -906,7 +911,8 @@ arg lines up."
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command "multimarkdown"))
+  :init (setq markdown-command "multimarkdown")
+  :config)
 
 (use-package highlight-defined
   :ensure t
