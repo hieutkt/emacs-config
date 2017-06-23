@@ -1024,8 +1024,3 @@ arg lines up."
 ("q" nil "Quit" :exit t))
 
 (global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
-
-(use-package org-table-sticky-header
-  :ensure t
-  :config
-  (add-hook 'org-mode-hook 'org-table-sticky-header-mode))
