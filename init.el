@@ -113,6 +113,13 @@
   (set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
   )
 
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+  (add-hook 'ess-mode-hook 'rainbow-delimiters-mode)
+  )
+
 ;; Ignore disabled command
 (setq disabled-command-function 'ignore)
 
