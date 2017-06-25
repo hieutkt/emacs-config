@@ -2,5 +2,8 @@
 # name: packages
 # key: pkgs
 # --
-pkgs <- c(${1:"readr", "dplyr", "tidyr"})
+pkgs <- c(${1:magrittr$$(when yas-moving-away-p
+		      (concat "\\""
+		      (replace-regexp-in-string "[[:space:]]*,[[:space:]]*" "\\", \\"" yas-text)
+		      "\\""))})
 sapply(pkgs, require, character.only = TRUE)

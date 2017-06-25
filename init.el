@@ -906,13 +906,21 @@ arg lines up."
   )
 
 (use-package markdown-mode
-  :ensure t
-  :commands (markdown-mode gfm-mode)
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command "multimarkdown")
-  :config)
+:ensure t
+:commands (markdown-mode gfm-mode)
+:mode (("README\\.md\\'" . gfm-mode)
+       ("\\.md\\'" . markdown-mode)
+       ("\\.markdown\\'" . markdown-mode))
+:init
+:config
+(defun markdown-insert-code-chunk (header) 
+  "Insert an code chunk in markdown mode. Necessary due to interactions between polymode and yas snippet" 
+  (interactive "sChunk header: ") 
+  (insert (concat "```{" header "}\n\n```")) 
+  (forward-line -1))
+:bind
+("C-c i" . markdown-insert-code-chunk)
+)
 
 (use-package highlight-defined
   :ensure t
