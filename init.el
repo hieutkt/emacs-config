@@ -107,8 +107,8 @@
 (use-package gruvbox-theme
   :ensure t
   :init
-  (load-theme 'gruvbox t)
   :config
+  (load-theme 'gruvbox-dark-hard t)
   (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
   (set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
   )
@@ -261,16 +261,6 @@ arg lines up."
   	company-minimum-prefix-length 2
   	company-tooltip-limit 10)
   ;; Make scroll bar more visible
-  (set-face-attribute 'company-scrollbar-bg nil :background "tan")
-  (set-face-attribute 'company-scrollbar-fg nil :background "darkred")
-  (set-face-attribute 'company-tooltip nil :background "#f9f5d7" :foreground "#1d2021")
-  (set-face-attribute 'company-tooltip-selection nil 
-		      :background "#b57614" :foreground "#1d2021" :weight 'bold)
-  (set-face-attribute 'company-tooltip-common nil :foreground "#458588" :weight 'bold :underline nil)
-  (set-face-attribute 'company-tooltip-common-selection nil :foreground "#f9f5d7" 
-		      :weight 'bold :underline nil)
-  (set-face-attribute 'company-preview-common nil
-		      :foreground "#1d2021" :background "#f9f5d7" :weight 'bold)
   :bind 
   (:map company-active-map
 	("C-<f1>" . my/company-show-doc-buffer)
@@ -550,9 +540,6 @@ arg lines up."
   :config
   ;; Add highlighting
   (setq ag-highlight-search t)
-  (set-face-attribute 'ag-match-face nil 
-		      :weight 'bold
-		      :foreground "#fabd2f")
 
   ;; Set ag to reuse the same buffer
   (setq ag-reuse-buffers nil)
