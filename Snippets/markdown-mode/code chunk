@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: code chunk
+# key: {
+# --
+`(markdown-insert-code-chunk yas-selected-text)`

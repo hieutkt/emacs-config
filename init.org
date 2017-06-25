@@ -1095,17 +1095,24 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 
 ** Markdown
 
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 
-(use-package markdown-mode
+  (use-package markdown-mode
   :ensure t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command "multimarkdown")
-  :config)
-
+  :init
+  :config
+  (defun markdown-insert-code-chunk (header) 
+    "Insert an code chunk in markdown mode. Necessary due to interactions between polymode and yas snippet" 
+    (interactive "sChunk header: ") 
+    (insert (concat "```{" header "}\n\n```")) 
+    (forward-line -1))
+  :bind
+  ("C-c i" . markdown-insert-code-chunk)
+  )
 
 
 #+END_SRC
@@ -1242,19 +1249,10 @@ Currently disabled, I will test this later when I'm more familiar with emacs.
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package helm-swoop
+  (use-package swiper-helm
     :ensure t
-    :bind ([remap isearch-forward] . helm-swoop)
-    :init
-    :config
-    ;; Face name is `helm-swoop-line-number-face`
-    (setq-default
-     helm-swoop-use-line-number-face t
-     helm-swoop-move-to-line-cycle nil)
-    (set-face-attribute 'helm-swoop-target-word-face nil
-			:background 'unspecified
-			:foreground 'unspecified
-			:inherit 'isearch))
+    :bind ([remap isearch-forward] . swiper-helm)
+    )
 
 #+END_SRC
 ** Helm-rhythmbox

@@ -981,19 +981,10 @@ arg lines up."
 (use-package helpful
   :ensure t)
 
-(use-package helm-swoop
+(use-package swiper-helm
   :ensure t
-  :bind ([remap isearch-forward] . helm-swoop)
-  :init
-  :config
-  ;; Face name is `helm-swoop-line-number-face`
-  (setq-default
-   helm-swoop-use-line-number-face t
-   helm-swoop-move-to-line-cycle nil)
-  (set-face-attribute 'helm-swoop-target-word-face nil
-		      :background 'unspecified
-		      :foreground 'unspecified
-		      :inherit 'isearch))
+  :bind ([remap isearch-forward] . swiper-helm)
+  )
 
 (use-package helm-rhythmbox
   :ensure t
