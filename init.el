@@ -57,6 +57,9 @@
 ;; Set emacs as a client
 ;; (server-start)
 
+(use-package hydra
+  :ensure t)
+
 ;; Startup screen
 (use-package dashboard
   :ensure t
@@ -118,6 +121,16 @@
   :config
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'ess-mode-hook 'rainbow-delimiters-mode)
+  ;; Custom pallete
+  (custom-set-faces
+   '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
+   '(rainbow-delimiters-depth-2-face ((t (:foreground "Darkolivegreen3"))))
+   '(rainbow-delimiters-depth-3-face ((t (:foreground "IndianRed"))))
+   '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue"))))
+   '(rainbow-delimiters-depth-5-face ((t (:foreground "Gold"))))
+   '(rainbow-delimiters-depth-6-face ((t (:foreground "DeepPink"))))
+   '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
+   '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1")))))
   )
 
 ;; Ignore disabled command
@@ -166,6 +179,19 @@
   ("C-'" . er/expand-region)
   )
 
+
+
+(defhydra hydra-yank-pop ()
+  "yank"
+  ("C-y" yank nil)
+  ("M-y" yank-pop nil)
+  ("y" (yank-pop 1) "next")
+  ("Y" (yank-pop -1) "prev")
+  ("l" helm-show-kill-ring "list" :color blue))   ; or browse-kill-ring
+(global-set-key (kbd "M-y") #'hydra-yank-pop/yank-pop)
+(global-set-key (kbd "C-y") #'hydra-yank-pop/yank)
+
+
 ;; Multi-cursor
 (use-package multiple-cursors
   :ensure t
@@ -177,13 +203,33 @@
 So you can fix the list for run-once and run-for-all multiple-cursors commands."
     (interactive)
     (find-file "~/.emacs.d/.mc-lists.el"))  
-  ;; :bind
-  ;;; Testing to replace with hydra
-  ;; ("C-?" . mc/edit-lines)
-  ;; ("C->" . mc/mark-next-like-this)
-  ;; ("C-<" . mc/mark-previous-like-this)
-  ;; ("C-S-n" . mc/insert-numbers)
-  ;; :chords ("??" . mc/mark-all-like-this)
+  :config
+  (defhydra multiple-cursors-hydra (:columns 3 :idle 1.0)
+    "Multiple cursors"
+    ("l" mc/edit-lines "Edit lines in region" :exit t)
+    ("b" mc/edit-beginnings-of-lines "Edit beginnings of lines in region" :exit t)
+    ("e" mc/edit-ends-of-lines "Edit ends of lines in region" :exit t)
+    ("a" mc/mark-all-like-this "Mark all like this" :exit t)
+    ("S" mc/mark-all-symbols-like-this "Mark all symbols likes this" :exit t)
+    ("w" mc/mark-all-words-like-this "Mark all words like this" :exit t)
+    ("r" mc/mark-all-in-region "Mark all in region" :exit t)
+    ("R" mc/mark-all-in-region-regexp "Mark all in region (regexp)" :exit t)
+    ("i" (lambda (n) 
+	   (interactive "nInsert initial number:") 
+	   (mc/insert-numbers n)) 
+     "Insert numbers" :exit t)
+    ("s" mc/sort-regions "Sort regions")
+    ("v" mc/reverse-regions "Reverse order")
+    ("d" mc/mark-all-dwim "Mark all dwim")
+    ("n" mc/mark-next-like-this "Mark next like this")
+    ("N" mc/skip-to-next-like-this "Skip to next like this")
+    ("M-n" mc/unmark-next-like-this "Unmark next like this")
+    ("p" mc/mark-previous-like-this "Mark previous like this")
+    ("P" mc/skip-to-previous-like-this "Skip to previous like this")
+    ("M-p" mc/unmark-previous-like-this "Unmark previous like this")
+    ("q" nil "Quit" :exit t))
+
+  (global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
   )
 
 
@@ -376,7 +422,6 @@ arg lines up."
  	 ("C-x b" . helm-buffers-list)
  	 ("M-x" . helm-M-x)
  	 ("C-x C-f" . helm-find-files)
- 	 ("M-y" . helm-show-kill-ring)
  	 :map helm-map
  	 ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
  	 ("C-i" . helm-execute-persistent-action)   ; make TAB work in terminal
@@ -713,8 +758,8 @@ arg lines up."
 	)
       )
 
-(set-face-attribute 'ess-numbers-face nil :foreground "#8ec07c")
 
+(set-face-attribute 'ess-numbers-face nil :foreground "#8ec07c")
 ;; Disable IDO so helm is used instead
 (setq ess-use-ido nil)
 
@@ -993,33 +1038,3 @@ arg lines up."
   :bind 
   (:map helm-command-map
 	("r" . helm-rhythmbox)))
-
-(use-package hydra
-  :ensure t)
-
-(defhydra multiple-cursors-hydra (:columns 3 :idle 1.0)
-"Multiple cursors"
-("l" mc/edit-lines "Edit lines in region" :exit t)
-("b" mc/edit-beginnings-of-lines "Edit beginnings of lines in region" :exit t)
-("e" mc/edit-ends-of-lines "Edit ends of lines in region" :exit t)
-("a" mc/mark-all-like-this "Mark all like this" :exit t)
-("S" mc/mark-all-symbols-like-this "Mark all symbols likes this" :exit t)
-("w" mc/mark-all-words-like-this "Mark all words like this" :exit t)
-("r" mc/mark-all-in-region "Mark all in region" :exit t)
-("R" mc/mark-all-in-region-regexp "Mark all in region (regexp)" :exit t)
-("i" (lambda (n) 
-       (interactive "nInsert initial number:") 
-       (mc/insert-numbers n)) 
- "Insert numbers" :exit t)
-("s" mc/sort-regions "Sort regions")
-("v" mc/reverse-regions "Reverse order")
-("d" mc/mark-all-dwim "Mark all dwim")
-("n" mc/mark-next-like-this "Mark next like this")
-("N" mc/skip-to-next-like-this "Skip to next like this")
-("M-n" mc/unmark-next-like-this "Unmark next like this")
-("p" mc/mark-previous-like-this "Mark previous like this")
-("P" mc/skip-to-previous-like-this "Skip to previous like this")
-("M-p" mc/unmark-previous-like-this "Unmark previous like this")
-("q" nil "Quit" :exit t))
-
-(global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
