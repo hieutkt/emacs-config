@@ -180,18 +180,6 @@
   )
 
 
-
-(defhydra hydra-yank-pop ()
-  "yank"
-  ("C-y" yank nil)
-  ("M-y" yank-pop nil)
-  ("y" (yank-pop 1) "next")
-  ("Y" (yank-pop -1) "prev")
-  ("l" helm-show-kill-ring "list" :color blue))   ; or browse-kill-ring
-(global-set-key (kbd "M-y") #'hydra-yank-pop/yank-pop)
-(global-set-key (kbd "C-y") #'hydra-yank-pop/yank)
-
-
 ;; Multi-cursor
 (use-package multiple-cursors
   :ensure t
@@ -422,6 +410,7 @@ arg lines up."
  	 ("C-x b" . helm-buffers-list)
  	 ("M-x" . helm-M-x)
  	 ("C-x C-f" . helm-find-files)
+	 ("M-y" . helm-show-kill-ring)
  	 :map helm-map
  	 ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
  	 ("C-i" . helm-execute-persistent-action)   ; make TAB work in terminal
