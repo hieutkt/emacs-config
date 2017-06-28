@@ -606,6 +606,9 @@ arg lines up."
 ;; Auto indent normally
 (setq org-src-tab-acts-natively t)
 
+;; Hide emphasis markers
+(setq org-hide-emphasis-markers t)
+
 ;; Enable shift selection
 (setq org-support-shift-select t)
 
@@ -616,6 +619,10 @@ arg lines up."
 (set-face-attribute 'org-block nil :foreground "#ffffff")  
 (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
 (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
+
+(font-lock-add-keywords 'org-mode
+                      '(("^ +\\([-*]\\) "
+                         (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 ;; Org agenda folders
 (setq org-agenda-files '("/home/hieu/Dropbox/org"))
