@@ -137,6 +137,13 @@
    '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1")))))
   )
 
+  (use-package popup
+  :config
+  (set-face-attribute 'popup-tip-face nil 
+		      :foreground "#1d2021"
+		      :background "#f9f5d7")
+  )
+
 ;; Ignore disabled command
 (setq disabled-command-function 'ignore)
 
@@ -387,6 +394,7 @@ arg lines up."
 
 (use-package helm
   :ensure t
+  :diminish helm-mode
   :init
   (helm-mode 1)
   :config
@@ -475,6 +483,7 @@ arg lines up."
 
 (use-package polymode
   :ensure t
+  :diminish polymode-mode
   :init 
   (require 'poly-R)
   (require 'poly-markdown)
@@ -911,6 +920,31 @@ arg lines up."
 	     )
   )
 
+(use-package sql
+  :ensure t
+  :config
+  ;; Use a more friendly keyword face
+  (copy-face 'font-lock-keyword-face 'sql-keyword-face)
+  (set-face-attribute 'sql-keyword-face nil 
+		      :foreground "#fabd2f"
+		      :weight 'bold)
+  (add-hook 'sql-mode-hook (lambda ()
+			     (set (make-local-variable 'font-lock-keyword-face)
+				  'sql-keyword-face)))
+
+  )
+
+;; Upcase sql keywords
+(use-package sqlup-mode
+  :ensure t
+  :diminish sqlup-mode
+  :init
+  ;; Capitalize keywords in SQL mode
+  (add-hook 'sql-mode-hook 'sqlup-mode)
+  ;; Capitalize keywords in an interactive session (e.g. psql)
+  (add-hook 'sql-interactive-mode-hook 'sqlup-mode)
+  )
+
 (use-package tex 
   :ensure auctex)
 
@@ -1030,6 +1064,9 @@ arg lines up."
   :ensure t
   :config
   (add-hook 'text-mode-hook 'flyspell-mode)
+  (set-face-attribute 'flyspell-duplicate nil :underline "DeepPink")
+  (set-face-attribute 'flyspell-incorrect nil :underline "Red1")
+  :diminish flyspell-mode
   )
 
 (use-package ispell)
@@ -1037,8 +1074,29 @@ arg lines up."
 (use-package langtool
   :ensure t
   :config
+  ;; Set path to the Java tool
   (setq langtool-language-tool-jar 
 	"/home/hieu/Java/LanguageTool-3.8/languagetool-commandline.jar")
+  ;; Show messages as pop-up
+  (defun langtool-autoshow-detail-popup (overlays)
+    (when (require 'popup nil t)
+      (unless (or popup-instances
+		  (memq last-command '(keyboard-quit)))
+	(let ((msg (langtool-details-error-message overlays)))
+	  (popup-tip msg)))))
+  (setq langtool-autoshow-message-function
+	'langtool-autoshow-detail-popup)
+  )
+
+
+(use-package writegood-mode
+  :ensure t
+  :config
+  (set-face-attribute 'writegood-duplicates-face nil :underline "DeepPink")
+  (set-face-attribute 'writegood-passive-voice-face nil :underline "Cyan")
+  (set-face-attribute 'writegood-weasels-face nil :underline "DarkOrange")
+  (add-hook 'text-mode-hook 'writegood-mode)
+  :diminish writegood-mode
   )
 
 (use-package helpful
