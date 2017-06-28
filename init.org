@@ -1320,33 +1320,49 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
 
 #+BEGIN_SRC emacs-lisp
   
-  (use-package langtool
-    :ensure t
-    :config
-    ;; Set path to the Java tool
-    (setq langtool-language-tool-jar 
-	  "/home/hieu/Java/LanguageTool-3.8/languagetool-commandline.jar")
-    ;; Show messages as pop-up
-    (defun langtool-autoshow-detail-popup (overlays)
-      (when (require 'popup nil t)
-	(unless (or popup-instances
-		    (memq last-command '(keyboard-quit)))
-	  (let ((msg (langtool-details-error-message overlays)))
-	    (popup-tip msg)))))
-    (setq langtool-autoshow-message-function
-	  'langtool-autoshow-detail-popup)
-    )
+  ;; (use-package langtool
+  ;;   :ensure t
+  ;;   :config
+  ;;   ;; Set path to the Java tool
+  ;;   (setq langtool-language-tool-jar 
+  ;; 	  "/home/hieu/Java/LanguageTool-3.8/languagetool-commandline.jar")
+  ;;   ;; Show messages as pop-up
+  ;;   (defun langtool-autoshow-detail-popup (overlays)
+  ;;     (when (require 'popup nil t)
+  ;; 	(unless (or popup-instances
+  ;; 		    (memq last-command '(keyboard-quit)))
+  ;; 	  (let ((msg (langtool-details-error-message overlays)))
+  ;; 	    (popup-tip msg)))))
+  ;;   (setq langtool-autoshow-message-function
+  ;; 	  'langtool-autoshow-detail-popup)
+  ;;   )
 
 
-  (use-package writegood-mode
-    :ensure t
-    :config
-    (set-face-attribute 'writegood-duplicates-face nil :underline "DeepPink")
-    (set-face-attribute 'writegood-passive-voice-face nil :underline "Cyan")
-    (set-face-attribute 'writegood-weasels-face nil :underline "DarkOrange")
-    (add-hook 'text-mode-hook 'writegood-mode)
-    :diminish writegood-mode
-    )
+  ;; (use-package writegood-mode
+  ;;   :ensure t
+  ;;   :config
+  ;;   (set-face-attribute 'writegood-duplicates-face nil :underline "DeepPink")
+  ;;   (set-face-attribute 'writegood-passive-voice-face nil :underline "Cyan")
+  ;;   (set-face-attribute 'writegood-weasels-face nil :underline "DarkOrange")
+  ;;   (add-hook 'text-mode-hook 'writegood-mode)
+  ;;   :diminish writegood-mode
+  ;;   )
+
+
+  (use-package flycheck)
+  (flycheck-define-checker proselint
+    "A linter for prose."
+    :command ("proselint" source-inplace)
+    :error-patterns
+    ((warning line-start (file-name) ":" line ":" column ": "
+	      (id (one-or-more (not (any " "))))
+	      (message) line-end))
+    :modes (text-mode markdown-mode gfm-mode org-mode))
+
+  (add-to-list 'flycheck-checkers 'proselint)
+
+  (add-hook 'markdown-mode-hook 'flycheck-mode)
+  (add-hook 'text-mode-hook 'flycheck-mode)
 
 #+END_SRC
 
