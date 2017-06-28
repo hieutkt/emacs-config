@@ -69,6 +69,10 @@
   (setq dashboard-startup-banner 'logo)
   )
 
+;; Global truncate line, except in text-based modes
+(set-default 'truncate-lines t)
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+
 ;; Initialize Emacs full screen 
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 (global-set-key (kbd "<f11>") 'toggle-frame-maximized)
@@ -598,13 +602,16 @@ arg lines up."
   )
 
 ;; Word-wrap
-(add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
+;; (add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
 
 ;; Omit the headline-asterisks except the last one:
 (setq org-hide-leading-stars t)
 
 ;; Auto indent normally
 (setq org-src-tab-acts-natively t)
+
+;; Hide emphasis markers
+(setq org-hide-emphasis-markers t)
 
 ;; Enable shift selection
 (setq org-support-shift-select t)
@@ -616,6 +623,10 @@ arg lines up."
 (set-face-attribute 'org-block nil :foreground "#ffffff")  
 (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
 (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
+
+(font-lock-add-keywords 'org-mode
+                      '(("^ +\\([-*]\\) "
+                         (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 ;; Org agenda folders
 (setq org-agenda-files '("/home/hieu/Dropbox/org"))
@@ -716,13 +727,13 @@ arg lines up."
   (require 'ess-help)
   )
 
-;; Truncate long lines
-(add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
-(add-hook 'inferior-ess-mode-hook (lambda () (setq truncate-lines t)))
-(add-hook 'ess-mode-hook (lambda () (setq truncate-lines t)))
+;; ;; Truncate long lines
+;; (add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
+;; (add-hook 'inferior-ess-mode-hook (lambda () (setq truncate-lines t)))
+;; (add-hook 'ess-mode-hook (lambda () (setq truncate-lines t)))
 
-;; Indentation style
-(setq ess-default-style 'RRR)
+;; ;; Indentation style
+(setq ess-default-style 'DEFAULT)
 
 ;; Disable syntax highlight in inferior buffer
 (add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
@@ -1012,6 +1023,22 @@ arg lines up."
   (setq plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
   ;; Add to org-plantuml
   (setq org-plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
+  )
+
+;; Use flyspell for English spell-checking
+(use-package flyspell
+  :ensure t
+  :config
+  (add-hook 'text-mode-hook 'flyspell-mode)
+  )
+
+(use-package ispell)
+
+(use-package langtool
+  :ensure t
+  :config
+  (setq langtool-language-tool-jar 
+	"/home/hieu/Java/LanguageTool-3.8/languagetool-commandline.jar")
   )
 
 (use-package helpful

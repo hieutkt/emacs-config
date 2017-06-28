@@ -104,6 +104,10 @@ The whole thing is driven by the following =.emacs=
     (setq dashboard-startup-banner 'logo)
     )
   
+  ;; Global truncate line, except in text-based modes
+  (set-default 'truncate-lines t)
+  (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+
   ;; Initialize Emacs full screen 
   (add-to-list 'initial-frame-alist '(fullscreen . maximized))
   (global-set-key (kbd "<f11>") 'toggle-frame-maximized)
@@ -585,6 +589,7 @@ Make TAB the magical button that almost always do the right thing
 - If there is nothing to autocomplete and we're in a yasnippet placeholder, skip to the next placeholder.
 Probs to [[https://emacs.stackexchange.com/a/7925/15689][Kristóf Marussy]]
 
+
 #+BEGIN_SRC emacs-lisp
   (defun check-expansion ()
     (save-excursion
@@ -726,7 +731,7 @@ See [[http://orgmode.org/][here]].
 
 #+BEGIN_SRC emacs-lisp
   ;; Word-wrap
-  (add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
+  ;; (add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
 
   ;; Omit the headline-asterisks except the last one:
   (setq org-hide-leading-stars t)
@@ -893,13 +898,13 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 *** Appearance
 #+BEGIN_SRC emacs-lisp
 
-  ;; Truncate long lines
-  (add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
-  (add-hook 'inferior-ess-mode-hook (lambda () (setq truncate-lines t)))
-  (add-hook 'ess-mode-hook (lambda () (setq truncate-lines t)))
+  ;; ;; Truncate long lines
+  ;; (add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
+  ;; (add-hook 'inferior-ess-mode-hook (lambda () (setq truncate-lines t)))
+  ;; (add-hook 'ess-mode-hook (lambda () (setq truncate-lines t)))
 
-  ;; Indentation style
-  (setq ess-default-style 'RRR)
+  ;; ;; Indentation style
+  (setq ess-default-style 'DEFAULT)
 
   ;; Disable syntax highlight in inferior buffer
   (add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
@@ -1234,7 +1239,7 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 
 #+END_SRC
 
-** Plantuml
+** Plantuml=
 [[http://plantuml.com/][PlantUML]] is a component that allows to quickly write different kinds of diagrams
 
 #+BEGIN_SRC emacs-lisp
@@ -1246,6 +1251,38 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
     (setq plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
     ;; Add to org-plantuml
     (setq org-plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
+    )
+
+#+END_SRC
+
+* Writing
+This part of Emacs is mostly for text-derived modes, mainly for normal (English) text writings.
+
+** Spell checking
+
+
+#+BEGIN_SRC emacs-lisp
+  
+  ;; Use flyspell for English spell-checking
+  (use-package flyspell
+    :ensure t
+    :config
+    (add-hook 'text-mode-hook 'flyspell-mode)
+    )
+
+  (use-package ispell)
+
+#+END_SRC
+
+** Grammar checking
+
+#+BEGIN_SRC emacs-lisp
+  
+  (use-package langtool
+    :ensure t
+    :config
+    (setq langtool-language-tool-jar 
+	  "/home/hieu/Java/LanguageTool-3.8/languagetool-commandline.jar")
     )
 
 #+END_SRC
