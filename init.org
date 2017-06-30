@@ -1364,6 +1364,15 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
   (add-hook 'markdown-mode-hook 'flycheck-mode)
   (add-hook 'text-mode-hook 'flycheck-mode)
 
+
+  (use-package flycheck-pos-tip
+    :ensure t
+    :diminish flycheck-pos-tip-mode
+    :config
+    (with-eval-after-load 'flycheck
+      (flycheck-pos-tip-mode))
+    )
+
 #+END_SRC
 
 * Draft
