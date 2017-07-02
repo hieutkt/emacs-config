@@ -117,7 +117,7 @@
   :config
   (load-theme 'gruvbox-dark-hard t)
   (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
-  (set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
+  ;; (set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
   )
 
 (use-package rainbow-delimiters
@@ -1115,6 +1115,15 @@ arg lines up."
 (add-hook 'markdown-mode-hook 'flycheck-mode)
 (add-hook 'text-mode-hook 'flycheck-mode)
 
+
+(use-package flycheck-pos-tip
+  :ensure t
+  :diminish flycheck-pos-tip-mode
+  :config
+  (with-eval-after-load 'flycheck
+    (flycheck-pos-tip-mode))
+  )
+
 (use-package helpful
   :ensure t)
 
@@ -1128,3 +1137,39 @@ arg lines up."
   :bind 
   (:map helm-command-map
 	("r" . helm-rhythmbox)))
+
+(use-package airline-themes
+  :ensure t
+  :config
+  (setq powerline-utf-8-separator-left        #xe0b0
+  	powerline-utf-8-separator-right       #xe0b2
+  	airline-utf-glyph-separator-left      #xe0b0
+  	airline-utf-glyph-separator-right     #xe0b2
+  	airline-utf-glyph-subseparator-left   #xe0b1
+  	airline-utf-glyph-subseparator-right  #xe0b3
+  	airline-utf-glyph-branch              #xe0a0
+  	airline-utf-glyph-readonly            #xe0a2
+  	airline-utf-glyph-linenumber          #xe0a1
+  	airline-cursor-colors nil
+  	airline-helm-colors nil
+  	airline-shortened-directory-length 20
+  	airline-eshell-colors nil)
+  (load-theme 'airline-luna t)
+  )
+
+;; (use-package powerline
+;;   :ensure t
+;;   :config
+;;   (powerline-default-theme)
+;;   (set-face-attribute 'mode-line nil
+;;   		    :foreground "Black"
+;;   		    :background "DarkOrange"
+;;   		    :box nil)
+;;   (setq powerline-arrow-shape 'curve)
+;;   )
+
+;; (use-package telephone-line
+;;   :ensure t
+;;   :config
+;;   (telephone-line-mode 1)
+;;   )
