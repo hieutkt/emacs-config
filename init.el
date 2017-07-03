@@ -99,6 +99,9 @@
 (show-paren-mode t)
 (setq show-paren-delay 0)
 
+;; Diminish some modes
+(diminish 'visual-line-mode)
+
 ;; Default font
 (use-package unicode-fonts
   :ensure t
@@ -473,6 +476,7 @@ arg lines up."
   :config
   (projectile-global-mode)
   (setq projectile-completion-system 'helm)
+  (setq projectile-mode-line '(:eval (format " 𝐏[%s]" (projectile-project-name))))
   )
 
 ;; Helm-projectile
@@ -483,7 +487,16 @@ arg lines up."
 
 (use-package polymode
   :ensure t
-  :diminish polymode-mode
+  :diminish (poly-org-mode
+	     poly-markdown-mode
+	     poly-noweb+r-mode
+	     poly-noweb+r-mode
+	     poly-markdown+r-mode
+	     poly-rapport-mode
+	     poly-html+r-mode
+	     poly-brew+r-mode
+	     poly-r+c++-mode
+	     poly-c++r-mode)
   :init 
   (require 'poly-R)
   (require 'poly-markdown)
@@ -1100,7 +1113,11 @@ arg lines up."
 ;;   )
 
 
-(use-package flycheck)
+(use-package flycheck
+  :ensure t
+  :diminish flycheck-mode
+  )
+
 (flycheck-define-checker proselint
   "A linter for prose."
   :command ("proselint" source-inplace)
@@ -1146,13 +1163,13 @@ arg lines up."
   	airline-utf-glyph-separator-left      #xe0b0
   	airline-utf-glyph-separator-right     #xe0b2
   	airline-utf-glyph-subseparator-left   #xe0b1
-  	airline-utf-glyph-subseparator-right  #xe0b3
-  	airline-utf-glyph-branch              #xe0a0
+  	airline-utf-glyph-subseparator-right  #xe0d2
+  	airline-utf-glyph-branch              #x2387
   	airline-utf-glyph-readonly            #xe0a2
   	airline-utf-glyph-linenumber          #xe0a1
   	airline-cursor-colors nil
   	airline-helm-colors nil
-  	airline-shortened-directory-length 20
+  	airline-shortened-directory-length 0
   	airline-eshell-colors nil)
   (load-theme 'airline-luna t)
   )
