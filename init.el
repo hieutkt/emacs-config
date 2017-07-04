@@ -147,6 +147,49 @@
 		      :background "#f9f5d7")
   )
 
+(use-package airline-themes
+  :ensure t
+  :config
+  (setq powerline-utf-8-separator-left        #xe0b0
+  	powerline-utf-8-separator-right       #xe0b2
+  	airline-utf-glyph-separator-left      #xe0b0
+  	airline-utf-glyph-separator-right     #xe0b2
+  	airline-utf-glyph-subseparator-left   #xe0b1
+  	airline-utf-glyph-subseparator-right  #xe0d2
+  	airline-utf-glyph-branch              #x2387
+  	airline-utf-glyph-readonly            #xe0a2
+  	airline-utf-glyph-linenumber          #xe0a1
+  	airline-cursor-colors nil
+  	airline-helm-colors nil
+  	airline-shortened-directory-length 0
+  	airline-eshell-colors nil)
+  (load-theme 'airline-luna t)
+  )
+
+
+;; Comint
+(set-face-attribute 'minibuffer-prompt nil 
+		    :foreground "DarkOrange"
+		    :background nil)
+
+
+;; (use-package powerline
+;;   :ensure t
+;;   :config
+;;   (powerline-default-theme)
+;;   (set-face-attribute 'mode-line nil
+;;   		    :foreground "Black"
+;;   		    :background "DarkOrange"
+;;   		    :box nil)
+;;   (setq powerline-arrow-shape 'curve)
+;;   )
+
+;; (use-package telephone-line
+;;   :ensure t
+;;   :config
+;;   (telephone-line-mode 1)
+;;   )
+
 ;; Ignore disabled command
 (setq disabled-command-function 'ignore)
 
@@ -315,7 +358,7 @@ arg lines up."
   	company-idle-delay 0.36
   	company-minimum-prefix-length 2
   	company-tooltip-limit 10)
-  ;; Make scroll bar more visible
+
   :bind 
   (:map company-active-map
 	("C-<f1>" . my/company-show-doc-buffer)
@@ -337,7 +380,6 @@ arg lines up."
   :config
   (company-quickhelp-mode 1)
   (setq company-quickhelp-delay 1)
-  (set-face-attribute 'company-tooltip-annotation nil :foreground "#504945")
   (setq company-quickhelp-color-background "#f9f5d7")
   (setq company-quickhelp-color-foreground "#1d2021")
   )
@@ -758,10 +800,26 @@ arg lines up."
 (setq ess-default-style 'DEFAULT)
 
 ;; Disable syntax highlight in inferior buffer
-(add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
+;; (add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
 
 ;; Right now read-only comints cause some errors
-(add-hook 'inferior-ess-mode-hook (lambda () (setq-local comint-prompt-read-only nil)))
+
+(add-hook 'inferior-ess-mode-hook 
+	  (lambda () 
+	    (setq-local ess-R-font-lock-keywords 
+			'((ess-R-fl-keyword:modifiers)
+			  (ess-R-fl-keyword:fun-defs)
+			  (ess-R-fl-keyword:keywords)
+			  (ess-R-fl-keyword:assign-ops)
+			  (ess-R-fl-keyword:constants)
+			  (ess-fl-keyword:fun-calls)
+			  (ess-fl-keyword:numbers)
+			  (ess-fl-keyword:operators)
+			  (ess-fl-keyword:delimiters)
+			  (ess-fl-keyword:=)
+			  (ess-R-fl-keyword:F&T)
+			  (ess-R-fl-keyword:%op%)
+			  ))))
 
 ;; ESS syntax highlight  
 (setq ess-R-font-lock-keywords 
@@ -1021,14 +1079,8 @@ arg lines up."
   (set-face-attribute 'highlight-quoted-symbol nil
 		      :inherit 'font-lock-string-face))
 
-(use-package shx
-  :ensure t
-  :init
-  (add-hook 'shell-mode-hook #'shx-mode)
-  )
-
 ;; Keybinding for terminal
-(global-set-key [f2] 'shell)
+(global-set-key [f2] 'eshell)
 
 ;; Company
 (use-package company-shell
@@ -1154,39 +1206,3 @@ arg lines up."
   :bind 
   (:map helm-command-map
 	("r" . helm-rhythmbox)))
-
-(use-package airline-themes
-  :ensure t
-  :config
-  (setq powerline-utf-8-separator-left        #xe0b0
-  	powerline-utf-8-separator-right       #xe0b2
-  	airline-utf-glyph-separator-left      #xe0b0
-  	airline-utf-glyph-separator-right     #xe0b2
-  	airline-utf-glyph-subseparator-left   #xe0b1
-  	airline-utf-glyph-subseparator-right  #xe0d2
-  	airline-utf-glyph-branch              #x2387
-  	airline-utf-glyph-readonly            #xe0a2
-  	airline-utf-glyph-linenumber          #xe0a1
-  	airline-cursor-colors nil
-  	airline-helm-colors nil
-  	airline-shortened-directory-length 0
-  	airline-eshell-colors nil)
-  (load-theme 'airline-luna t)
-  )
-
-;; (use-package powerline
-;;   :ensure t
-;;   :config
-;;   (powerline-default-theme)
-;;   (set-face-attribute 'mode-line nil
-;;   		    :foreground "Black"
-;;   		    :background "DarkOrange"
-;;   		    :box nil)
-;;   (setq powerline-arrow-shape 'curve)
-;;   )
-
-;; (use-package telephone-line
-;;   :ensure t
-;;   :config
-;;   (telephone-line-mode 1)
-;;   )
