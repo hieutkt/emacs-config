@@ -789,6 +789,7 @@ arg lines up."
   (require 'ess-rutils)
   (require 'ess-eldoc)
   (require 'ess-help)
+  (require 'ess-custom)
   )
 
 ;; ;; Truncate long lines
@@ -799,43 +800,39 @@ arg lines up."
 ;; ;; Indentation style
 (setq ess-default-style 'DEFAULT)
 
-;; Disable syntax highlight in inferior buffer
-;; (add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
 
-;; Right now read-only comints cause some errors
-
-(add-hook 'inferior-ess-mode-hook 
-	  (lambda () 
-	    (setq-local ess-R-font-lock-keywords 
-			'((ess-R-fl-keyword:modifiers)
-			  (ess-R-fl-keyword:fun-defs)
-			  (ess-R-fl-keyword:keywords)
-			  (ess-R-fl-keyword:assign-ops)
-			  (ess-R-fl-keyword:constants)
-			  (ess-fl-keyword:fun-calls)
-			  (ess-fl-keyword:numbers)
-			  (ess-fl-keyword:operators)
-			  (ess-fl-keyword:delimiters)
-			  (ess-fl-keyword:=)
-			  (ess-R-fl-keyword:F&T)
-			  (ess-R-fl-keyword:%op%)
-			  ))))
 
 ;; ESS syntax highlight  
 (setq ess-R-font-lock-keywords 
       '((ess-R-fl-keyword:modifiers . nil)
-	(ess-R-fl-keyword:fun-defs . t)
-	(ess-R-fl-keyword:keywords . t)
-	(ess-R-fl-keyword:assign-ops . t)
-	(ess-R-fl-keyword:constants . t)
-	(ess-fl-keyword:fun-calls . t)
-	(ess-fl-keyword:numbers . t)
-	(ess-fl-keyword:operators . t)
-	(ess-fl-keyword:delimiters . t)
-	(ess-fl-keyword:= . t)
+  	(ess-R-fl-keyword:fun-defs . t)
+  	(ess-R-fl-keyword:keywords . nil)
+  	(ess-R-fl-keyword:assign-ops . t)
+  	(ess-R-fl-keyword:constants . t)
+  	(ess-fl-keyword:fun-calls . t)
+  	(ess-fl-keyword:numbers . t)
+  	(ess-fl-keyword:operators . t)
+  	(ess-fl-keyword:delimiters . t)
+  	(ess-fl-keyword:= . nil)
+  	(ess-R-fl-keyword:F&T . t)
+  	(ess-R-fl-keyword:%op% . nil)
+  	)
+      )
+
+
+(setq inferior-ess-r-font-lock-keywords 
+      '((ess-R-fl-keyword:modifiers . nil)
+	(ess-R-fl-keyword:fun-defs . nil)
+	(ess-R-fl-keyword:keywords . nil)
+	(ess-R-fl-keyword:assign-ops . nil)
+	(ess-R-fl-keyword:constants . nil)
+	(ess-fl-keyword:fun-calls . nil)
+	(ess-fl-keyword:numbers . nil)
+	(ess-fl-keyword:operators . nil)
+	(ess-fl-keyword:delimiters . nil)
+	(ess-fl-keyword:= . nil)
 	(ess-R-fl-keyword:F&T . t)
-	(ess-R-fl-keyword:%op% . t)
-	)
+	(ess-R-fl-keyword:%op% . nil)) 
       )
 
 

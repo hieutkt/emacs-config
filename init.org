@@ -1,6 +1,6 @@
 #+TITLE: Emacs Configuration
 #+AUTHOR: Nguyễn Đức Hiếu
-o#+STARTUP: content
+#+STARTUP: content
 #+OPTIONS: num:3 ^:nil toc:nil
 #+LATEX_CLASS: article
 #+LATEX_HEADER: \usepackage[utf8]{vietnam}
@@ -956,6 +956,7 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
     (require 'ess-rutils)
     (require 'ess-eldoc)
     (require 'ess-help)
+    (require 'ess-custom)
     )
 
 
@@ -972,46 +973,42 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
   ;; ;; Indentation style
   (setq ess-default-style 'DEFAULT)
 
-  ;; Disable syntax highlight in inferior buffer
-  ;; (add-hook 'inferior-ess-mode-hook (lambda () (font-lock-mode 0)) t)
 
-  ;; Right now read-only comints cause some errors
-  
-  (add-hook 'inferior-ess-mode-hook 
-	    (lambda () 
-	      (setq-local ess-R-font-lock-keywords 
-			  '((ess-R-fl-keyword:modifiers)
-			    (ess-R-fl-keyword:fun-defs)
-			    (ess-R-fl-keyword:keywords)
-			    (ess-R-fl-keyword:assign-ops)
-			    (ess-R-fl-keyword:constants)
-			    (ess-fl-keyword:fun-calls)
-			    (ess-fl-keyword:numbers)
-			    (ess-fl-keyword:operators)
-			    (ess-fl-keyword:delimiters)
-			    (ess-fl-keyword:=)
-			    (ess-R-fl-keyword:F&T)
-			    (ess-R-fl-keyword:%op%)
-			    ))))
 
   ;; ESS syntax highlight  
   (setq ess-R-font-lock-keywords 
+  	'((ess-R-fl-keyword:modifiers . nil)
+  	  (ess-R-fl-keyword:fun-defs . t)
+  	  (ess-R-fl-keyword:keywords . nil)
+  	  (ess-R-fl-keyword:assign-ops . t)
+  	  (ess-R-fl-keyword:constants . t)
+  	  (ess-fl-keyword:fun-calls . t)
+  	  (ess-fl-keyword:numbers . t)
+  	  (ess-fl-keyword:operators . t)
+  	  (ess-fl-keyword:delimiters . t)
+  	  (ess-fl-keyword:= . nil)
+  	  (ess-R-fl-keyword:F&T . t)
+  	  (ess-R-fl-keyword:%op% . nil)
+  	  )
+  	)
+
+
+  (setq inferior-ess-r-font-lock-keywords 
 	'((ess-R-fl-keyword:modifiers . nil)
-	  (ess-R-fl-keyword:fun-defs . t)
-	  (ess-R-fl-keyword:keywords . t)
-	  (ess-R-fl-keyword:assign-ops . t)
-	  (ess-R-fl-keyword:constants . t)
-	  (ess-fl-keyword:fun-calls . t)
-	  (ess-fl-keyword:numbers . t)
-	  (ess-fl-keyword:operators . t)
-	  (ess-fl-keyword:delimiters . t)
-	  (ess-fl-keyword:= . t)
+	  (ess-R-fl-keyword:fun-defs . nil)
+	  (ess-R-fl-keyword:keywords . nil)
+	  (ess-R-fl-keyword:assign-ops . nil)
+	  (ess-R-fl-keyword:constants . nil)
+	  (ess-fl-keyword:fun-calls . nil)
+	  (ess-fl-keyword:numbers . nil)
+	  (ess-fl-keyword:operators . nil)
+	  (ess-fl-keyword:delimiters . nil)
+	  (ess-fl-keyword:= . nil)
 	  (ess-R-fl-keyword:F&T . t)
-	  (ess-R-fl-keyword:%op% . t)
-	  )
+	  (ess-R-fl-keyword:%op% . nil)) 
 	)
 
-  
+
   (set-face-attribute 'ess-numbers-face nil :foreground "#8ec07c")
   ;; Disable IDO so helm is used instead
   (setq ess-use-ido nil)
@@ -1519,5 +1516,43 @@ Practicing Emacs by disable all normal hot-key
     :config
     (guru-global-mode)
     )
+
+#+END_SRC
+** Key combo
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  
+  (use-package key-combo
+    :ensure t
+    :diminish (key-combo-mode)
+    :config
+    (key-combo-mode 1)
+
+    (add-hook 'ess-mode-hook
+	      '(lambda()
+		 (key-combo-mode t)))
+
+    (add-hook 'inferior-ess-mode-hook
+	      '(lambda()
+		 (key-combo-mode t)))
+
+    (defvar key-combo-ess-default
+      '(("%" . (" %>% " " %in% " " %between% " "%"))
+	("*" . ("*" " * "))
+	("+" . " + ")
+	("-" . " - ")
+	("," . ", ")
+	("~" . " ~ ")
+	("=" . (" = " " == " " := " "")) ; data.table
+	("->" . " -> ")
+	(">" . (" > " " >= "))
+	("<" . (" < " " <= "))
+	))
+
+    (key-combo-define-hook '(ess-mode-hook inferior-ess-mode-hook)
+			   'ess-key-combo-load-default
+			   key-combo-ess-default)
+    )
+
 
 #+END_SRC
