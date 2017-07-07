@@ -108,9 +108,7 @@
   :init
   (unicode-fonts-setup)
   :config
-  (set-frame-font "Noto Mono 10" nil t))
-
-(set-face-attribute 'variable-pitch nil :family "Noto Sans")
+  (set-frame-font "Source Code Pro 10" nil t))
 
 
 ;; Set themes
@@ -374,21 +372,6 @@ arg lines up."
   :config
   (add-to-list 'company-backends 'company-math-symbols-unicode)
   )
-
-(use-package company-quickhelp
-  :ensure t
-  :config
-  (company-quickhelp-mode 1)
-  (setq company-quickhelp-delay 1)
-  (setq company-quickhelp-color-background "#f9f5d7")
-  (setq company-quickhelp-color-foreground "#1d2021")
-  )
-
-;; Quick help show up in a popup
-;; (company-quickhelp-mode 1)
-
-;; (eval-after-load 'company
-;; '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
 
 (use-package electric-operator
   :ensure t
@@ -1125,7 +1108,7 @@ arg lines up."
 (use-package flyspell
   :ensure t
   :config
-  (add-hook 'text-mode-hook 'flyspell-mode)
+  ;; (add-hook 'text-mode-hook 'flyspell-mode)
   (set-face-attribute 'flyspell-duplicate nil :underline "DeepPink")
   (set-face-attribute 'flyspell-incorrect nil :underline "Red1")
   :diminish flyspell-mode
@@ -1178,8 +1161,8 @@ arg lines up."
 
 (add-to-list 'flycheck-checkers 'proselint)
 
-(add-hook 'markdown-mode-hook 'flycheck-mode)
-(add-hook 'text-mode-hook 'flycheck-mode)
+;; (add-hook 'markdown-mode-hook 'flycheck-mode)
+;; (add-hook 'text-mode-hook 'flycheck-mode)
 
 
 (use-package flycheck-pos-tip
