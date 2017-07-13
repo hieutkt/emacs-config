@@ -974,11 +974,10 @@ arg lines up."
            font-lock-function-name-face) ; highlight function names
           ))))
 
-  :bind(
-             ("C-c <RET>" . elpy-shell-send-region-or-buffer)
-        :map python-mode-map
-             ("C-c C-c" . elpy-send-current-block)
-             )
+  :bind
+  (:map python-mode-map
+        ("C-c <RET>" . elpy-shell-send-region-or-buffer)
+        ("C-c C-c" . elpy-send-current-block))
   )
 
 (use-package sql
@@ -1053,7 +1052,8 @@ arg lines up."
   (insert (concat "```{" header "}\n\n```")) 
   (forward-line -1))
 :bind
-("C-c i" . markdown-insert-code-chunk)
+(:map markdown-mode-map
+ ("C-c i" . markdown-insert-code-chunk))
 )
 
 (use-package highlight-defined
@@ -1186,13 +1186,15 @@ arg lines up."
 (use-package helpful
   :ensure t)
 
-(use-package swiper-helm
-  :ensure t
-  :bind ([remap isearch-forward] . swiper-helm)
-  )
-
 (use-package helm-rhythmbox
   :ensure t
   :bind 
   (:map helm-command-map
         ("r" . helm-rhythmbox)))
+
+(use-package which-key
+  :ensure t
+  :diminish which-key-mode
+  :config
+  (which-key-mode 1)
+  )
