@@ -396,6 +396,22 @@ Install it on Ubuntu by the following script:
 
 #+END_SRC
 
+** Ace Window
+[[https://github.com/abo-abo/ace-window][Ace-window]] makes it easy to navigate between windows.
+Since I don't have the habit of using many windows, simple setup is enough.
+#+BEGIN_SRC emacs-lisp
+
+  (use-package ace-window
+    :ensure t
+    :config
+    ;; ace-window uses home row
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    :bind*
+    (("M-p" . ace-window))
+    )
+
+#+END_SRC
+
 ** Company
 Company is a completion mechanism that is very flexible 
 
