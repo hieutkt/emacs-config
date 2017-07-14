@@ -192,9 +192,9 @@
 ;; Ignore disabled command
 (setq disabled-command-function 'ignore)
 
-;; I never want to enter overwrite mode
+;; Set some command disabled
 (put 'overwrite-mode 'disabled t)
-
+  
 ;; Delete marked region when input
 (delete-selection-mode 1)
 
@@ -547,6 +547,8 @@ arg lines up."
          ("\\.Rbrew$" . poly-brew+r-mode)
          ("\\.Rcpp$" . poly-r+c++-mode)
          ("\\.cppR$" . poly-c++r-mode))
+  :config
+  (setq polymode-exporter-output-file-format "%s")
   )
 
 (defun check-expansion ()
