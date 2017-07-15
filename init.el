@@ -1,4 +1,3 @@
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
@@ -40,15 +39,15 @@
       (current (float-time (current-time))))
   (dolist (file (directory-files temporary-file-directory t))
     (when (and (backup-file-name-p file)
-               (> (- current (float-time (fifth (file-attributes file))))
-                  week))
+	       (> (- current (float-time (fifth (file-attributes file))))
+		  week))
       (message "%s" file)
       (delete-file file))))
 
 ;; Startup
 (add-hook 'after-init-hook 
-          (lambda () 
-            (find-file (format "%s/%s" config-directory "init.org"))))
+	  (lambda () 
+	    (find-file (format "%s/%s" config-directory "init.org"))))
 
 
 ;; Information settings
@@ -138,38 +137,38 @@
    '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
    '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1")))))
   )
-  
+
   (use-package popup
   :config
   (set-face-attribute 'popup-tip-face nil 
-                      :foreground "#1d2021"
-                      :background "#f9f5d7")
+		      :foreground "#1d2021"
+		      :background "#f9f5d7")
   )
 
 (use-package airline-themes
   :ensure t
   :config
   (setq powerline-utf-8-separator-left        #xe0b0
-        powerline-utf-8-separator-right       #xe0b2
-        airline-utf-glyph-separator-left      #xe0b0
-        airline-utf-glyph-separator-right     #xe0b2
-        airline-utf-glyph-subseparator-left   #xe0b1
-        airline-utf-glyph-subseparator-right  #xe0d2
-        airline-utf-glyph-branch              #xe0a0
-        airline-utf-glyph-readonly            #xe0a2
-        airline-utf-glyph-linenumber          #xe0a1
-        airline-cursor-colors nil
-        airline-helm-colors nil
-        airline-shortened-directory-length 0
-        airline-eshell-colors nil)
+  	powerline-utf-8-separator-right       #xe0b2
+  	airline-utf-glyph-separator-left      #xe0b0
+  	airline-utf-glyph-separator-right     #xe0b2
+  	airline-utf-glyph-subseparator-left   #xe0b1
+  	airline-utf-glyph-subseparator-right  #xe0d2
+  	airline-utf-glyph-branch              #xe0a0
+  	airline-utf-glyph-readonly            #xe0a2
+  	airline-utf-glyph-linenumber          #xe0a1
+  	airline-cursor-colors nil
+  	airline-helm-colors nil
+  	airline-shortened-directory-length 0
+  	airline-eshell-colors nil)
   (load-theme 'airline-luna t)
   )
 
 
 ;; Comint
 (set-face-attribute 'minibuffer-prompt nil 
-                    :foreground "DarkOrange"
-                    :background nil)
+		    :foreground "DarkOrange"
+		    :background nil)
 
 
 ;; (use-package powerline
@@ -177,9 +176,9 @@
 ;;   :config
 ;;   (powerline-default-theme)
 ;;   (set-face-attribute 'mode-line nil
-;;                :foreground "Black"
-;;                :background "DarkOrange"
-;;                :box nil)
+;;   		    :foreground "Black"
+;;   		    :background "DarkOrange"
+;;   		    :box nil)
 ;;   (setq powerline-arrow-shape 'curve)
 ;;   )
 
@@ -194,7 +193,7 @@
 
 ;; Set some command disabled
 (put 'overwrite-mode 'disabled t)
-  
+
 ;; Delete marked region when input
 (delete-selection-mode 1)
 
@@ -210,10 +209,10 @@
 ;; Auto close bracket insertion.
 (electric-pair-mode 1)
 (setq electric-pair-pairs '(
-                            (?\" . ?\")
-                            (?\( . ?\))
-                            (?\{ . ?\})
-                            ) )
+			    (?\" . ?\")
+			    (?\( . ?\))
+			    (?\{ . ?\})
+			    ) )
 
 (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
@@ -259,8 +258,8 @@ So you can fix the list for run-once and run-for-all multiple-cursors commands."
     ("r" mc/mark-all-in-region "Mark all in region" :exit t)
     ("R" mc/mark-all-in-region-regexp "Mark all in region (regexp)" :exit t)
     ("i" (lambda (n) 
-           (interactive "nInsert initial number:") 
-           (mc/insert-numbers n)) 
+	   (interactive "nInsert initial number:") 
+	   (mc/insert-numbers n)) 
      "Insert numbers" :exit t)
     ("s" mc/sort-regions "Sort regions")
     ("v" mc/reverse-regions "Reverse order")
@@ -293,7 +292,7 @@ So you can fix the list for run-once and run-for-all multiple-cursors commands."
   (interactive)
   (backward-kill-sexp)
   (prin1 (eval (read (current-kill 0)))
-         (current-buffer)))
+	 (current-buffer)))
 (global-set-key (kbd "C-c e") 'fc-eval-and-replace)
 
 ;; Move line/region up/down
@@ -301,9 +300,9 @@ So you can fix the list for run-once and run-for-all multiple-cursors commands."
   (cond
    ((and mark-active transient-mark-mode)
     (if (> (point) (mark))
-        (exchange-point-and-mark))
+	(exchange-point-and-mark))
     (let ((column (current-column))
-          (text (delete-and-extract-region (point) (mark))))
+	  (text (delete-and-extract-region (point) (mark))))
       (forward-line arg)
       (move-to-column column t)
       (set-mark (point))
@@ -315,7 +314,7 @@ So you can fix the list for run-once and run-for-all multiple-cursors commands."
     (when (or (> arg 0) (not (bobp)))
       (forward-line)
       (when (or (< arg 0) (not (eobp)))
-        (transpose-lines arg))
+	(transpose-lines arg))
       (forward-line -1)))))
 
 (defun move-text-down (arg)
@@ -347,32 +346,32 @@ arg lines up."
   :init
   ;; Activate globally
   (add-hook 'after-init-hook 'global-company-mode)
- 
+
   ;; Press <F1> to show the documentation buffer and press C-<F1> to jump to it
   (defun my/company-show-doc-buffer ()
     "Temporarily show the documentation buffer for the selection."
     (interactive)
     (let* ((selected (nth company-selection company-candidates))
-           (doc-buffer (or (company-call-backend 'doc-buffer selected)
-                           (error "No documentation available"))))
+	   (doc-buffer (or (company-call-backend 'doc-buffer selected)
+			   (error "No documentation available"))))
       (with-current-buffer doc-buffer
-        (goto-char (point-min)))
+	(goto-char (point-min)))
       (display-buffer doc-buffer t)))  
-  
+
   :config
   ;; Some useful configs
   (setq company-selection-wrap-around t
-        company-tooltip-align-annotations t
-        company-idle-delay 0.36
-        company-minimum-prefix-length 2
-        company-tooltip-limit 10)
+  	company-tooltip-align-annotations t
+  	company-idle-delay 0.36
+  	company-minimum-prefix-length 2
+  	company-tooltip-limit 10)
 
   :bind 
   (:map company-active-map
-        ("C-<f1>" . my/company-show-doc-buffer)
-        ("C-n" . company-select-next)
-        ("C-p" . company-select-previous)
-        )
+	("C-<f1>" . my/company-show-doc-buffer)
+	("C-n" . company-select-next)
+	("C-p" . company-select-previous)
+	)
   )
 
 ;; math backend, this will input math symbols everywhere except in 
@@ -389,10 +388,10 @@ arg lines up."
   (setq electric-operator-R-named-argument-style 'spaced)
   (add-hook 'ess-mode-hook #'electric-operator-mode)
   (add-hook 'python-mode-hook #'electric-operator-mode)
-  
+
   (electric-operator-add-rules-for-mode 'ess-mode
-                                        (cons ":=" " := ")
-                                        (cons "%in%" " %in% "))
+					(cons ":=" " := ")
+					(cons "%in%" " %in% "))
   )
 
 ;; Enable Yasnippets
@@ -405,18 +404,18 @@ arg lines up."
     (setq yas--condition-cache-timestamp (current-time))
     (let (templates-and-pos)
       (unless (and yas-expand-only-for-last-commands
-                   (not (member last-command yas-expand-only-for-last-commands)))
-        (setq templates-and-pos (if field
-                                    (save-restriction
-                                      (narrow-to-region (yas--field-start field)
-                                                        (yas--field-end field))
-                                      (yas--templates-for-key-at-point))
-                                  (yas--templates-for-key-at-point))))
+		   (not (member last-command yas-expand-only-for-last-commands)))
+	(setq templates-and-pos (if field
+				    (save-restriction
+				      (narrow-to-region (yas--field-start field)
+							(yas--field-end field))
+				      (yas--templates-for-key-at-point))
+				  (yas--templates-for-key-at-point))))
 
       (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
-                            "green" "#f9f5d7"))))
+			    "green" "#f9f5d7"))))
   (add-hook 'post-command-hook 'yasnippet-can-fire-p)  
-  
+
   (yas-global-mode 1)
 
   (yas-reload-all)
@@ -441,14 +440,14 @@ arg lines up."
 
 
   (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-        helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source    .       
-        helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-        helm-ff-file-name-history-use-recentf t
-        helm-echo-input-in-header-line t 
-        helm-M-x-fuzzy-match t
-        helm-autoresize-max-height 0
-        helm-autoresize-min-height 30)
-  
+	helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source	.	
+	helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+	helm-ff-file-name-history-use-recentf t
+	helm-echo-input-in-header-line t 
+	helm-M-x-fuzzy-match t
+	helm-autoresize-max-height 0
+	helm-autoresize-min-height 30)
+
   (helm-autoresize-mode 1)
 
   :bind-keymap
@@ -457,15 +456,15 @@ arg lines up."
   ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
   ("C-c h" . helm-command-prefix)  
   :bind (
-         ("C-x b" . helm-buffers-list)
-         ("M-x" . helm-M-x)
-         ("C-x C-f" . helm-find-files)
-         ("M-y" . helm-show-kill-ring)
-         :map helm-map
-         ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
-         ("C-i" . helm-execute-persistent-action)   ; make TAB work in terminal
-         ("M-x" . helm-select-action)              ; list actions using C-z    
-         )
+ 	 ("C-x b" . helm-buffers-list)
+ 	 ("M-x" . helm-M-x)
+ 	 ("C-x C-f" . helm-find-files)
+	 ("M-y" . helm-show-kill-ring)
+ 	 :map helm-map
+ 	 ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
+ 	 ("C-i" . helm-execute-persistent-action)   ; make TAB work in terminal
+ 	 ("M-x" . helm-select-action)              ; list actions using C-z    
+ 	 )
   :diminish helm-mode
   )
 
@@ -487,21 +486,21 @@ arg lines up."
   :config
   ;; Set bib folder
   (setq bibtex-completion-bibliography
-        (expand-file-name "~/Dropbox/references.bib"))
+	(expand-file-name "~/Dropbox/references.bib"))
   (setq bibtex-completion-library-path
-        (append (f-directories "~/Dropbox" nil t)
-                (f-directories "~/Documents" nil t)))
+	(append (f-directories "~/Dropbox" nil t)
+		(f-directories "~/Documents" nil t)))
   ;; Set display format    
   (setq bibtex-completion-display-formats
-        '((article       . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${journal:40}")
-          (inbook        . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
-          (incollection  . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-          (inproceedings . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-          (t             . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*}")))
+	'((article       . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${journal:40}")
+	  (inbook        . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
+	  (incollection  . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
+	  (inproceedings . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
+	  (t             . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*}")))
   :bind(
-        :map helm-command-map
-             ("b" . helm-bibtex)
-             )
+	:map helm-command-map
+	     ("b" . helm-bibtex)
+	     )
   )
 
 (helm-autoresize-mode t)
@@ -523,30 +522,30 @@ arg lines up."
 (use-package polymode
   :ensure t
   :diminish (poly-org-mode
-             poly-markdown-mode
-             poly-noweb+r-mode
-             poly-noweb+r-mode
-             poly-markdown+r-mode
-             poly-rapport-mode
-             poly-html+r-mode
-             poly-brew+r-mode
-             poly-r+c++-mode
-             poly-c++r-mode)
+	     poly-markdown-mode
+	     poly-noweb+r-mode
+	     poly-noweb+r-mode
+	     poly-markdown+r-mode
+	     poly-rapport-mode
+	     poly-html+r-mode
+	     poly-brew+r-mode
+	     poly-r+c++-mode
+	     poly-c++r-mode)
   :init 
   (require 'poly-R)
   (require 'poly-markdown)
   (require 'poly-org)
-  
+
   :mode (("\\.org" . poly-org-mode)
-         ("\\.md" . poly-markdown-mode)
-         ("\\.Snw$" . poly-noweb+r-mode)
-         ("\\.Rnw$" . poly-noweb+r-mode)
-         ("\\.Rmd$" . poly-markdown+r-mode)
-         ("\\.rapport$" . poly-rapport-mode)
-         ("\\.Rhtml$" . poly-html+r-mode)
-         ("\\.Rbrew$" . poly-brew+r-mode)
-         ("\\.Rcpp$" . poly-r+c++-mode)
-         ("\\.cppR$" . poly-c++r-mode))
+	 ("\\.md" . poly-markdown-mode)
+	 ("\\.Snw$" . poly-noweb+r-mode)
+	 ("\\.Rnw$" . poly-noweb+r-mode)
+	 ("\\.Rmd$" . poly-markdown+r-mode)
+	 ("\\.rapport$" . poly-rapport-mode)
+	 ("\\.Rhtml$" . poly-html+r-mode)
+	 ("\\.Rbrew$" . poly-brew+r-mode)
+	 ("\\.Rcpp$" . poly-r+c++-mode)
+	 ("\\.cppR$" . poly-c++r-mode))
   :config
   (setq polymode-exporter-output-file-format "%s")
   )
@@ -556,8 +555,8 @@ arg lines up."
     (if (looking-at "\\_>") t
       (backward-char 1)
       (if (looking-at "\\.") t
-        (backward-char 1)
-        (if (looking-at "->") t nil)))))
+	(backward-char 1)
+	(if (looking-at "->") t nil)))))
 
 (defun do-yas-expand ()
   (let ((yas/fallback-behavior 'return-nil))
@@ -571,35 +570,35 @@ arg lines up."
    (t
     (indent-for-tab-command)
     (if (or (not yas/minor-mode)
-            (null (do-yas-expand)))
-        (if (check-expansion)
-            (progn
-              (company-manual-begin)
-              (if (null company-candidates)
-                  (progn
-                    (company-abort)
-                    (indent-for-tab-command)))))))))
+	    (null (do-yas-expand)))
+	(if (check-expansion)
+	    (progn
+	      (company-manual-begin)
+	      (if (null company-candidates)
+		  (progn
+		    (company-abort)
+		    (indent-for-tab-command)))))))))
 
 (defun tab-complete-or-next-field ()
   (interactive)
   (if (or (not yas/minor-mode)
-          (null (do-yas-expand)))
+	  (null (do-yas-expand)))
       (if company-candidates
-          (company-complete-selection)
-        (if (check-expansion)
-            (progn
-              (company-manual-begin)
-              (if (null company-candidates)
-                  (progn
-                    (company-abort)
-                    (yas-next-field))))
-          (yas-next-field)))))
+	  (company-complete-selection)
+	(if (check-expansion)
+	    (progn
+	      (company-manual-begin)
+	      (if (null company-candidates)
+		  (progn
+		    (company-abort)
+		    (yas-next-field))))
+	  (yas-next-field)))))
 
 (defun expand-snippet-or-complete-selection ()
   (interactive)
   (if (or (not yas/minor-mode)
-          (null (do-yas-expand))
-          (company-abort))
+	  (null (do-yas-expand))
+	  (company-abort))
       (company-complete-selection)))
 
 (defun abort-company-or-yas ()
@@ -696,18 +695,18 @@ arg lines up."
 ;; Org keyword
 (setq org-todo-keywords
       '((sequence "TODO" "|" "DONE" "SUSPENDED")
-        (sequence "PLANNING" "|" "OVER")
-        ))
+	(sequence "PLANNING" "|" "OVER")
+	))
 
 (setq org-todo-keyword-faces
       '(("TODO" . "yellow") ("DONE" . "green") ("SUSPENDED" . "gray50")
-        ("PLANNING" . "light blue") ("OVER" . "slate gray")))
+	("PLANNING" . "light blue") ("OVER" . "slate gray")))
 
 ;; Agenda summary 
 (setq org-agenda-custom-commands
       '(("c" "Simple agenda view"
-         ((agenda "")
-          (alltodo "")))))
+	 ((agenda "")
+	  (alltodo "")))))
 ;; And bind it to <f8>
 (global-set-key (kbd "<f8>") 'org-agenda)
 
@@ -730,10 +729,10 @@ arg lines up."
   (pdf-tools-install)
   :config
   (setq pdf-view-display-size "fit-page"
-        auto-revert-interval 0
-        ess-pdf-viewer-pref "emacsclient"
-        TeX-view-program-selection '((output-pdf "PDF Tools"))
-        pdf-view-midnight-colors '("#fffff8" . "#111111"))
+	auto-revert-interval 0
+	ess-pdf-viewer-pref "emacsclient"
+	TeX-view-program-selection '((output-pdf "PDF Tools"))
+	pdf-view-midnight-colors '("#fffff8" . "#111111"))
   )
 
 (use-package magit
@@ -746,30 +745,58 @@ arg lines up."
   ;; Currently magit cause some error when auto revert mode is on
   (setq magit-auto-revert-mode nil)
 
+(use-package elfeed
+  :ensure t
+  :config
+  (setq elfeed-use-curl t)
+
+  ;; (setq elfeed-feeds
+  ;; 	  '(("http://planet.emacsen.org/atom.xml" programming emacs)
+  ;; 	    ("http://feeds.feedburner.com/RBloggers?format=xml" programming r)))
+
+  :bind 
+  ("C-x w" . elfeed)
+  )
+
+(use-package elfeed-goodies
+  :ensure t
+  :config
+  (elfeed-goodies/setup)
+  )
+
+;; elfeed-org allows you to organize elfeed with org
+(use-package elfeed-org
+  :ensure t
+  :config
+  (elfeed-org)
+  (setq rmh-elfeed-org-files 
+	(list "/home/hieu/Dropbox/org/elfeed.org"))
+  )
+
 (use-package ibuffer
   :ensure t
   :config
   (setq ibuffer-saved-filter-groups
-        (quote (("Default"
-                 ("Dired" (mode . dired-mode))
-                 ("Org" (name . "^.*org$"))
-                 ("Process" (or (mode . inferior-ess-mode)
-                                (mode . shell-mode)))
-                 ("Programming" (or
-                                 (mode . ess-mode)
-                                 (mode . python-mode)
-                                 (mode . c++-mode)))
-                 ("Helm" (mode . Hmm-mode))
-                 ("Emacs" (or
-                           (name . "^\\*scratch\\*$")
-                           (name . "^\\*Messages\\*$")
-                           (name . "^\\*dashboard\\*$")))
-                 ))))
-  
+	(quote (("Default"
+		 ("Dired" (mode . dired-mode))
+		 ("Org" (name . "^.*org$"))
+		 ("Process" (or (mode . inferior-ess-mode)
+				(mode . shell-mode)))
+		 ("Programming" (or
+				 (mode . ess-mode)
+				 (mode . python-mode)
+				 (mode . c++-mode)))
+		 ("Helm" (mode . Hmm-mode))
+		 ("Emacs" (or
+			   (name . "^\\*scratch\\*$")
+			   (name . "^\\*Messages\\*$")
+			   (name . "^\\*dashboard\\*$")))
+		 ))))
+
   (add-hook 'ibuffer-mode-hook
-            (lambda ()
-              (ibuffer-auto-mode 1)
-              (ibuffer-switch-to-saved-filter-groups "default")))
+	    (lambda ()
+	      (ibuffer-auto-mode 1)
+	      (ibuffer-switch-to-saved-filter-groups "default")))
 
   ;; Don't show filter groups if there are no buffers in that group
   (setq ibuffer-show-empty-filter-groups nil)
@@ -800,34 +827,34 @@ arg lines up."
 ;; ESS syntax highlight  
 (setq ess-R-font-lock-keywords 
       '((ess-R-fl-keyword:modifiers . nil)
-        (ess-R-fl-keyword:fun-defs . t)
-        (ess-R-fl-keyword:keywords . nil)
-        (ess-R-fl-keyword:assign-ops . t)
-        (ess-R-fl-keyword:constants . t)
-        (ess-fl-keyword:fun-calls . t)
-        (ess-fl-keyword:numbers . t)
-        (ess-fl-keyword:operators . t)
-        (ess-fl-keyword:delimiters . t)
-        (ess-fl-keyword:= . nil)
-        (ess-R-fl-keyword:F&T . t)
-        (ess-R-fl-keyword:%op% . nil)
-        )
+  	(ess-R-fl-keyword:fun-defs . t)
+  	(ess-R-fl-keyword:keywords . nil)
+  	(ess-R-fl-keyword:assign-ops . t)
+  	(ess-R-fl-keyword:constants . t)
+  	(ess-fl-keyword:fun-calls . t)
+  	(ess-fl-keyword:numbers . t)
+  	(ess-fl-keyword:operators . t)
+  	(ess-fl-keyword:delimiters . t)
+  	(ess-fl-keyword:= . nil)
+  	(ess-R-fl-keyword:F&T . t)
+  	(ess-R-fl-keyword:%op% . nil)
+  	)
       )
 
 
 (setq inferior-ess-r-font-lock-keywords 
       '((ess-R-fl-keyword:modifiers . nil)
-        (ess-R-fl-keyword:fun-defs . nil)
-        (ess-R-fl-keyword:keywords . nil)
-        (ess-R-fl-keyword:assign-ops . nil)
-        (ess-R-fl-keyword:constants . nil)
-        (ess-fl-keyword:fun-calls . nil)
-        (ess-fl-keyword:numbers . nil)
-        (ess-fl-keyword:operators . nil)
-        (ess-fl-keyword:delimiters . nil)
-        (ess-fl-keyword:= . nil)
-        (ess-R-fl-keyword:F&T . t)
-        (ess-R-fl-keyword:%op% . nil)) 
+	(ess-R-fl-keyword:fun-defs . nil)
+	(ess-R-fl-keyword:keywords . nil)
+	(ess-R-fl-keyword:assign-ops . nil)
+	(ess-R-fl-keyword:constants . nil)
+	(ess-fl-keyword:fun-calls . nil)
+	(ess-fl-keyword:numbers . nil)
+	(ess-fl-keyword:operators . nil)
+	(ess-fl-keyword:delimiters . nil)
+	(ess-fl-keyword:= . nil)
+	(ess-R-fl-keyword:F&T . t)
+	(ess-R-fl-keyword:%op% . nil)) 
       )
 
 
@@ -836,13 +863,13 @@ arg lines up."
 (setq ess-use-ido nil)
 
 (setq ess-use-company 'script-only)
-(setq ess-tab-complete-in-script t)   ;; Press <tab> inside functions for completions
+(setq ess-tab-complete-in-script t)	;; Press <tab> inside functions for completions
 
 ;; Describe object
 ;; (setq ess-R-describe-object-at-point-commands
-;;    '(("str(%s)")
-;;      ("print(%s)")
-;;      ("summary(%s, maxsum = 20)")))
+;; 	'(("str(%s)")
+;; 	  ("print(%s)")
+;; 	  ("summary(%s, maxsum = 20)")))
 
 (define-key ess-doc-map (kbd "C-r") 'ess-rdired)
 (define-key ess-doc-map (kbd "r") 'ess-rdired)
@@ -886,15 +913,15 @@ arg lines up."
   (let* ((rmd-buf (current-buffer)))
     (save-excursion
       (let* ((sprocess (ess-get-process ess-current-process-name))
-             (sbuffer (process-buffer sprocess))
-             (buf-coding (symbol-name buffer-file-coding-system))
-             (R-cmd
-              (format "library(rmarkdown); rmarkdown::render(\"%s\")"
-                      buffer-file-name)))
-        (message "Running rmarkdown on %s" buffer-file-name)
-        (ess-execute R-cmd 'buffer nil nil)
-        (switch-to-buffer rmd-buf)
-        (ess-show-buffer (buffer-name sbuffer) nil)))))
+	     (sbuffer (process-buffer sprocess))
+	     (buf-coding (symbol-name buffer-file-coding-system))
+	     (R-cmd
+	      (format "library(rmarkdown); rmarkdown::render(\"%s\")"
+		      buffer-file-name)))
+	(message "Running rmarkdown on %s" buffer-file-name)
+	(ess-execute R-cmd 'buffer nil nil)
+	(switch-to-buffer rmd-buf)
+	(ess-show-buffer (buffer-name sbuffer) nil)))))
 
 (define-key polymode-mode-map "\M-ns" 'ess-rmarkdown)
 
@@ -909,15 +936,15 @@ arg lines up."
   (let* ((rmd-buf (current-buffer)))
     (save-excursion
       (let* ((sprocess (ess-get-process ess-current-process-name))
-             (sbuffer (process-buffer sprocess))
-             (buf-coding (symbol-name buffer-file-coding-system))
-             (R-cmd
-              (format "library(rmarkdown);rmarkdown::run(\"%s\")"
-                      buffer-file-name)))
-        (message "Running shiny on %s" buffer-file-name)
-        (ess-execute R-cmd 'buffer nil nil)
-        (switch-to-buffer rmd-buf)
-        (ess-show-buffer (buffer-name sbuffer) nil)))))
+	     (sbuffer (process-buffer sprocess))
+	     (buf-coding (symbol-name buffer-file-coding-system))
+	     (R-cmd
+	      (format "library(rmarkdown);rmarkdown::run(\"%s\")"
+		      buffer-file-name)))
+	(message "Running shiny on %s" buffer-file-name)
+	(ess-execute R-cmd 'buffer nil nil)
+	(switch-to-buffer rmd-buf)
+	(ess-show-buffer (buffer-name sbuffer) nil)))))
 
 (define-key polymode-mode-map "\M-nr" 'ess-rshiny)
 
@@ -934,14 +961,14 @@ arg lines up."
   (add-hook 'inferior-python-mode-hook 'company-mode)
   ;; Enable highlight indentation
   (add-hook 'highlight-indentation-mode-hook 
-            'highlight-indentation-current-column-mode)
+	    'highlight-indentation-current-column-mode)
   ;; Enable elpy
   (elpy-enable)
   :config
   ;; Do not enable elpy flymake for now
   (remove-hook 'elpy-modules 'elpy-module-flymake)
   (remove-hook 'elpy-modules 'elpy-module-highlight-indentation)
-  
+
   ;; Use python3
   (elpy-use-ipython "ipython3")
   ;;     (setq python-shell-interpreter-args "--simple-prompt --pprint")
@@ -964,8 +991,8 @@ arg lines up."
     (forward-block)
     (elpy-shell-send-region-or-buffer)
     (display-buffer (process-buffer (elpy-shell-get-or-create-process))
-                    nil
-                    'visible))
+		    nil
+		    'visible))
 
   ;; Font-lock
   (add-hook 'python-mode-hook
@@ -973,13 +1000,13 @@ arg lines up."
        (font-lock-add-keywords
         nil
         '(("\\<\\([_A-Za-z0-9]*\\)(" 1
-           font-lock-function-name-face) ; highlight function names
-          ))))
+	   font-lock-function-name-face) ; highlight function names
+	  ))))
 
   :bind
   (:map python-mode-map
-        ("C-c <RET>" . elpy-shell-send-region-or-buffer)
-        ("C-c C-c" . elpy-send-current-block))
+	("C-c <RET>" . elpy-shell-send-region-or-buffer)
+	("C-c C-c" . elpy-send-current-block))
   )
 
 (use-package sql
@@ -988,12 +1015,12 @@ arg lines up."
   ;; Use a more friendly keyword face
   (copy-face 'font-lock-keyword-face 'sql-keyword-face)
   (set-face-attribute 'sql-keyword-face nil 
-                      :foreground "#fabd2f"
-                      :weight 'bold)
+		      :foreground "#fabd2f"
+		      :weight 'bold)
   (add-hook 'sql-mode-hook (lambda ()
-                             (set (make-local-variable 'font-lock-keyword-face)
-                                  'sql-keyword-face)))
-  
+			     (set (make-local-variable 'font-lock-keyword-face)
+				  'sql-keyword-face)))
+
   )
 
 ;; Upcase sql keywords
@@ -1021,11 +1048,11 @@ arg lines up."
 ;; (set-face-attribute 'font-latex-math-face nil :foreground "#ffffff")
 
 ;; Enable query for master file
-(setq-default TeX-master nil)             
-(setq TeX-auto-save t                     
+(setq-default TeX-master nil)		    
+(setq TeX-auto-save t			    
       TeX-parse-self t
       TeX-save-query nil
-      TeX-PDF-mode t      
+      TeX-PDF-mode t	    
       font-latex-fontify-sectioning 'color
       font-latex-fontify-script nil)    
 
@@ -1069,7 +1096,7 @@ arg lines up."
   :config
   (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode)
   (set-face-attribute 'highlight-quoted-symbol nil
-                      :inherit 'font-lock-string-face))
+		      :inherit 'font-lock-string-face))
 
 ;; Keybinding for terminal
 (global-set-key [f2] 'eshell)
@@ -1088,17 +1115,17 @@ arg lines up."
   (setq web-mode-enable-css-colorization t)
   (setq web-mode-enable-current-element-highlight t)
   (set-face-attribute 'web-mode-current-element-highlight-face nil
-                      :weight 'bold
-                      :background "#665c54")
+		      :weight 'bold
+		      :background "#665c54")
   )
 
 (use-package web-beautify
   :ensure t
   :config
   :bind (:map web-mode-map
-              ("C-c b" . web-beautify-html)
-         :map css-mode-map
-              ("C-c b". web-beautify-css))
+	      ("C-c b" . web-beautify-html)
+	 :map css-mode-map
+	      ("C-c b". web-beautify-css))
   )
 
 (use-package gnuplot-mode
@@ -1133,16 +1160,16 @@ arg lines up."
 ;;   :config
 ;;   ;; Set path to the Java tool
 ;;   (setq langtool-language-tool-jar 
-;;      "/home/hieu/Java/LanguageTool-3.8/languagetool-commandline.jar")
+;; 	  "/home/hieu/Java/LanguageTool-3.8/languagetool-commandline.jar")
 ;;   ;; Show messages as pop-up
 ;;   (defun langtool-autoshow-detail-popup (overlays)
 ;;     (when (require 'popup nil t)
-;;    (unless (or popup-instances
-;;                (memq last-command '(keyboard-quit)))
-;;      (let ((msg (langtool-details-error-message overlays)))
-;;        (popup-tip msg)))))
+;; 	(unless (or popup-instances
+;; 		    (memq last-command '(keyboard-quit)))
+;; 	  (let ((msg (langtool-details-error-message overlays)))
+;; 	    (popup-tip msg)))))
 ;;   (setq langtool-autoshow-message-function
-;;      'langtool-autoshow-detail-popup)
+;; 	  'langtool-autoshow-detail-popup)
 ;;   )
 
 
@@ -1167,8 +1194,8 @@ arg lines up."
   :command ("proselint" source-inplace)
   :error-patterns
   ((warning line-start (file-name) ":" line ":" column ": "
-            (id (one-or-more (not (any " "))))
-            (message) line-end))
+	    (id (one-or-more (not (any " "))))
+	    (message) line-end))
   :modes (text-mode markdown-mode gfm-mode org-mode))
 
 (add-to-list 'flycheck-checkers 'proselint)
@@ -1192,7 +1219,7 @@ arg lines up."
   :ensure t
   :bind 
   (:map helm-command-map
-        ("r" . helm-rhythmbox)))
+	("r" . helm-rhythmbox)))
 
 (use-package which-key
   :ensure t

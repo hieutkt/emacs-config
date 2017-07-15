@@ -799,7 +799,6 @@ Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/
 
 #+END_SRC
 
-
 * Utilities
 ** Org-mode
 Org mode is for keeping notes, maintaining TODO lists, planning projects, and authoring documents with a fast and effective plain-text system.
@@ -919,6 +918,38 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     (setq magit-auto-revert-mode nil)
 
 #+END_SRC  
+
+** Elfeed
+
+#+BEGIN_SRC emacs-lisp
+  (use-package elfeed
+    :ensure t
+    :config
+    (setq elfeed-use-curl t)
+
+    ;; (setq elfeed-feeds
+    ;; 	  '(("http://planet.emacsen.org/atom.xml" programming emacs)
+    ;; 	    ("http://feeds.feedburner.com/RBloggers?format=xml" programming r)))
+
+    :bind 
+    ("C-x w" . elfeed)
+    )
+
+  (use-package elfeed-goodies
+    :ensure t
+    :config
+    (elfeed-goodies/setup)
+    )
+
+  ;; elfeed-org allows you to organize elfeed with org
+  (use-package elfeed-org
+    :ensure t
+    :config
+    (elfeed-org)
+    (setq rmh-elfeed-org-files 
+	  (list "/home/hieu/Dropbox/org/elfeed.org"))
+    )
+#+END_SRC
 
 ** Ibuffer
 Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buffers much in the same manner as Dired.
