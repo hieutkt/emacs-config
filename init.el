@@ -687,7 +687,7 @@ arg lines up."
                          (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 ;; Org agenda folders
-(setq org-agenda-files '("/home/hieu/Dropbox/org"))
+(setq org-agenda-files '("~/Dropbox/org"))
 
 ;; Set monday as the start of the week
 (setq org-agenda-start-on-weekday 1)
@@ -749,10 +749,9 @@ arg lines up."
   :ensure t
   :config
   (setq elfeed-use-curl t)
-
-  ;; (setq elfeed-feeds
-  ;; 	  '(("http://planet.emacsen.org/atom.xml" programming emacs)
-  ;; 	    ("http://feeds.feedburner.com/RBloggers?format=xml" programming r)))
+  (setq elfeed-search-filter "@3-days-ago")
+  (setq elfeed-db-directory "~/Dropbox/Emacs/db.elfeed")
+  (add-hook 'elfeed-show-mode-hook (lambda () (visual-line-mode 1)))
 
   :bind 
   ("C-x w" . elfeed)
@@ -770,7 +769,7 @@ arg lines up."
   :config
   (elfeed-org)
   (setq rmh-elfeed-org-files 
-	(list "/home/hieu/Dropbox/org/elfeed.org"))
+	(list "~/Dropbox/org/elfeed.org"))
   )
 
 (use-package ibuffer
@@ -1160,7 +1159,7 @@ arg lines up."
 ;;   :config
 ;;   ;; Set path to the Java tool
 ;;   (setq langtool-language-tool-jar 
-;; 	  "/home/hieu/Java/LanguageTool-3.8/languagetool-commandline.jar")
+;; 	  "~/Java/LanguageTool-3.8/languagetool-commandline.jar")
 ;;   ;; Show messages as pop-up
 ;;   (defun langtool-autoshow-detail-popup (overlays)
 ;;     (when (require 'popup nil t)

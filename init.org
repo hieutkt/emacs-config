@@ -12,7 +12,7 @@ The whole thing is driven by the following =.emacs=
 #+begin_example emacs-lisp :eval no
   (require 'org)
 
-  (setq config-directory "/home/hieu/Emacs/emacs-config/")
+  (setq config-directory "~/Emacs/emacs-config/")
   (org-babel-load-file
     (expand-file-name "init.org" config-directory))		   
 #+end_example
@@ -216,7 +216,7 @@ Install it on Ubuntu by the following script:
   	  airline-helm-colors nil
   	  airline-shortened-directory-length 0
   	  airline-eshell-colors nil)
-    (load-theme 'airline-luna t)
+    (load-theme ' t)
     )
 
 
@@ -838,7 +838,7 @@ See [[http://orgmode.org/][here]].
 *** Agenda
 #+BEGIN_SRC emacs-lisp
   ;; Org agenda folders
-  (setq org-agenda-files '("/home/hieu/Dropbox/org"))
+  (setq org-agenda-files '("~/Dropbox/org"))
 
   ;; Set monday as the start of the week
   (setq org-agenda-start-on-weekday 1)
@@ -926,10 +926,9 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     :ensure t
     :config
     (setq elfeed-use-curl t)
-
-    ;; (setq elfeed-feeds
-    ;; 	  '(("http://planet.emacsen.org/atom.xml" programming emacs)
-    ;; 	    ("http://feeds.feedburner.com/RBloggers?format=xml" programming r)))
+    (setq elfeed-search-filter "@3-days-ago")
+    (setq elfeed-db-directory "~/Dropbox/Emacs/db.elfeed")
+    (add-hook 'elfeed-show-mode-hook (lambda () (visual-line-mode 1)))
 
     :bind 
     ("C-x w" . elfeed)
@@ -947,7 +946,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     :config
     (elfeed-org)
     (setq rmh-elfeed-org-files 
-	  (list "/home/hieu/Dropbox/org/elfeed.org"))
+	  (list "~/Dropbox/org/elfeed.org"))
     )
 #+END_SRC
 
@@ -1432,7 +1431,7 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
   ;;   :config
   ;;   ;; Set path to the Java tool
   ;;   (setq langtool-language-tool-jar 
-  ;; 	  "/home/hieu/Java/LanguageTool-3.8/languagetool-commandline.jar")
+  ;; 	  "~/Java/LanguageTool-3.8/languagetool-commandline.jar")
   ;;   ;; Show messages as pop-up
   ;;   (defun langtool-autoshow-detail-popup (overlays)
   ;;     (when (require 'popup nil t)
