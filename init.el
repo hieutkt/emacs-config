@@ -118,7 +118,6 @@
   :config
   (load-theme 'gruvbox-dark-hard t)
   (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
-  ;; (set-face-attribute 'mode-line nil :background "#427b58" :foreground "#ffffff")
   )
 
 (use-package rainbow-delimiters
@@ -732,7 +731,7 @@ arg lines up."
 	auto-revert-interval 0
 	ess-pdf-viewer-pref "emacsclient"
 	TeX-view-program-selection '((output-pdf "PDF Tools"))
-	pdf-view-midnight-colors '("#fffff8" . "#111111"))
+	pdf-view-midnight-colors '("#ffffc8" . "#1d2021"))
   )
 
 (use-package magit
@@ -1211,14 +1210,12 @@ arg lines up."
     (flycheck-pos-tip-mode))
   )
 
-(use-package helpful
-  :ensure t)
-
-(use-package helm-rhythmbox
+(use-package define-word
   :ensure t
-  :bind 
-  (:map helm-command-map
-	("r" . helm-rhythmbox)))
+  :bind
+  (:map pdf-view-mode-map
+	("l" . define-word))
+  )
 
 (use-package which-key
   :ensure t
