@@ -21,8 +21,6 @@
 ;; Requice common-lisp library
 (require 'cl-lib)
 
-;; Files searching
-(require 'f)
 ;; Auto-revert mode
 (global-auto-revert-mode 1)
 (setq auto-revert-interval 0.5)
@@ -31,7 +29,7 @@
 (setq backup-directory-alist
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+      `((".*" , temporary-file-directory t)))
 
 ;; Delete old backup
 (message "Deleting old backup files...")
@@ -45,9 +43,9 @@
       (delete-file file))))
 
 ;; Startup
-(add-hook 'after-init-hook 
-	  (lambda () 
-	    (find-file (format "%s/%s" config-directory "init.org"))))
+;; (add-hook 'after-init-hook 
+;; 	    (lambda () 
+;; 	      (find-file (format "%s/%s" config-directory "init.org"))))
 
 
 ;; Information settings
@@ -90,6 +88,11 @@
 ;; Enable line number and column number
 (setq column-number-mode t)
 
+;; Display line number
+(add-hook 'text-mode-hook (lambda () (setq display-line-numbers 'relative)))
+(add-hook 'prog-mode-hook (lambda () (setq display-line-numbers 'relative)))
+(add-hook 'ess-mode-hook (lambda () (setq display-line-numbers 'relative)))
+
 ;; Disable tool bar, menu bar, and scroll bar
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -103,12 +106,7 @@
 (diminish 'visual-line-mode)
 
 ;; Default font
-(use-package unicode-fonts
-  :ensure t
-  :init
-  (unicode-fonts-setup)
-  :config
-  (set-frame-font "Source Code Pro 10" nil t))
+(set-frame-font "Source Code Pro 10" nil t)
 
 
 ;; Set themes

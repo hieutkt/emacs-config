@@ -47,8 +47,6 @@ The whole thing is driven by the following =.emacs=
   ;; Requice common-lisp library
   (require 'cl-lib)
 
-  ;; Files searching
-  (require 'f)
   ;; Auto-revert mode
   (global-auto-revert-mode 1)
   (setq auto-revert-interval 0.5)
@@ -57,7 +55,7 @@ The whole thing is driven by the following =.emacs=
   (setq backup-directory-alist
 	`((".*" . ,temporary-file-directory)))
   (setq auto-save-file-name-transforms
-	`((".*" ,temporary-file-directory t)))
+	`((".*" , temporary-file-directory t)))
 
   ;; Delete old backup
   (message "Deleting old backup files...")
@@ -71,9 +69,9 @@ The whole thing is driven by the following =.emacs=
 	(delete-file file))))
 
   ;; Startup
-  (add-hook 'after-init-hook 
-	    (lambda () 
-	      (find-file (format "%s/%s" config-directory "init.org"))))
+  ;; (add-hook 'after-init-hook 
+  ;; 	    (lambda () 
+  ;; 	      (find-file (format "%s/%s" config-directory "init.org"))))
 
 
   ;; Information settings
@@ -127,6 +125,11 @@ The whole thing is driven by the following =.emacs=
   ;; Enable line number and column number
   (setq column-number-mode t)
 
+  ;; Display line number
+  (add-hook 'text-mode-hook (lambda () (setq display-line-numbers 'relative)))
+  (add-hook 'prog-mode-hook (lambda () (setq display-line-numbers 'relative)))
+  (add-hook 'ess-mode-hook (lambda () (setq display-line-numbers 'relative)))
+
   ;; Disable tool bar, menu bar, and scroll bar
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
@@ -155,14 +158,9 @@ Install it on Ubuntu by the following script:
 #+BEGIN_SRC emacs-lisp
 
   ;; Default font
-  (use-package unicode-fonts
-    :ensure t
-    :init
-    (unicode-fonts-setup)
-    :config
-    (set-frame-font "Source Code Pro 10" nil t))
+  (set-frame-font "Source Code Pro 10" nil t)
 
-
+  
   ;; Set themes
   (use-package gruvbox-theme
     :ensure t
@@ -870,13 +868,13 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 #+BEGIN_SRC emacs-lisp
  
   ;; Active Babel languages:
-  ;; (org-babel-do-load-languages
-  ;;  'org-babel-load-languages
-  ;;  '((R . t)
-  ;;    (emacs-lisp . t)
-  ;;    (gnuplot . t)
-  ;;    (plantuml . t)
-  ;;    ))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((R . t)
+     (emacs-lisp . t)
+     (gnuplot . t)
+     (plantuml . t)
+     ))
 
 
   ;; Show inline images
