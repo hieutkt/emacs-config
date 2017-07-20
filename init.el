@@ -98,10 +98,6 @@
 (scroll-bar-mode -1)
 (menu-bar-mode 1)
 
-;; Paren mode
-(show-paren-mode t)
-(setq show-paren-delay 0)
-
 ;; Diminish some modes
 (diminish 'visual-line-mode)
 
@@ -167,24 +163,6 @@
 		    :foreground "DarkOrange"
 		    :background nil)
 
-
-;; (use-package powerline
-;;   :ensure t
-;;   :config
-;;   (powerline-default-theme)
-;;   (set-face-attribute 'mode-line nil
-;;   		    :foreground "Black"
-;;   		    :background "DarkOrange"
-;;   		    :box nil)
-;;   (setq powerline-arrow-shape 'curve)
-;;   )
-
-;; (use-package telephone-line
-;;   :ensure t
-;;   :config
-;;   (telephone-line-mode 1)
-;;   )
-
 ;; Ignore disabled command
 (setq disabled-command-function 'ignore)
 
@@ -202,16 +180,6 @@
 
 ;; Make comint promts read-only
 (setq comint-prompt-read-only t)
-
-;; Auto close bracket insertion.
-(electric-pair-mode 1)
-(setq electric-pair-pairs '(
-			    (?\" . ?\")
-			    (?\( . ?\))
-			    (?\{ . ?\})
-			    ) )
-
-(when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
 ;; Set kill ring size
 (setq global-mark-ring-max 50000)
@@ -384,11 +352,12 @@ arg lines up."
   :config
   (setq electric-operator-R-named-argument-style 'spaced)
   (add-hook 'ess-mode-hook #'electric-operator-mode)
+  (add-hook 'inferior-ess-mode-hook #'electric-operator-mode)
   (add-hook 'python-mode-hook #'electric-operator-mode)
 
   (electric-operator-add-rules-for-mode 'ess-mode
 					(cons ":=" " := ")
-					(cons "%in%" " %in% "))
+					)
   )
 
 ;; Enable Yasnippets
@@ -1220,4 +1189,27 @@ arg lines up."
   :diminish which-key-mode
   :config
   (which-key-mode 1)
+  )
+
+;; Paren mode
+;; (show-paren-mode t)
+;; (setq show-paren-delay 0)
+
+;; Auto close bracket insertion.
+;; (electric-pair-mode 1)
+;; (setq electric-pair-pairs '(
+;; 			      (?\" . ?\")
+;; 			      (?\( . ?\))
+;; 			      (?\{ . ?\})
+;; 			      ) )
+
+;; (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
+
+(use-package smartparens
+  :ensure t
+  :diminish smartparens-mode
+  :config
+  (require 'smartparens-config)
+  (smartparens-global-strict-mode t)
+  (show-smartparens-global-mode t)
   )
