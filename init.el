@@ -1,3 +1,6 @@
+;; This speed up initiation a bit
+(setq gc-cons-threshold 100000000)
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
@@ -59,13 +62,14 @@
   :ensure t)
 
 ;; Startup screen
-(use-package dashboard
-  :ensure t
-  :init 
-  (dashboard-setup-startup-hook)
-  :config 
-  (setq dashboard-startup-banner 'logo)
-  )
+;; (use-package dashboard
+;;   :ensure t
+;;   :init 
+;;   (dashboard-setup-startup-hook)
+;;   :config 
+;;   (setq dashboard-startup-banner 'logo)
+;;   )
+(setq inhibit-startup-screen t)
 
 ;; Global truncate line, except in text-based modes
 (set-default 'truncate-lines t)
@@ -92,6 +96,8 @@
 (add-hook 'text-mode-hook (lambda () (setq display-line-numbers 'relative)))
 (add-hook 'prog-mode-hook (lambda () (setq display-line-numbers 'relative)))
 (add-hook 'ess-mode-hook (lambda () (setq display-line-numbers 'relative)))
+(setq-default display-line-number-width 4)
+(setq-default display-line-number-widen t)
 
 ;; Disable tool bar, menu bar, and scroll bar
 (tool-bar-mode -1)
@@ -162,6 +168,9 @@
 (set-face-attribute 'minibuffer-prompt nil 
 		    :foreground "DarkOrange"
 		    :background nil)
+
+;; Use utf-8
+(prefer-coding-system 'utf-8)
 
 ;; Ignore disabled command
 (setq disabled-command-function 'ignore)
@@ -649,8 +658,25 @@ arg lines up."
 (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
 (font-lock-add-keywords 'org-mode
-                      '(("^ +\\([-*]\\) "
-                         (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+		      '(("^ +\\([-*]\\) "
+			 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+;; Highlight code blocks in org-latex-export-to-pdf
+;; Minted options can be found in:
+;; http://mirror.kku.ac.th/CTAN/macros/latex/contrib/minted/minted.pdf
+(setq org-latex-listings 'minted
+      org-latex-packages-alist '(("" "minted"))
+      org-latex-minted-options '(("breaklines" "true")
+				 ("breakanywhere" "true")
+				 ("mathescape")
+				 ("linenos" "true")
+				 ("firstnumber" "last")
+                                 ("frame" "lines")
+				 ("framesep" "2mm"))
+      org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+	"pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+      )
 
 ;; Org agenda folders
 (setq org-agenda-files '("~/Dropbox/org"))
