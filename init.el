@@ -10,16 +10,14 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-
 ;; Use use-package to reduce load time
 (eval-when-compile
-  (require 'use-package))
+  (require 'use-package)
+  )
+
 (use-package use-package-chords
-  :ensure t
+  :ensure key-chord
   :config (key-chord-mode 1))
-(require 'diminish)                ;; if you use :diminish
-(require 'bind-key)                ;; if you use any :bind variant
-(require 'key-chord)
 
 ;; Requice common-lisp library
 (require 'cl-lib)
@@ -95,7 +93,6 @@
 ;; Display line number
 (add-hook 'text-mode-hook (lambda () (setq display-line-numbers 'relative)))
 (add-hook 'prog-mode-hook (lambda () (setq display-line-numbers 'relative)))
-(add-hook 'ess-mode-hook (lambda () (setq display-line-numbers 'relative)))
 (setq-default display-line-number-width 4)
 (setq-default display-line-number-widen t)
 
@@ -124,7 +121,6 @@
   :ensure t
   :config
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-  (add-hook 'ess-mode-hook 'rainbow-delimiters-mode)
   ;; Custom pallete
   (custom-set-faces
    '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
@@ -599,6 +595,8 @@ arg lines up."
 
 (use-package focus
   :ensure t
+  :defer t
+  :commands focus-mode
   :bind ("<f4>" . focus-mode))
 
 (use-package dired+
@@ -739,18 +737,21 @@ arg lines up."
 
 (use-package elfeed
   :ensure t
+  :defer t
   :config
   (setq elfeed-use-curl t)
   (setq elfeed-search-filter "@3-days-ago")
   (setq elfeed-db-directory "~/Dropbox/Emacs/db.elfeed")
   (add-hook 'elfeed-show-mode-hook (lambda () (visual-line-mode 1)))
 
+  :commands elfeed
   :bind 
   ("C-x w" . elfeed)
   )
 
 (use-package elfeed-goodies
   :ensure t
+  :after elfeed
   :config
   (elfeed-goodies/setup)
   )
@@ -758,6 +759,7 @@ arg lines up."
 ;; elfeed-org allows you to organize elfeed with org
 (use-package elfeed-org
   :ensure t
+  :after elfeed
   :config
   (elfeed-org)
   (setq rmh-elfeed-org-files 
@@ -803,6 +805,8 @@ arg lines up."
   (require 'ess-eldoc)
   (require 'ess-help)
   (require 'ess-custom)
+  ;; Some how ess-mode is not derived from prog-mode
+  (add-hook 'ess-mode-hook (lambda ()  (run-hooks 'prog-mode-hook)))
   )
 
 ;; ;; Truncate long lines

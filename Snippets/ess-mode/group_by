@@ -3,6 +3,4 @@
 # key: group
 # --
 group_by($1) %>%
-  summarise(
-  $2
-  )
+  ${2:$$(yas-choose-value '("summarise" "mutate" "arrange"))}($3)
