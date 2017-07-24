@@ -3,7 +3,9 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
 (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
+
 (package-initialize)
 
 ;; Bootstrap `use-package'
@@ -42,12 +44,6 @@
 		  week))
       (message "%s" file)
       (delete-file file))))
-
-;; Startup
-;; (add-hook 'after-init-hook 
-;; 	    (lambda () 
-;; 	      (find-file (format "%s/%s" config-directory "init.org"))))
-
 
 ;; Information settings
 (setq user-full-name "Nguyễn Đức Hiếu"
@@ -202,8 +198,13 @@
 
 (advice-add #'vc-git-mode-line-string :around #'my-vc-git-mode-line-string)
 
-;; Use utf-8
+;; Everything utf-8
+(set-language-environment "UTF-8")
 (prefer-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
 
 ;; Ignore disabled command
 (setq disabled-command-function 'ignore)
@@ -229,6 +230,11 @@
 ;; Bound undo to C-z
 (global-set-key (kbd "C-z") 'undo)
 
+
+;; Scrolling
+(setq scroll-step 1) ; keyboard scroll one line at a time
+(setq scroll-preserve-screen-position t)
+(setq scroll-conservatively 101)
 
 ;; Expand region with C-' and return to original position with C-g
 (use-package expand-region
