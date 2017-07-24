@@ -3,7 +3,9 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
 (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
+
 (package-initialize)
 
 ;; Bootstrap `use-package'
@@ -42,12 +44,6 @@
 		  week))
       (message "%s" file)
       (delete-file file))))
-
-;; Startup
-;; (add-hook 'after-init-hook 
-;; 	    (lambda () 
-;; 	      (find-file (format "%s/%s" config-directory "init.org"))))
-
 
 ;; Information settings
 (setq user-full-name "Nguyễn Đức Hiếu"
@@ -93,8 +89,8 @@
 ;; Display line number
 (add-hook 'text-mode-hook (lambda () (setq display-line-numbers 'relative)))
 (add-hook 'prog-mode-hook (lambda () (setq display-line-numbers 'relative)))
-(setq-default display-line-number-width 4)
-(setq-default display-line-number-widen t)
+(setq-default display-line-numbers-width 4)
+(setq-default display-line-numbers-widen t)
 
 ;; Disable tool bar, menu bar, and scroll bar
 (tool-bar-mode -1)
@@ -140,33 +136,75 @@
 		      :background "#f9f5d7")
   )
 
-(use-package airline-themes
-  :ensure t
+;; (use-package airline-themes
+;;   :ensure t
+;;   :config
+;;   (setq powerline-utf-8-separator-left        #xe0b0
+;; 	  powerline-utf-8-separator-right       #xe0b2
+;; 	  airline-utf-glyph-separator-left      #xe0b0
+;; 	  airline-utf-glyph-separator-right     #xe0b2
+;; 	  airline-utf-glyph-subseparator-left   #xe0b1
+;; 	  airline-utf-glyph-subseparator-right  #xe0d2
+;; 	  airline-utf-glyph-branch              #xe0a0
+;; 	  airline-utf-glyph-readonly            #xe0a2
+;; 	  airline-utf-glyph-linenumber          #xe0a1
+;; 	  airline-cursor-colors nil
+;; 	  airline-helm-colors nil
+;; 	  airline-shortened-directory-length 0
+;; 	  airline-eshell-colors nil)
+;;   (load-theme 'airline-luna t)
+;;   )
+
+
+;; ;; Comint
+;; (set-face-attribute 'minibuffer-prompt nil 
+;; 		      :foreground "DarkOrange"
+;; 		      :background nil)
+
+(use-package spaceline-config
+  :ensure spaceline
   :config
-  (setq powerline-utf-8-separator-left        #xe0b0
-  	powerline-utf-8-separator-right       #xe0b2
-  	airline-utf-glyph-separator-left      #xe0b0
-  	airline-utf-glyph-separator-right     #xe0b2
-  	airline-utf-glyph-subseparator-left   #xe0b1
-  	airline-utf-glyph-subseparator-right  #xe0d2
-  	airline-utf-glyph-branch              #xe0a0
-  	airline-utf-glyph-readonly            #xe0a2
-  	airline-utf-glyph-linenumber          #xe0a1
-  	airline-cursor-colors nil
-  	airline-helm-colors nil
-  	airline-shortened-directory-length 0
-  	airline-eshell-colors nil)
-  (load-theme 'airline-luna t)
+  (setq spaceline-window-numbers-unicode t)
+  (setq spaceline-workspace-numbers-unicode t)
+  (spaceline-helm-mode)
+  (spaceline-info-mode)
+  (setq-default
+   powerline-default-separator 'wave
+   spaceline-flycheck-bullet "❖ %s"
+   spaceline-separator-dir-left '(right . right)
+   spaceline-separator-dir-right '(left . left))
+  (spaceline-install
+  'main
+  '((window-number)
+    (buffer-modified)
+    (projectile-root)
+    (version-control :when active)
+    ((remote-host buffer-id) :face highlight-face)
+    )
+  '((selection-info :face region :when mark-active)
+    (major-mode)
+    (process :when active)
+    ((flycheck-error flycheck-warning flycheck-info) :when active)
+    (line-column)
+    (global :when active)
+    (buffer-position)))
+  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
   )
 
+(defun my-vc-git-mode-line-string (orig-fn &rest args)
+  "Replace Git in modeline with font-awesome git icon via ORIG-FN and ARGS."
+  (let ((str (apply orig-fn args)))
+    (concat [#xe0a0] " " (substring-no-properties str 4))))
 
-;; Comint
-(set-face-attribute 'minibuffer-prompt nil 
-		    :foreground "DarkOrange"
-		    :background nil)
+(advice-add #'vc-git-mode-line-string :around #'my-vc-git-mode-line-string)
 
-;; Use utf-8
+;; Everything utf-8
+(set-language-environment "UTF-8")
 (prefer-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
 
 ;; Ignore disabled command
 (setq disabled-command-function 'ignore)
@@ -192,6 +230,11 @@
 ;; Bound undo to C-z
 (global-set-key (kbd "C-z") 'undo)
 
+
+;; Scrolling
+(setq scroll-step 1) ; keyboard scroll one line at a time
+(setq scroll-preserve-screen-position t)
+(setq scroll-conservatively 101)
 
 ;; Expand region with C-' and return to original position with C-g
 (use-package expand-region
