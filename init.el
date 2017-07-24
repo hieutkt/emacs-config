@@ -1,60 +1,3 @@
-;; This speed up initiation a bit
-(setq gc-cons-threshold 100000000)
-
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
-(add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
-
-(package-initialize)
-
-;; Bootstrap `use-package'
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-;; Use use-package to reduce load time
-(eval-when-compile
-  (require 'use-package)
-  )
-
-(use-package use-package-chords
-  :ensure key-chord
-  :config (key-chord-mode 1))
-
-;; Requice common-lisp library
-(require 'cl-lib)
-
-;; Auto-revert mode
-(global-auto-revert-mode 1)
-(setq auto-revert-interval 0.5)
-
-;; Backup stored in /tmp
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" , temporary-file-directory t)))
-
-;; Delete old backup
-(message "Deleting old backup files...")
-(let ((week (* 60 60 24 7))
-      (current (float-time (current-time))))
-  (dolist (file (directory-files temporary-file-directory t))
-    (when (and (backup-file-name-p file)
-	       (> (- current (float-time (fifth (file-attributes file))))
-		  week))
-      (message "%s" file)
-      (delete-file file))))
-
-;; Information settings
-(setq user-full-name "Nguyễn Đức Hiếu"
-      user-mail-address "hieunguyen31371@gmail.com")
-
-;; Set emacs as a client
-;; (server-start)
-
-(use-package hydra
-  :ensure t)
-
 ;; Startup screen
 ;; (use-package dashboard
 ;;   :ensure t
@@ -206,11 +149,11 @@
 (set-buffer-file-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
 
-;; Ignore disabled command
-(setq disabled-command-function 'ignore)
 
-;; Set some command disabled
-(put 'overwrite-mode 'disabled t)
+;; Set some annoying command disabled
+(unbind-key "<insert>") 		;overwrite-mode
+(unbind-key "C-x C-z")		;suspend-frame
+(unbind-key "C-x m")			;compose-mail
 
 ;; Delete marked region when input
 (delete-selection-mode 1)
@@ -642,6 +585,63 @@ arg lines up."
   :commands focus-mode
   :bind ("<f4>" . focus-mode))
 
+;; This speed up initiation a bit
+(setq gc-cons-threshold 100000000)
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+(add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
+
+(package-initialize)
+
+;; Bootstrap `use-package'
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+;; Use use-package to reduce load time
+(eval-when-compile
+  (require 'use-package)
+  )
+
+(use-package use-package-chords
+  :ensure key-chord
+  :config (key-chord-mode 1))
+
+;; Requice common-lisp library
+(require 'cl-lib)
+
+;; Auto-revert mode
+(global-auto-revert-mode 1)
+(setq auto-revert-interval 0.5)
+
+;; Backup stored in /tmp
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" , temporary-file-directory t)))
+
+;; Delete old backup
+(message "Deleting old backup files...")
+(let ((week (* 60 60 24 7))
+      (current (float-time (current-time))))
+  (dolist (file (directory-files temporary-file-directory t))
+    (when (and (backup-file-name-p file)
+	       (> (- current (float-time (fifth (file-attributes file))))
+		  week))
+      (message "%s" file)
+      (delete-file file))))
+
+;; Information settings
+(setq user-full-name "Nguyễn Đức Hiếu"
+      user-mail-address "hieunguyen31371@gmail.com")
+
+;; Set emacs as a client
+;; (server-start)
+
+(use-package hydra
+  :ensure t)
+
 (use-package dired+
   :ensure t
   :config
@@ -840,14 +840,9 @@ arg lines up."
   :bind
   ("C-x C-b" . ibuffer))
 
-(use-package ess
-  :ensure t
+(use-package ess-site
+  :ensure ess
   :config
-  (require 'ess-site)
-  (require 'ess-rutils)
-  (require 'ess-eldoc)
-  (require 'ess-help)
-  (require 'ess-custom)
   ;; Some how ess-mode is not derived from prog-mode
   (add-hook 'ess-mode-hook (lambda ()  (run-hooks 'prog-mode-hook)))
   )
@@ -859,8 +854,6 @@ arg lines up."
 
 ;; ;; Indentation style
 (setq ess-default-style 'DEFAULT)
-
-
 
 ;; ESS syntax highlight  
 (setq ess-R-font-lock-keywords 
@@ -1094,6 +1087,11 @@ arg lines up."
       font-latex-fontify-sectioning 'color
       font-latex-fontify-script nil)    
 
+;; Turn on RefTeX in AUCTeX
+(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+;; Activate nice interface between RefTeX and AUCTeX
+(setq reftex-plug-into-AUCTeX t)
+
 ;; Word-wrap
  (add-hook 'TeX-mode-hook (lambda () (visual-line-mode 1)))
 
@@ -1289,6 +1287,6 @@ arg lines up."
   :diminish smartparens-mode
   :config
   (require 'smartparens-config)
-  (smartparens-global-strict-mode t)
+  (smartparens-global-mode t)
   (show-smartparens-global-mode t)
   )
