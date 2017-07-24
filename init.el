@@ -1214,6 +1214,12 @@ arg lines up."
 	("l" . define-word))
   )
 
+(defun dad-joke ()
+(interactive)
+(shell-command "curl -s https://icanhazdadjoke.com/"))
+
+(run-with-idle-timer 60 t 'dad-joke)
+
 (use-package which-key
   :ensure t
   :diminish which-key-mode
