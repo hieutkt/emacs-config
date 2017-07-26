@@ -355,8 +355,19 @@ Since I don't have the habit of using many windows, simple setup is enough.
     :config
     ;; ace-window uses home row
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+
+    (defhydra window-hydra (:hint nil)
+      "
+_[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
+"
+      ("[" shrink-window-horizontally)
+      ("]" enlarge-window-horizontally)
+      ("=" balance-windows :exit t)
+      )
+    
     :bind*
-    (("M-p" . ace-window))
+    (("M-p" . ace-window)
+     ("C-x =" . window-hydra/body))
     )
 
 #+END_SRC
@@ -1105,10 +1116,10 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 *** Functions and key bindind
 #+BEGIN_SRC emacs-lisp
   ;; Describe object
-  ;; (setq ess-R-describe-object-at-point-commands
-  ;; 	'(("str(%s)")
-  ;; 	  ("print(%s)")
-  ;; 	  ("summary(%s, maxsum = 20)")))
+  (setq ess-R-describe-object-at-point-commands
+  	'(("str(%s)")
+  	  ("skimr::skim(%s)")
+  	  ("summary(%s, maxsum = 20)")))
 
   (define-key ess-doc-map (kbd "C-r") 'ess-rdired)
   (define-key ess-doc-map (kbd "r") 'ess-rdired)

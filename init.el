@@ -289,13 +289,24 @@ arg lines up."
 (global-set-key [\M-down] 'move-text-down)
 
 (use-package ace-window
-  :ensure t
-  :config
-  ;; ace-window uses home row
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-  :bind*
-  (("M-p" . ace-window))
-  )
+    :ensure t
+    :config
+    ;; ace-window uses home row
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+
+    (defhydra window-hydra (:hint nil)
+      "
+_[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
+"
+      ("[" shrink-window-horizontally)
+      ("]" enlarge-window-horizontally)
+      ("=" balance-windows :exit t)
+      )
+    
+    :bind*
+    (("M-p" . ace-window)
+     ("C-x =" . window-hydra/body))
+    )
 
 (use-package company
   :ensure t
@@ -897,10 +908,10 @@ arg lines up."
 (setq ess-tab-complete-in-script t)	;; Press <tab> inside functions for completions
 
 ;; Describe object
-;; (setq ess-R-describe-object-at-point-commands
-;; 	'(("str(%s)")
-;; 	  ("print(%s)")
-;; 	  ("summary(%s, maxsum = 20)")))
+(setq ess-R-describe-object-at-point-commands
+      '(("str(%s)")
+  	("skimr::skim(%s)")
+  	("summary(%s, maxsum = 20)")))
 
 (define-key ess-doc-map (kbd "C-r") 'ess-rdired)
 (define-key ess-doc-map (kbd "r") 'ess-rdired)
