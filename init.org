@@ -12,17 +12,20 @@ The Ubuntu repo for emacs version is
 
 The whole thing is driven by the following =.emacs=
 
-#+begin_example emacs-lisp :eval no
-  (require 'org)
+#+BEGIN_EXAMPLE emacs-lisp
 
-  (setq config-directory "~/Emacs/emacs-config/")
-  (org-babel-load-file
-    (expand-file-name "init.org" config-directory))		   
-#+end_example
+(require 'org)
+
+(setq config-directory "~/Emacs/emacs-config/")
+(org-babel-load-file
+(expand-file-name "init.org" config-directory))		   
+
+#+END_EXAMPLE
+
 * Appearence
 ** Interface
 
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 
   ;; Startup screen
   ;; (use-package dashboard
@@ -33,7 +36,7 @@ The whole thing is driven by the following =.emacs=
   ;;   (setq dashboard-startup-banner 'logo)
   ;;   )
   (setq inhibit-startup-screen t)
-  
+
   ;; Global truncate line, except in text-based modes
   (set-default 'truncate-lines t)
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
@@ -60,7 +63,7 @@ The whole thing is driven by the following =.emacs=
   (add-hook 'prog-mode-hook (lambda () (setq display-line-numbers 'relative)))
   (setq-default display-line-numbers-width 4)
   (setq-default display-line-numbers-widen t)
-  
+
   ;; Disable tool bar, menu bar, and scroll bar
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
@@ -89,7 +92,7 @@ Install it on Ubuntu by the following script:
   ;; Default font
   (set-frame-font "Source Code Pro 10" nil t)
 
-  
+
   ;; Set themes
   (use-package gruvbox-theme
     :ensure t
@@ -114,7 +117,7 @@ Install it on Ubuntu by the following script:
      '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
      '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1")))))
     )
-    
+
     (use-package popup
     :config
     (set-face-attribute 'popup-tip-face nil 
@@ -215,6 +218,9 @@ Install it on Ubuntu by the following script:
   ;; Global mark ring
   (setq global-mark-ring-max 50000)
 
+  ;; Auto save abbreviation
+  (setq save-abbrevs 'silently)
+  
   ;; "Yes or no"? Too much writing
   (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -410,14 +416,6 @@ Company is a completion mechanism that is very flexible
 	  )
     )
 
-  ;; math backend, this will input math symbols everywhere except in 
-  ;; LaTeX math evironments
-  (use-package company-math
-    :ensure t
-    :config
-    (add-to-list 'company-backends 'company-math-symbols-unicode)
-    )
-  
 
 #+END_SRC
 
@@ -601,9 +599,9 @@ Company is a completion mechanism that is very flexible
     :init 
     (require 'poly-R)
     (require 'poly-markdown)
-    (require 'poly-org)
     
-    :mode (("\\.org" . poly-org-mode)
+    :mode (
+	   ;; ("\\.org" . poly-org-mode)
 	   ("\\.md" . poly-markdown-mode)
 	   ("\\.Snw$" . poly-noweb+r-mode)
 	   ("\\.Rnw$" . poly-noweb+r-mode)
@@ -838,15 +836,12 @@ See [[http://orgmode.org/][here]].
 *** Setting up
 
 #+BEGIN_SRC emacs-lisp
-      
+
   ;; Word-wrap
   ;; (add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
 
   ;; Omit the headline-asterisks except the last one:
   (setq org-hide-leading-stars t)
-
-  ;; Auto indent normally
-  (setq org-src-tab-acts-natively t)
 
   ;; Hide emphasis markers
   (setq org-hide-emphasis-markers t)
@@ -855,16 +850,20 @@ See [[http://orgmode.org/][here]].
   (setq org-support-shift-select t)
 
   ;; Fontification
-  (setq org-src-fontify-natively t)
   (set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
   (set-face-attribute 'org-level-2 nil :weight 'bold)
-  (set-face-attribute 'org-block nil :foreground "#ffffff")  
   (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
   (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
+
+  (set-face-attribute 'org-block nil :background
+		      (color-lighten-name
+		       (face-attribute 'default :background) 2))
+
+
   (font-lock-add-keywords 'org-mode
-			'(("^ +\\([-*]\\) "
-			   (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+			  '(("^ +\\([-*]\\) "
+			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
   ;; Highlight code blocks in org-latex-export-to-pdf
   ;; Minted options can be found in:
@@ -873,15 +872,19 @@ See [[http://orgmode.org/][here]].
 	org-latex-packages-alist '(("" "minted"))
 	org-latex-minted-options '(("breaklines" "true")
 				   ("breakanywhere" "true")
-				   ("mathescape")
-				   ("linenos" "true")
-				   ("firstnumber" "last")
-                                   ("frame" "lines")
-				   ("framesep" "2mm"))
-	org-latex-pdf-process
-	'("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-	  "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
-	)
+				     ("mathescape")
+				     ("linenos" "true")
+				     ("firstnumber" "last")
+				     ("frame" "lines")
+				     ("framesep" "2mm"))
+	  org-latex-pdf-process
+	  '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+	    "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+	  )
+
+  ;; Writing latex in org-mode
+  (add-hook 'org-mode-hook 'org-cdlatex-mode)
+  (setq org-pretty-entities t)
 
 #+END_SRC
 
@@ -916,7 +919,7 @@ See [[http://orgmode.org/][here]].
 Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 #+BEGIN_SRC emacs-lisp
- 
+
   ;; Active Babel languages:
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -926,6 +929,11 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
      (plantuml . t)
      ))
 
+  ;; Indent normally in source code
+  (setq org-src-tab-acts-natively t)
+
+  ;; Fontification in org source block
+  (setq org-src-fontify-natively t)
 
   ;; Show inline images
   (setq org-startup-with-inline-images t)
@@ -1118,7 +1126,7 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
   ;; Describe object
   (setq ess-R-describe-object-at-point-commands
   	'(("str(%s)")
-  	  ("skimr::skim(%s)")
+  	  ("options(tibble.print_max = Inf);skimr::skim(%s);options(tibble.print_max = Inf)")
   	  ("summary(%s, maxsum = 20)")))
 
   (define-key ess-doc-map (kbd "C-r") 'ess-rdired)
@@ -1643,14 +1651,15 @@ Practicing Emacs by disable all normal hot-key
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package which-key
-  :ensure t
-  :diminish which-key-mode
-  :config
-  (which-key-mode 1)
-  )
+  (use-package which-key
+    :ensure t
+    :diminish which-key-mode
+    :config
+    (which-key-mode 1)
+    )
 
 #+END_SRC
+
 ** Smartparens
 
 #+BEGIN_SRC emacs-lisp
@@ -1676,6 +1685,7 @@ Practicing Emacs by disable all normal hot-key
     (require 'smartparens-config)
     (smartparens-global-mode t)
     (show-smartparens-global-mode t)
+    (add-hook 'comint-mode-hook 'smartparens-mode)
     )
   
 #+END_SRC

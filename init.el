@@ -161,6 +161,9 @@
 ;; Global mark ring
 (setq global-mark-ring-max 50000)
 
+;; Auto save abbreviation
+(setq save-abbrevs 'silently)
+
 ;; "Yes or no"? Too much writing
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -341,14 +344,6 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
 	)
   )
 
-;; math backend, this will input math symbols everywhere except in 
-;; LaTeX math evironments
-(use-package company-math
-  :ensure t
-  :config
-  (add-to-list 'company-backends 'company-math-symbols-unicode)
-  )
-
 (use-package electric-operator
   :ensure t
   :config
@@ -502,9 +497,9 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
   :init 
   (require 'poly-R)
   (require 'poly-markdown)
-  (require 'poly-org)
 
-  :mode (("\\.org" . poly-org-mode)
+  :mode (
+	 ;; ("\\.org" . poly-org-mode)
 	 ("\\.md" . poly-markdown-mode)
 	 ("\\.Snw$" . poly-noweb+r-mode)
 	 ("\\.Rnw$" . poly-noweb+r-mode)
@@ -692,9 +687,6 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
 ;; Omit the headline-asterisks except the last one:
 (setq org-hide-leading-stars t)
 
-;; Auto indent normally
-(setq org-src-tab-acts-natively t)
-
 ;; Hide emphasis markers
 (setq org-hide-emphasis-markers t)
 
@@ -702,16 +694,20 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
 (setq org-support-shift-select t)
 
 ;; Fontification
-(setq org-src-fontify-natively t)
 (set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
 (set-face-attribute 'org-level-2 nil :weight 'bold)
-(set-face-attribute 'org-block nil :foreground "#ffffff")  
 (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
 (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
+
+(set-face-attribute 'org-block nil :background
+		    (color-lighten-name
+		     (face-attribute 'default :background) 2))
+
+
 (font-lock-add-keywords 'org-mode
-		      '(("^ +\\([-*]\\) "
-			 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+			'(("^ +\\([-*]\\) "
+			   (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 ;; Highlight code blocks in org-latex-export-to-pdf
 ;; Minted options can be found in:
@@ -720,15 +716,19 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
       org-latex-packages-alist '(("" "minted"))
       org-latex-minted-options '(("breaklines" "true")
 				 ("breakanywhere" "true")
-				 ("mathescape")
-				 ("linenos" "true")
-				 ("firstnumber" "last")
-                                 ("frame" "lines")
-				 ("framesep" "2mm"))
-      org-latex-pdf-process
-      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-	"pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
-      )
+				   ("mathescape")
+				   ("linenos" "true")
+				   ("firstnumber" "last")
+				   ("frame" "lines")
+				   ("framesep" "2mm"))
+	org-latex-pdf-process
+	'("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+	  "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+	)
+
+;; Writing latex in org-mode
+(add-hook 'org-mode-hook 'org-cdlatex-mode)
+(setq org-pretty-entities t)
 
 ;; Org agenda folders
 (setq org-agenda-files '("~/Dropbox/org"))
@@ -763,6 +763,11 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
    (plantuml . t)
    ))
 
+;; Indent normally in source code
+(setq org-src-tab-acts-natively t)
+
+;; Fontification in org source block
+(setq org-src-fontify-natively t)
 
 ;; Show inline images
 (setq org-startup-with-inline-images t)
@@ -910,7 +915,7 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
 ;; Describe object
 (setq ess-R-describe-object-at-point-commands
       '(("str(%s)")
-  	("skimr::skim(%s)")
+  	("options(tibble.print_max = Inf);skimr::skim(%s);options(tibble.print_max = Inf)")
   	("summary(%s, maxsum = 20)")))
 
 (define-key ess-doc-map (kbd "C-r") 'ess-rdired)
@@ -1300,4 +1305,5 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
   (require 'smartparens-config)
   (smartparens-global-mode t)
   (show-smartparens-global-mode t)
+  (add-hook 'comint-mode-hook 'smartparens-mode)
   )
