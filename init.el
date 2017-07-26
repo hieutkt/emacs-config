@@ -1,11 +1,4 @@
 ;; Startup screen
-;; (use-package dashboard
-;;   :ensure t
-;;   :init 
-;;   (dashboard-setup-startup-hook)
-;;   :config 
-;;   (setq dashboard-startup-banner 'logo)
-;;   )
 (setq inhibit-startup-screen t)
 
 ;; Global truncate line, except in text-based modes
@@ -78,31 +71,6 @@
 		      :foreground "#1d2021"
 		      :background "#f9f5d7")
   )
-
-;; (use-package airline-themes
-;;   :ensure t
-;;   :config
-;;   (setq powerline-utf-8-separator-left        #xe0b0
-;; 	  powerline-utf-8-separator-right       #xe0b2
-;; 	  airline-utf-glyph-separator-left      #xe0b0
-;; 	  airline-utf-glyph-separator-right     #xe0b2
-;; 	  airline-utf-glyph-subseparator-left   #xe0b1
-;; 	  airline-utf-glyph-subseparator-right  #xe0d2
-;; 	  airline-utf-glyph-branch              #xe0a0
-;; 	  airline-utf-glyph-readonly            #xe0a2
-;; 	  airline-utf-glyph-linenumber          #xe0a1
-;; 	  airline-cursor-colors nil
-;; 	  airline-helm-colors nil
-;; 	  airline-shortened-directory-length 0
-;; 	  airline-eshell-colors nil)
-;;   (load-theme 'airline-luna t)
-;;   )
-
-
-;; ;; Comint
-;; (set-face-attribute 'minibuffer-prompt nil 
-;; 		      :foreground "DarkOrange"
-;; 		      :background nil)
 
 (use-package spaceline-config
   :ensure spaceline
@@ -1117,6 +1085,15 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
   :ensure t
   :init
   (company-auctex-init)
+  )
+
+(use-package cdlatex
+  :ensure t
+  :config
+  (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
+  :bind
+  (:map LaTeX-mode-map
+   ("<tab>" . cdlatex-tab))
   )
 
 (use-package markdown-mode

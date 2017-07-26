@@ -28,13 +28,6 @@ The whole thing is driven by the following =.emacs=
 #+BEGIN_SRC emacs-lisp
 
   ;; Startup screen
-  ;; (use-package dashboard
-  ;;   :ensure t
-  ;;   :init 
-  ;;   (dashboard-setup-startup-hook)
-  ;;   :config 
-  ;;   (setq dashboard-startup-banner 'logo)
-  ;;   )
   (setq inhibit-startup-screen t)
 
   ;; Global truncate line, except in text-based modes
@@ -79,13 +72,13 @@ The whole thing is driven by the following =.emacs=
 [[https://github.com/adobe-fonts/source-code-pro][Source Code Pro]] is a beautiful programming font with Unicode supports
 Install it on Ubuntu by the following script:
 
-#+BEGIN_SRC sh :tangle no
+#+BEGIN_EXAMPLE sh
 
-  [ -d /usr/share/fonts/opentype ] || sudo mkdir /usr/share/fonts/opentype
-  sudo git clone --depth 1 --branch release https://github.com/adobe-fonts/source-code-pro.git /usr/share/fonts/opentype/scp
-  sudo fc-cache -f -v
+[ -d /usr/share/fonts/opentype ] || sudo mkdir /usr/share/fonts/opentype
+sudo git clone --depth 1 --branch release https://github.com/adobe-fonts/source-code-pro.git /usr/share/fonts/opentype/scp
+sudo fc-cache -f -v
 
-#+END_SRC
+#+END_EXAMPLE
 
 #+BEGIN_SRC emacs-lisp
 
@@ -131,31 +124,6 @@ Install it on Ubuntu by the following script:
 
 #+BEGIN_SRC emacs-lisp
 
-  ;; (use-package airline-themes
-  ;;   :ensure t
-  ;;   :config
-  ;;   (setq powerline-utf-8-separator-left        #xe0b0
-  ;; 	  powerline-utf-8-separator-right       #xe0b2
-  ;; 	  airline-utf-glyph-separator-left      #xe0b0
-  ;; 	  airline-utf-glyph-separator-right     #xe0b2
-  ;; 	  airline-utf-glyph-subseparator-left   #xe0b1
-  ;; 	  airline-utf-glyph-subseparator-right  #xe0d2
-  ;; 	  airline-utf-glyph-branch              #xe0a0
-  ;; 	  airline-utf-glyph-readonly            #xe0a2
-  ;; 	  airline-utf-glyph-linenumber          #xe0a1
-  ;; 	  airline-cursor-colors nil
-  ;; 	  airline-helm-colors nil
-  ;; 	  airline-shortened-directory-length 0
-  ;; 	  airline-eshell-colors nil)
-  ;;   (load-theme 'airline-luna t)
-  ;;   )
-
-
-  ;; ;; Comint
-  ;; (set-face-attribute 'minibuffer-prompt nil 
-  ;; 		      :foreground "DarkOrange"
-  ;; 		      :background nil)
-
   (use-package spaceline-config
     :ensure spaceline
     :config
@@ -190,9 +158,9 @@ Install it on Ubuntu by the following script:
     "Replace Git in modeline with font-awesome git icon via ORIG-FN and ARGS."
     (let ((str (apply orig-fn args)))
       (concat [#xe0a0] " " (substring-no-properties str 4))))
-  
+
   (advice-add #'vc-git-mode-line-string :around #'my-vc-git-mode-line-string)
-  
+
 #+END_SRC
 * Editing
 ** General
@@ -1306,8 +1274,9 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
     )
 
 #+END_SRC
-** \LaTeX{}
-
+** TeX and LaTeX
+*** AUCTeX
+    
 #+BEGIN_SRC emacs-lisp
 
   (use-package tex 
@@ -1346,6 +1315,22 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
     :ensure t
     :init
     (company-auctex-init)
+    )
+
+#+END_SRC
+
+*** CDLaTex
+CDLaTeX is a minor mode for Emacs supporting fast insertion of environment templates and math stuff in LaTeX. 
+For more information see [[https://github.com/cdominik/cdlatex][here]]
+
+#+BEGIN_SRC emacs-lisp
+  (use-package cdlatex
+    :ensure t
+    :config
+    (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
+    :bind
+    (:map LaTeX-mode-map
+     ("<tab>" . cdlatex-tab))
     )
 
 #+END_SRC
