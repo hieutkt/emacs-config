@@ -82,8 +82,8 @@
   (setq-default
    powerline-default-separator 'wave
    spaceline-flycheck-bullet "❖ %s"
-   spaceline-separator-dir-left '(right . right)
-   spaceline-separator-dir-right '(left . left))
+   spaceline-separator-dir-left '(left . left)
+   spaceline-separator-dir-right '(right . right))
   (spaceline-install
   'main
   '((window-number)
@@ -791,6 +791,13 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
   (elfeed-org)
   (setq rmh-elfeed-org-files 
 	(list "~/Dropbox/org/elfeed.org"))
+  )
+
+(use-package paradox
+  :ensure t
+  :config
+  (paradox-enable)
+  (setq paradox-execute-asynchronously t)
   )
 
 (use-package ibuffer
