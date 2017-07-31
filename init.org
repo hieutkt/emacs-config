@@ -988,7 +988,11 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     :ensure t
     :config
     (paradox-enable)
-    (setq paradox-execute-asynchronously t)
+    (setq-default
+     paradox-column-width-package 27
+     paradox-column-width-version 13
+     paradox-execute-asynchronously t
+     paradox-github-token t)
     )
 #+END_SRC
 
@@ -1660,11 +1664,11 @@ Practicing Emacs by disable all normal hot-key
 ** Smartparens
 
 #+BEGIN_SRC emacs-lisp
-  
+
   ;; Paren mode
   ;; (show-paren-mode t)
   ;; (setq show-paren-delay 0)
-  
+
   ;; Auto close bracket insertion.
   ;; (electric-pair-mode 1)
   ;; (setq electric-pair-pairs '(
@@ -1683,6 +1687,38 @@ Practicing Emacs by disable all normal hot-key
     (smartparens-global-mode t)
     (show-smartparens-global-mode t)
     (add-hook 'comint-mode-hook 'smartparens-mode)
+    :bind
+    (("M-<backspace>" . sp-unwrap-sexp))
     )
-  
+
+#+END_SRC
+
+** Vimish-fold
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package vimish-fold
+    :ensure t
+    :config
+    (setq vimish-fold-header-width '100)
+    )
+
+
+  (use-package selected
+    :defer t
+    :ensure t
+    :bind
+    (:map selected-keymap
+	  ("C-c c"       . capitalize-region)
+	  ("C-c l"       . downcase-region)
+	  ("C-c u"       . upcase-region)
+	  ("C-f"         . fill-region)
+	  ("C-g"         . selected-off)
+	  ("C-s r"       . reverse-region)
+	  ("C-s s"       . sort-lines)
+	  ("C-`"         . vimish-fold)
+	  )
+    :config (selected-global-mode)
+    ) 
+
 #+END_SRC

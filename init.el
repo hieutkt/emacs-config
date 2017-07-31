@@ -797,7 +797,11 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
   :ensure t
   :config
   (paradox-enable)
-  (setq paradox-execute-asynchronously t)
+  (setq-default
+   paradox-column-width-package 27
+   paradox-column-width-version 13
+   paradox-execute-asynchronously t
+   paradox-github-token t)
   )
 
 (use-package ibuffer
@@ -1290,4 +1294,30 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
   (smartparens-global-mode t)
   (show-smartparens-global-mode t)
   (add-hook 'comint-mode-hook 'smartparens-mode)
+  :bind
+  (("M-<backspace>" . sp-unwrap-sexp))
+  )
+
+(use-package vimish-fold
+  :ensure t
+  :config
+  (setq vimish-fold-header-width '100)
+  )
+
+
+(use-package selected
+  :defer t
+  :ensure t
+  :bind
+  (:map selected-keymap
+	("C-c c"       . capitalize-region)
+	("C-c l"       . downcase-region)
+	("C-c u"       . upcase-region)
+	("C-f"         . fill-region)
+	("C-g"         . selected-off)
+	("C-s r"       . reverse-region)
+	("C-s s"       . sort-lines)
+	("C-`"         . vimish-fold)
+	)
+  :config (selected-global-mode)
   )
