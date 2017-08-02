@@ -1301,7 +1301,7 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows
 (use-package vimish-fold
   :ensure t
   :config
-  (setq vimish-fold-header-width '100)
+  (setq vimish-fold-header-width '79)
   )
 
 

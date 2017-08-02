@@ -1700,7 +1700,7 @@ Practicing Emacs by disable all normal hot-key
   (use-package vimish-fold
     :ensure t
     :config
-    (setq vimish-fold-header-width '100)
+    (setq vimish-fold-header-width '79)
     )
 
 
