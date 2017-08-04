@@ -1,3 +1,62 @@
+;; Increase garbage collection threshold to improve emacs init time
+(setq gc-cons-threshold 100000000)
+(add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
+
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+(add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
+
+(package-initialize)
+
+;; Bootstrap `use-package'
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+;; Use use-package to reduce load time
+(eval-when-compile
+  (require 'use-package)
+  )
+
+(use-package use-package-chords
+  :ensure key-chord
+  :config (key-chord-mode 1))
+
+;; Requice common-lisp library
+(require 'cl-lib)
+
+;; Auto-revert mode
+(global-auto-revert-mode 1)
+(setq auto-revert-interval 0.5)
+
+;; Backup stored in /tmp
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" , temporary-file-directory t)))
+
+;; Delete old backup
+(message "Deleting old backup files...")
+(let ((week (* 60 60 24 7))
+      (current (float-time (current-time))))
+  (dolist (file (directory-files temporary-file-directory t))
+    (when (and (backup-file-name-p file)
+	       (> (- current (float-time (fifth (file-attributes file))))
+		  week))
+      (message "%s" file)
+      (delete-file file))))
+
+;; Information settings
+(setq user-full-name "Nguyễn Đức Hiếu"
+      user-mail-address "hieunguyen31371@gmail.com")
+
+;; Set emacs as a client
+;; (server-start)
+
+(use-package hydra
+  :ensure t)
+
 ;; Startup screen
 (setq inhibit-startup-screen t)
 
@@ -557,63 +616,6 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
   :defer t
   :commands focus-mode
   :bind ("<f4>" . focus-mode))
-
-;; This speed up initiation a bit
-(setq gc-cons-threshold 100000000)
-
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
-(add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
-
-(package-initialize)
-
-;; Bootstrap `use-package'
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-;; Use use-package to reduce load time
-(eval-when-compile
-  (require 'use-package)
-  )
-
-(use-package use-package-chords
-  :ensure key-chord
-  :config (key-chord-mode 1))
-
-;; Requice common-lisp library
-(require 'cl-lib)
-
-;; Auto-revert mode
-(global-auto-revert-mode 1)
-(setq auto-revert-interval 0.5)
-
-;; Backup stored in /tmp
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" , temporary-file-directory t)))
-
-;; Delete old backup
-(message "Deleting old backup files...")
-(let ((week (* 60 60 24 7))
-      (current (float-time (current-time))))
-  (dolist (file (directory-files temporary-file-directory t))
-    (when (and (backup-file-name-p file)
-	       (> (- current (float-time (fifth (file-attributes file))))
-		  week))
-      (message "%s" file)
-      (delete-file file))))
-
-;; Information settings
-(setq user-full-name "Nguyễn Đức Hiếu"
-      user-mail-address "hieunguyen31371@gmail.com")
-
-;; Set emacs as a client
-;; (server-start)
-
-(use-package hydra
-  :ensure t)
 
 (use-package dired+
   :ensure t
