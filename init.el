@@ -1354,7 +1354,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 (use-package vimish-fold
   :ensure t
   :config
-  (setq vimish-fold-header-width '100)
+  (setq vimish-fold-header-width '79)
   )
 
 
