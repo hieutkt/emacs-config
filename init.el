@@ -23,6 +23,10 @@
   :ensure key-chord
   :config (key-chord-mode 1))
 
+
+(use-package hydra
+  :ensure t)
+
 ;; Requice common-lisp library
 (require 'cl-lib)
 
@@ -54,8 +58,49 @@
 ;; Set emacs as a client
 ;; (server-start)
 
-(use-package hydra
-  :ensure t)
+;; Everything utf-8
+(set-language-environment "UTF-8")
+(prefer-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+
+
+;; Set some annoying command disabled
+(unbind-key "<insert>") 		;overwrite-mode
+(unbind-key "C-x C-z")		;suspend-frame
+(unbind-key "C-x m")			;compose-mail
+
+;; Delete marked region when input
+(delete-selection-mode 1)
+
+;; Pressing TAB indents first then complete
+(setq tab-always-indent 'complete)
+
+;; Global mark ring
+(setq global-mark-ring-max 50000)
+
+;; Auto save abbreviation
+(setq save-abbrevs 'silently)
+
+;; "Yes or no"? Too much writing
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; Make comint promts read-only
+(setq comint-prompt-read-only t)
+
+;; Set kill ring size
+(setq global-mark-ring-max 50000)
+
+;; Bound undo to C-z
+(global-set-key (kbd "C-z") 'undo)
+
+
+;; Scrolling
+(setq scroll-step 1) ; keyboard scroll one line at a time
+(setq scroll-preserve-screen-position t)
+(setq scroll-conservatively 101)
 
 ;; Startup screen
 (setq inhibit-startup-screen t)
@@ -168,102 +213,6 @@
 
 (advice-add #'vc-git-mode-line-string :around #'my-vc-git-mode-line-string)
 
-;; Everything utf-8
-(set-language-environment "UTF-8")
-(prefer-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-buffer-file-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-
-
-;; Set some annoying command disabled
-(unbind-key "<insert>") 		;overwrite-mode
-(unbind-key "C-x C-z")		;suspend-frame
-(unbind-key "C-x m")			;compose-mail
-
-;; Delete marked region when input
-(delete-selection-mode 1)
-
-;; Global mark ring
-(setq global-mark-ring-max 50000)
-
-;; Auto save abbreviation
-(setq save-abbrevs 'silently)
-
-;; "Yes or no"? Too much writing
-(defalias 'yes-or-no-p 'y-or-n-p)
-
-;; Make comint promts read-only
-(setq comint-prompt-read-only t)
-
-;; Set kill ring size
-(setq global-mark-ring-max 50000)
-
-;; Bound undo to C-z
-(global-set-key (kbd "C-z") 'undo)
-
-
-;; Scrolling
-(setq scroll-step 1) ; keyboard scroll one line at a time
-(setq scroll-preserve-screen-position t)
-(setq scroll-conservatively 101)
-
-;; Expand region with C-' and return to original position with C-g
-(use-package expand-region
-  :ensure t
-  :init
-  (defadvice keyboard-quit (before collapse-region activate)
-    (when (memq last-command '(er/expand-region er/contract-region))
-      (er/contract-region 0)))
-  :bind 
-  ("C-'" . er/expand-region)
-  )
-
-
-;; Multi-cursor
-(use-package multiple-cursors
-  :ensure t
-  :init
-  ;; In case commands behavior is messy with multiple-cursors,
-  ;; check your ~/.emacs.d/.mc-lists.el
-  (defun mc/check-command-behavior ()
-    "Open ~/.emacs.d/.mc-lists.el. 
-So you can fix the list for run-once and run-for-all multiple-cursors commands."
-    (interactive)
-    (find-file "~/.emacs.d/.mc-lists.el"))  
-  :config
-  (defhydra multiple-cursors-hydra (:columns 3 :idle 1.0)
-    "Multiple cursors"
-    ("l" mc/edit-lines "Edit lines in region" :exit t)
-    ("b" mc/edit-beginnings-of-lines "Edit beginnings of lines in region" :exit t)
-    ("e" mc/edit-ends-of-lines "Edit ends of lines in region" :exit t)
-    ("a" mc/mark-all-like-this "Mark all like this" :exit t)
-    ("S" mc/mark-all-symbols-like-this "Mark all symbols likes this" :exit t)
-    ("w" mc/mark-all-words-like-this "Mark all words like this" :exit t)
-    ("r" mc/mark-all-in-region "Mark all in region" :exit t)
-    ("R" mc/mark-all-in-region-regexp "Mark all in region (regexp)" :exit t)
-    ("i" (lambda (n) 
-	   (interactive "nInsert initial number:") 
-	   (mc/insert-numbers n)) 
-     "Insert numbers" :exit t)
-    ("s" mc/sort-regions "Sort regions")
-    ("v" mc/reverse-regions "Reverse order")
-    ("d" mc/mark-all-dwim "Mark all dwim")
-    ("n" mc/mark-next-like-this "Mark next like this")
-    ("N" mc/skip-to-next-like-this "Skip to next like this")
-    ("M-n" mc/unmark-next-like-this "Unmark next like this")
-    ("p" mc/mark-previous-like-this "Mark previous like this")
-    ("P" mc/skip-to-previous-like-this "Skip to previous like this")
-    ("M-p" mc/unmark-previous-like-this "Unmark previous like this")
-    ("q" nil "Quit" :exit t))
-
-  (global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
-  )
-
-
-
-
 ;; Define function: fill character to 80
 (defun fill-to-end (char)
   (interactive "HcFill Character:")
@@ -318,6 +267,57 @@ arg lines up."
 (global-set-key [\M-up] 'move-text-up)
 (global-set-key [\M-down] 'move-text-down)
 
+;; Expand region with C-' and return to original position with C-g
+(use-package expand-region
+  :ensure t
+  :init
+  (defadvice keyboard-quit (before collapse-region activate)
+    (when (memq last-command '(er/expand-region er/contract-region))
+      (er/contract-region 0)))
+  :bind 
+  ("C-'" . er/expand-region)
+  )
+
+;; Multi-cursor
+(use-package multiple-cursors
+  :ensure t
+  :init
+  ;; In case commands behavior is messy with multiple-cursors,
+  ;; check your ~/.emacs.d/.mc-lists.el
+  (defun mc/check-command-behavior ()
+    "Open ~/.emacs.d/.mc-lists.el. 
+So you can fix the list for run-once and run-for-all multiple-cursors commands."
+    (interactive)
+    (find-file "~/.emacs.d/.mc-lists.el"))  
+  :config
+  (defhydra multiple-cursors-hydra (:columns 3 :idle 1.0)
+    "Multiple cursors"
+    ("l" mc/edit-lines "Edit lines in region" :exit t)
+    ("b" mc/edit-beginnings-of-lines "Edit beginnings of lines in region" :exit t)
+    ("e" mc/edit-ends-of-lines "Edit ends of lines in region" :exit t)
+    ("a" mc/mark-all-like-this "Mark all like this" :exit t)
+    ("S" mc/mark-all-symbols-like-this "Mark all symbols likes this" :exit t)
+    ("w" mc/mark-all-words-like-this "Mark all words like this" :exit t)
+    ("r" mc/mark-all-in-region "Mark all in region" :exit t)
+    ("R" mc/mark-all-in-region-regexp "Mark all in region (regexp)" :exit t)
+    ("i" (lambda (n) 
+	   (interactive "nInsert initial number:") 
+	   (mc/insert-numbers n)) 
+     "Insert numbers" :exit t)
+    ("s" mc/sort-regions "Sort regions")
+    ("v" mc/reverse-regions "Reverse order")
+    ("d" mc/mark-all-dwim "Mark all dwim")
+    ("n" mc/mark-next-like-this "Mark next like this")
+    ("N" mc/skip-to-next-like-this "Skip to next like this")
+    ("M-n" mc/unmark-next-like-this "Unmark next like this")
+    ("p" mc/mark-previous-like-this "Mark previous like this")
+    ("P" mc/skip-to-previous-like-this "Skip to previous like this")
+    ("M-p" mc/unmark-previous-like-this "Unmark previous like this")
+    ("q" nil "Quit" :exit t))
+
+  (global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
+  )
+
 (use-package ace-window
     :ensure t
     :config
@@ -358,7 +358,6 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
   ;; Some useful configs
   (setq company-selection-wrap-around t
   	company-tooltip-align-annotations t
-  	company-idle-delay 0.36
   	company-minimum-prefix-length 2
   	company-tooltip-limit 10)
 
@@ -375,7 +374,6 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
   :config
   (setq electric-operator-R-named-argument-style 'spaced)
   (add-hook 'ess-mode-hook #'electric-operator-mode)
-  (add-hook 'inferior-ess-mode-hook #'electric-operator-mode)
   (add-hook 'python-mode-hook #'electric-operator-mode)
 
   (electric-operator-add-rules-for-mode 'ess-mode
@@ -538,78 +536,6 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
   :config
   (setq polymode-exporter-output-file-format "%s")
   )
-
-(defun check-expansion ()
-  (save-excursion
-    (if (looking-at "\\_>") t
-      (backward-char 1)
-      (if (looking-at "\\.") t
-	(backward-char 1)
-	(if (looking-at "->") t nil)))))
-
-(defun do-yas-expand ()
-  (let ((yas/fallback-behavior 'return-nil))
-    (yas/expand)))
-
-(defun tab-indent-or-complete ()
-  (interactive)
-  (cond
-   ((minibufferp)
-    (minibuffer-complete))
-   (t
-    (indent-for-tab-command)
-    (if (or (not yas/minor-mode)
-	    (null (do-yas-expand)))
-	(if (check-expansion)
-	    (progn
-	      (company-manual-begin)
-	      (if (null company-candidates)
-		  (progn
-		    (company-abort)
-		    (indent-for-tab-command)))))))))
-
-(defun tab-complete-or-next-field ()
-  (interactive)
-  (if (or (not yas/minor-mode)
-	  (null (do-yas-expand)))
-      (if company-candidates
-	  (company-complete-selection)
-	(if (check-expansion)
-	    (progn
-	      (company-manual-begin)
-	      (if (null company-candidates)
-		  (progn
-		    (company-abort)
-		    (yas-next-field))))
-	  (yas-next-field)))))
-
-(defun expand-snippet-or-complete-selection ()
-  (interactive)
-  (if (or (not yas/minor-mode)
-	  (null (do-yas-expand))
-	  (company-abort))
-      (company-complete-selection)))
-
-(defun abort-company-or-yas ()
-  (interactive)
-  (if (null company-candidates)
-      (yas-abort-snippet)
-    (company-abort)))
-
-(global-set-key [tab] 'tab-indent-or-complete)
-(global-set-key (kbd "TAB") 'tab-indent-or-complete)
-(global-set-key [(control return)] 'company-complete-common)
-
-(define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
-(define-key company-active-map (kbd "TAB") 'expand-snippet-or-complete-selection)
-
-(define-key yas-minor-mode-map [tab] nil)
-(define-key yas-minor-mode-map (kbd "TAB") nil)
-
-(define-key yas-keymap [tab] 'tab-complete-or-next-field)
-(define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
-(define-key yas-keymap [(control tab)] 'yas-next-field)
-(define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)
 
 (use-package focus
   :ensure t
