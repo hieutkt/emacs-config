@@ -138,6 +138,7 @@ The original init.org file that is used to generate this file can be found here 
   (setq scroll-preserve-screen-position t)
   (setq scroll-conservatively 101)
 
+
 #+END_SRC
 
 
@@ -161,7 +162,8 @@ The original init.org file that is used to generate this file can be found here 
   (setq initial-scratch-message "")
 
   ;; Cursor type
-  (setq-default cursor-type 'bar)
+  (setq-default cursor-type 'bar
+		cursor-in-non-selected-windows nil)
 
   ;; Global font-lock mode
   (setq global-font-lock-mode t)
@@ -183,6 +185,19 @@ The original init.org file that is used to generate this file can be found here 
 
   ;; Diminish some modes
   (diminish 'visual-line-mode)
+
+
+#+END_SRC
+
+*** Smooth-scrolling
+
+#+BEGIN_SRC emacs-lisp
+
+  ;; Smooth scrolling
+  (use-package smooth-scrolling 
+    :ensure t
+    :config
+    (smooth-scrolling-mode t))
 
 #+END_SRC
 
@@ -210,7 +225,7 @@ sudo fc-cache -f -v
     :ensure t
     :init
     :config
-    (load-theme 'gruvbox-dark-hard t)
+    (load-theme 'gruvbox-dark-medium t)
     (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
     )
 

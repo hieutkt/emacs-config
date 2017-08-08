@@ -117,7 +117,8 @@
 (setq initial-scratch-message "")
 
 ;; Cursor type
-(setq-default cursor-type 'bar)
+(setq-default cursor-type 'bar
+	      cursor-in-non-selected-windows nil)
 
 ;; Global font-lock mode
 (setq global-font-lock-mode t)
@@ -140,6 +141,12 @@
 ;; Diminish some modes
 (diminish 'visual-line-mode)
 
+;; Smooth scrolling
+(use-package smooth-scrolling 
+  :ensure t
+  :config
+  (smooth-scrolling-mode t))
+
 ;; Default font
 (set-frame-font "Source Code Pro 10" nil t)
 
@@ -149,7 +156,7 @@
   :ensure t
   :init
   :config
-  (load-theme 'gruvbox-dark-hard t)
+  (load-theme 'gruvbox t)
   (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
   )
 
