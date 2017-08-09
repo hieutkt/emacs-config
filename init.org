@@ -505,6 +505,27 @@ Company is a completion mechanism that is very flexible
     )
 
 #+END_SRC
+** Auto Highlight Symbol
+**** TODO Remove some lesser used key in auto-highlight-symbol-mode-map to make room for other key bindind, make a hydra instead.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package auto-highlight-symbol
+    :ensure t
+    :init (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode)
+    :config
+    (setq ahs-idle-interval 1.0
+	  ahs-default-range 'ahs-range-whole-buffer
+	  ahs-inhibit-face-list '(font-lock-comment-delimiter-face
+				  font-lock-comment-face
+				  font-lock-doc-face))
+    (set-face-attribute 'ahs-plugin-whole-buffer-face nil :background "#ffaf00")
+    (set-face-attribute 'ahs-plugin-defalt-face nil :background "#afaf00")
+
+    (unbind-key "M--" auto-highlight-symbol-mode-map)
+    )
+
+#+END_SRC
 ** Yasnippets
 
 #+BEGIN_SRC emacs-lisp
@@ -628,27 +649,6 @@ Company is a completion mechanism that is very flexible
 
 #+end_SRC
 
-** Projectile
-
-#+BEGIN_SRC emacs-lisp
-  (use-package projectile
-    :ensure t
-    :config
-    (projectile-global-mode)
-    (setq projectile-completion-system 'helm)
-    (setq projectile-mode-line '(:eval (format " 𝐏[%s]" (projectile-project-name))))
-    )
-
-  ;; Helm-projectile
-  (use-package helm-projectile
-    :ensure t
-    :config 
-    (helm-projectile-on))
-
-
-  
-#+END_SRC
-
 ** Polymode
 
 #+BEGIN_SRC emacs-lisp
@@ -713,6 +713,28 @@ Company is a completion mechanism that is very flexible
     (setq dired-listing-switches "-alh")
     )
 #+END_SRC
+** Projectile
+
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-global-mode)
+    (setq projectile-completion-system 'helm)
+    (setq projectile-mode-line '(:eval (format " 𝐏[%s]" (projectile-project-name))))
+    )
+
+  ;; Helm-projectile
+  (use-package helm-projectile
+    :ensure t
+    :config 
+    (helm-projectile-on))
+
+
+  
+#+END_SRC
+
+
 ** Ag and Wgrep
 Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/latest/][(Documentation)]]
 
