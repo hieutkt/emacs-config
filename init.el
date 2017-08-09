@@ -156,7 +156,7 @@
   :ensure t
   :init
   :config
-  (load-theme 'gruvbox t)
+  (load-theme 'gruvbox-dark-medium t)
   (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
   )
 
@@ -388,6 +388,25 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
 					)
   )
 
+(use-package auto-highlight-symbol
+  :ensure t
+  :init (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode)
+  :bind (:map auto-highlight-symbol-mode-map
+	      ("C-p" . ahs-backward)
+	      ("C-n" . ahs-forward)
+	      ("C-d". ahs-forward-definition))
+  :config
+  (setq ahs-idle-interval 1.0
+	ahs-default-range 'ahs-range-whole-buffer
+	ahs-inhibit-face-list '(font-lock-comment-delimiter-face
+				font-lock-comment-face
+				font-lock-doc-face))
+  (set-face-attribute 'ahs-plugin-whole-buffer-face nil :background "#ffaf00")
+  (set-face-attribute 'ahs-plugin-defalt-face nil :background "#afaf00")
+
+  (unbind-key "M--" auto-highlight-symbol-mode-map)
+  )
+
 ;; Enable Yasnippets
 (use-package yasnippet
   :ensure t
@@ -499,20 +518,6 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
 
 (helm-autoresize-mode t)
 
-(use-package projectile
-  :ensure t
-  :config
-  (projectile-global-mode)
-  (setq projectile-completion-system 'helm)
-  (setq projectile-mode-line '(:eval (format " 𝐏[%s]" (projectile-project-name))))
-  )
-
-;; Helm-projectile
-(use-package helm-projectile
-  :ensure t
-  :config 
-  (helm-projectile-on))
-
 (use-package polymode
   :ensure t
   :diminish (poly-org-mode
@@ -557,6 +562,20 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
   (set-face-attribute 'diredp-number nil :foreground "#8ec07c")
   (setq dired-listing-switches "-alh")
   )
+
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-global-mode)
+  (setq projectile-completion-system 'helm)
+  (setq projectile-mode-line '(:eval (format " 𝐏[%s]" (projectile-project-name))))
+  )
+
+;; Helm-projectile
+(use-package helm-projectile
+  :ensure t
+  :config 
+  (helm-projectile-on))
 
 (use-package ag
   :ensure t
