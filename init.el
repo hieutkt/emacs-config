@@ -391,6 +391,13 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
 (use-package auto-highlight-symbol
   :ensure t
   :init (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode)
+<<<<<<< HEAD
+=======
+  :bind (:map auto-highlight-symbol-mode-map
+	      ("C-p" . ahs-backward)
+	      ("C-n" . ahs-forward)
+	      ("C-d". ahs-forward-definition))
+>>>>>>> d49f10d01333278a568d329079f229ddad46dfda
   :config
   (setq ahs-idle-interval 1.0
 	ahs-default-range 'ahs-range-whole-buffer
