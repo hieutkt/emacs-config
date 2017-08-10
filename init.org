@@ -359,6 +359,73 @@ sudo fc-cache -f -v
 
 #+END_SRC
 
+** Smartparens
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package smartparens
+    :ensure t
+    :diminish smartparens-mode
+    :config
+    (require 'smartparens-config)
+    (smartparens-global-mode 1)
+    (add-hook 'comint-mode-hook 'smartparens-mode)
+
+    (defhydra hydra-smartparens (:idle 1 :hint nil)
+      "
+  Sexps (quit with _q_)
+
+  ^Nav^            ^Barf/Slurp^          ^Depth^
+  ^---^------------^----------^----------^-----^-----------------------
+  _f_: forward     _s_:  slurp forward   _R_:      splice
+  _b_: backward    _S_:  barf forward    _r_:      raise
+  _a_: begin       _d_:  slurp backward  _<up>_:   raise backward
+  _e_: end         _D_:  barf backward   _<down>_: raise forward
+  _m_: mark
+
+  ^Kill^           ^Misc^                       ^Wrap^
+  ^----^-----------^----^-----------------------^----^------------------
+  _w_: copy        _j_: join                    _(_: wrap with ( )
+  _k_: kill        _s_: split                   _{_: wrap with { }
+  ^^               _t_: transpose               _'_: wrap with ' '
+  ^^               _c_: convolute               _\"_: wrap with \" \"
+  ^^               _i_: indent defun"
+      ("q" nil)
+      ;; Wrapping
+      ("(" (lambda (a) (interactive "P") (sp-wrap-with-pair "(")))
+      ("{" (lambda (a) (interactive "P") (sp-wrap-with-pair "{")))
+      ("'" (lambda (a) (interactive "P") (sp-wrap-with-pair "'")))
+      ("\"" (lambda (a) (interactive "P") (sp-wrap-with-pair "\"")))
+      ;; Navigation
+      ("f" sp-beginning-of-next-sexp)
+      ("b" sp-beginning-of-previous-sexp)
+      ("a" sp-beginning-of-sexp)
+      ("e" sp-end-of-sexp)
+      ("m" sp-mark-sexp)
+      ;; Kill/copy
+      ("w" sp-copy-sexp :exit t)
+      ("k" sp-kill-sexp :exit t)
+      ;; Misc
+      ("t" sp-transpose-sexp)
+      ("j" sp-join-sexp)
+      ("c" sp-convolute-sexp)
+      ("i" sp-indent-defun)
+      ;; Depth changing
+      ("R" sp-splice-sexp)
+      ("r" sp-splice-sexp-killing-around)
+      ("<up>" sp-splice-sexp-killing-backward)
+      ("<down>" sp-splice-sexp-killing-forward)
+      ;; Barfing/slurping
+      ("s" sp-forward-slurp-sexp)
+      ("S" sp-forward-barf-sexp)
+      ("D" sp-backward-barf-sexp)
+      ("d" sp-backward-slurp-sexp))
+
+    (bind-key "M-<backspace>" 'sp-unwrap-sexp)
+    (bind-key "C-c s" 'hydra-smartparens/body)
+    )
+#+END_SRC
+
 ** Expand-region
 
 #+BEGIN_SRC emacs-lisp
@@ -1627,90 +1694,6 @@ Practicing Emacs by disable all normal hot-key
     :diminish which-key-mode
     :config
     (which-key-mode 1)
-    )
-
-#+END_SRC
-
-** Smartparens
-
-#+BEGIN_SRC emacs-lisp
-
-  ;; Paren mode
-  ;; (show-paren-mode t)
-  ;; (setq show-paren-delay 0)
-
-  ;; Auto close bracket insertion.
-  ;; (electric-pair-mode 1)
-  ;; (setq electric-pair-pairs '(
-  ;; 			      (?\" . ?\")
-  ;; 			      (?\( . ?\))
-  ;; 			      (?\{ . ?\})
-  ;; 			      ) )
-
-  ;; (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
-
-  (use-package smartparens
-    :ensure t
-    :diminish smartparens-mode
-    :config
-    (require 'smartparens-config)
-    (smartparens-global-mode t)
-    (show-smartparens-global-mode t)
-    (add-hook 'comint-mode-hook 'smartparens-mode)
-
-    (defhydra hydra-smartparens (:idle 1 :hint nil)
-      "
-  Sexps (quit with _q_)
-
-  ^Nav^            ^Barf/Slurp^          ^Depth^
-  ^---^------------^----------^----------^-----^-----------------------
-  _f_: forward     _s_:  slurp forward   _R_:      splice
-  _b_: backward    _S_:  barf forward    _r_:      raise
-  _a_: begin       _d_:  slurp backward  _<up>_:   raise backward
-  _e_: end         _D_:  barf backward   _<down>_: raise forward
-  _m_: mark
-
-  ^Kill^           ^Misc^                       ^Wrap^
-  ^----^-----------^----^-----------------------^----^------------------
-  _w_: copy        _j_: join                    _(_: wrap with ( )
-  _k_: kill        _s_: split                   _{_: wrap with { }
-  ^^               _t_: transpose               _'_: wrap with ' '
-  ^^               _c_: convolute               _\"_: wrap with \" \"
-  ^^               _i_: indent defun"
-      ("q" nil)
-      ;; Wrapping
-      ("(" (lambda (a) (interactive "P") (sp-wrap-with-pair "(")))
-      ("{" (lambda (a) (interactive "P") (sp-wrap-with-pair "{")))
-      ("'" (lambda (a) (interactive "P") (sp-wrap-with-pair "'")))
-      ("\"" (lambda (a) (interactive "P") (sp-wrap-with-pair "\"")))
-      ;; Navigation
-      ("f" sp-beginning-of-next-sexp)
-      ("b" sp-beginning-of-previous-sexp)
-      ("a" sp-beginning-of-sexp)
-      ("e" sp-end-of-sexp)
-      ("m" sp-mark-sexp)
-      ;; Kill/copy
-      ("w" sp-copy-sexp :exit t)
-      ("k" sp-kill-sexp :exit t)
-      ;; Misc
-      ("t" sp-transpose-sexp)
-      ("j" sp-join-sexp)
-      ("c" sp-convolute-sexp)
-      ("i" sp-indent-defun)
-      ;; Depth changing
-      ("R" sp-splice-sexp)
-      ("r" sp-splice-sexp-killing-around)
-      ("<up>" sp-splice-sexp-killing-backward)
-      ("<down>" sp-splice-sexp-killing-forward)
-      ;; Barfing/slurping
-      ("s" sp-forward-slurp-sexp)
-      ("S" sp-forward-barf-sexp)
-      ("D" sp-backward-barf-sexp)
-      ("d" sp-backward-slurp-sexp))
-
-    :bind
-    (("M-<backspace>" . sp-unwrap-sexp)
-     ("C-c s" . hydra-smartparens/body))
     )
 
 #+END_SRC
