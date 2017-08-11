@@ -196,20 +196,24 @@
    spaceline-separator-dir-left '(left . left)
    spaceline-separator-dir-right '(right . right))
   (spaceline-install
-  'main
-  '((window-number)
-    (buffer-modified)
-    (projectile-root)
-    (version-control :when active)
-    ((remote-host buffer-id) :face highlight-face)
-    )
-  '((selection-info :face region :when mark-active)
-    (major-mode)
-    (process :when active)
-    ((flycheck-error flycheck-warning flycheck-info) :when active)
-    (line-column)
-    (global :when active)
-    (buffer-position)))
+    'main
+    '((buffer-modified :when buffer-read-only
+		       :face spaceline-read-only)
+      (buffer-modified :when (and (buffer-modified-p) (not buffer-read-only))
+		       :face spaceline-modified)
+      (buffer-modified :when (and (not (buffer-modified-p)) (not buffer-read-only))
+		       :face spaceline-evil-visual)
+      ((remote-host buffer-id) :face highlight-face)
+      (projectile-root)
+      )
+    '((selection-info :face region :when mark-active)
+      (major-mode)
+      (process :when active)
+      (line-column)
+      (global :when active)
+      (buffer-position)
+      (workspace-number)
+      ))
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
   )
 
@@ -405,6 +409,12 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
     (("M-p" . ace-window)
      ("C-x =" . window-hydra/body))
     )
+
+(use-package eyebrowse
+  :ensure t
+  :config
+  (eyebrowse-mode 1)
+  )
 
 (use-package company
   :ensure t
