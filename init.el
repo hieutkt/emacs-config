@@ -212,7 +212,7 @@
       (line-column)
       (global :when active)
       (buffer-position)
-      (workspace-number)
+      (workspace-number :face highlight)
       ))
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
   )
@@ -419,7 +419,7 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
     "
 Window Manager
 _1_ to _9_, _s_: Switch     _<left>_: Previous      _<right>_: Next
-_c_: Create             _<backspace>_: Close    _r_: Rename"
+_c_: Create             _C_: Close    _r_: Rename"
     ("q" nil)
     ("0" eyebrowse-switch-to-window-config-0)
     ("1" eyebrowse-switch-to-window-config-1)
@@ -434,7 +434,7 @@ _c_: Create             _<backspace>_: Close    _r_: Rename"
     ("r" eyebrowse-rename-window-config)
     ("c" eyebrowse-create-window-config)
     ("s" eyebrowse-switch-to-window-config)
-    ("<backspace>" eyebrowse-close-window-config)
+    ("C" eyebrowse-close-window-config)
     ("<left>" eyebrowse-prev-window-config :exit nil)
     ("<right>" eyebrowse-next-window-config :exit nil)
     )
