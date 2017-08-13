@@ -533,7 +533,7 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
       "
   Window Manager
   _1_ to _9_, _s_: Switch     _<left>_: Previous      _<right>_: Next
-  _c_: Create             _C_: Close    _r_: Rename"
+  _c_: Create             _C_: Close              _r_: Rename"
       ("q" nil)
       ("0" eyebrowse-switch-to-window-config-0)
       ("1" eyebrowse-switch-to-window-config-1)
