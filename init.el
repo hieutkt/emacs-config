@@ -413,8 +413,36 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
 (use-package eyebrowse
   :ensure t
   :config
+  (setq eyebrowse-new-workspace t)
+
+  (defhydra eyebrowse-hydra (:hint nil)
+    "
+Window Manager
+_1_ to _9_, _s_: Switch     _<left>_: Previous      _<right>_: Next
+_c_: Create             _<backspace>_: Close    _r_: Rename"
+    ("q" nil)
+    ("0" eyebrowse-switch-to-window-config-0)
+    ("1" eyebrowse-switch-to-window-config-1)
+    ("2" eyebrowse-switch-to-window-config-2)
+    ("3" eyebrowse-switch-to-window-config-3)
+    ("4" eyebrowse-switch-to-window-config-4)
+    ("5" eyebrowse-switch-to-window-config-5)
+    ("6" eyebrowse-switch-to-window-config-6)
+    ("7" eyebrowse-switch-to-window-config-7)
+    ("8" eyebrowse-switch-to-window-config-8)
+    ("9" eyebrowse-switch-to-window-config-9)
+    ("r" eyebrowse-rename-window-config)
+    ("c" eyebrowse-create-window-config)
+    ("s" eyebrowse-switch-to-window-config)
+    ("<backspace>" eyebrowse-close-window-config)
+    ("<left>" eyebrowse-prev-window-config :exit nil)
+    ("<right>" eyebrowse-next-window-config :exit nil)
+    )
+
   (eyebrowse-mode 1)
-  )
+
+  :bind* ("C-c C-w" . eyebrowse-hydra/body)
+)
 
 (use-package company
   :ensure t
@@ -1285,6 +1313,29 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
 (shell-command "curl -s https://icanhazdadjoke.com/"))
 
 (run-with-idle-timer 60 t 'dad-joke)
+
+(use-package zone
+  :ensure t
+  :config
+  (zone-when-idle 600)
+  )
+
+
+(use-package zone-select
+  :ensure zone
+  )
+
+(use-package zone-rainbow
+  :ensure zone
+  :config
+  (zone-select-add-program 'zone-pgm-rainbow)
+  )
+
+(use-package zone-nyan
+  :ensure t
+  :config
+  (zone-select-add-program 'zone-nyan)
+  )
 
 (use-package which-key
   :ensure t
