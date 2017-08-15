@@ -474,21 +474,21 @@ sudo fc-cache -f -v
       ("r" mc/mark-all-in-region "Mark all in region" :exit t)
       ("R" mc/mark-all-in-region-regexp "Mark all in region (regexp)" :exit t)
       ("i" (lambda (n) 
-	     (interactive "nInsert initial number:") 
+	     (interactive "nInsert initial number: ") 
 	     (mc/insert-numbers n)) 
-       "Insert numbers" :exit t)
-      ("s" mc/sort-regions "Sort regions")
-      ("v" mc/reverse-regions "Reverse order")
-      ("d" mc/mark-all-dwim "Mark all dwim")
-      ("n" mc/mark-next-like-this "Mark next like this")
-      ("N" mc/skip-to-next-like-this "Skip to next like this")
-      ("M-n" mc/unmark-next-like-this "Unmark next like this")
-      ("p" mc/mark-previous-like-this "Mark previous like this")
-      ("P" mc/skip-to-previous-like-this "Skip to previous like this")
-      ("M-p" mc/unmark-previous-like-this "Unmark previous like this")
-      ("q" nil "Quit" :exit t))
-
-    (global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
+       "Insert numbers")
+       ("s" mc/sort-regions "Sort regions")
+       ("v" mc/reverse-regions "Reverse order")
+       ("d" mc/mark-all-dwim "Mark all dwim")
+       ("n" mc/mark-next-like-this "Mark next like this")
+       ("N" mc/skip-to-next-like-this "Skip to next like this")
+       ("M-n" mc/unmark-next-like-this "Unmark next like this")
+       ("p" mc/mark-previous-like-this "Mark previous like this")
+       ("P" mc/skip-to-previous-like-this "Skip to previous like this")
+       ("M-p" mc/unmark-previous-like-this "Unmark previous like this")
+       ("q" nil "Quit" :exit t))
+ 
+    ( global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
     )
 
 
@@ -505,7 +505,7 @@ Since I don't have the habit of using many windows, simple setup is enough.
     ;; ace-window uses home row
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 
-    (defhydra window-hydra (:hint nil)
+    (defhydra window-hydra (:hint nil :color red)
       "
 _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
       ("[" shrink-window-horizontally)
@@ -529,12 +529,12 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
     :config
     (setq eyebrowse-new-workspace t)
 
-    (defhydra eyebrowse-hydra (:hint nil)
+    (defhydra eyebrowse-hydra (:hint nil :color red)
       "
   Window Manager
   _1_ to _9_, _s_: Switch     _<left>_: Previous      _<right>_: Next
   _c_: Create             _C_: Close              _r_: Rename"
-      ("q" nil)
+      ("q" nil :color blue)
       ("0" eyebrowse-switch-to-window-config-0)
       ("1" eyebrowse-switch-to-window-config-1)
       ("2" eyebrowse-switch-to-window-config-2)
@@ -545,12 +545,12 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
       ("7" eyebrowse-switch-to-window-config-7)
       ("8" eyebrowse-switch-to-window-config-8)
       ("9" eyebrowse-switch-to-window-config-9)
-      ("r" eyebrowse-rename-window-config)
-      ("c" eyebrowse-create-window-config)
-      ("s" eyebrowse-switch-to-window-config)
-      ("C" eyebrowse-close-window-config)
-      ("<left>" eyebrowse-prev-window-config :exit nil)
-      ("<right>" eyebrowse-next-window-config :exit nil)
+      ("r" eyebrowse-rename-window-config :exit t)
+      ("c" eyebrowse-create-window-config :exit t)
+      ("s" eyebrowse-switch-to-window-config :exit t)
+      ("C" eyebrowse-close-window-config :exit t)
+      ("<left>" eyebrowse-prev-window-config)
+      ("<right>" eyebrowse-next-window-config)
       )
 
     (eyebrowse-mode 1)
