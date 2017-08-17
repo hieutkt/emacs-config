@@ -2,7 +2,7 @@
 #+AUTHOR: Nguyễn Đức Hiếu
 #+STARTUP: content
 #+OPTIONS: num:3 ^:nil toc:nil
-#+LATEX_CLASS: article
+#+LATEX_CLASS: koma-article
 #+LATEX_HEADER: \usepackage[utf8]{vietnam}
 #+LATEX_HEADER: \usepackage{attachfile}
 
@@ -932,6 +932,31 @@ See [[http://orgmode.org/][here]].
   (add-hook 'org-mode-hook 'org-cdlatex-mode)
   (setq org-pretty-entities t)
 
+  ;; Add KOMA-scripts classes to org export
+  (add-to-list 'org-latex-classes
+		 '("koma-article" "\\documentclass{scrartcl}"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+  (add-to-list 'org-latex-classes
+		 '("koma-report" "\\documentclass{scrreprt}"
+		   ("\\part{%s}" . "\\part*{%s}")
+		   ("\\chapter{%s}" . "\\chapter*{%s}")
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+
+  (add-to-list 'org-latex-classes
+		 '("koma-book" "\\documentclass[11pt]{scrbook}"
+		   ("\\part{%s}" . "\\part*{%s}")
+		   ("\\chapter{%s}" . "\\chapter*{%s}")
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+
 #+END_SRC
 
 *** Agenda
@@ -983,6 +1008,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
   ;; Show inline images
   (setq org-startup-with-inline-images t)
+
 
 #+END_SRC
 
