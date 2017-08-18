@@ -418,7 +418,7 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
   (defhydra eyebrowse-hydra (:hint nil :color red)
     "
 Window Manager
-_1_ to _9_, _s_: Switch     _<left>_: Previous      _<right>_: Next
+_0_ to _9_, _s_: Switch     _<left>_: Previous      _<right>_: Next
 _c_: Create             _C_: Close              _r_: Rename"
     ("q" nil :color blue)
     ("0" eyebrowse-switch-to-window-config-0)
@@ -464,9 +464,21 @@ _c_: Create             _C_: Close              _r_: Rename"
   :config
   ;; Some useful configs
   (setq company-selection-wrap-around t
-  	company-tooltip-align-annotations t
-  	company-minimum-prefix-length 2
-  	company-tooltip-limit 10)
+	company-tooltip-align-annotations t
+	company-minimum-prefix-length 2
+	company-tooltip-limit 10)
+
+  ;; Add yasnippet support for all company backends
+  ;; https://github.com/syl20bnr/spacemacs/pull/179
+  (defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
+
+  (defun company-mode/backend-with-yas (backend)
+    (if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
+	backend
+      (append (if (consp backend) backend (list backend))
+	      '(:with company-yasnippet))))
+
+  (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
 
   :bind 
   (:map company-active-map
@@ -506,6 +518,7 @@ _c_: Create             _C_: Close              _r_: Rename"
 ;; Enable Yasnippets
 (use-package yasnippet
   :ensure t
+  :diminish yas-minor-mode
   :init
   ;; It will test whether it can expand, if yes, cursor color -> green.
   (defun yasnippet-can-fire-p (&optional field)
@@ -522,7 +535,7 @@ _c_: Create             _C_: Close              _r_: Rename"
 				  (yas--templates-for-key-at-point))))
 
       (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
-			    "green" "#f9f5d7"))))
+			    "#d65d0e" (face-attribute 'default :foreground)))))
   (add-hook 'post-command-hook 'yasnippet-can-fire-p)  
 
   (yas-global-mode 1)
