@@ -542,10 +542,12 @@ _c_: Create             _C_: Close              _r_: Rename"
 
   (yas-reload-all)
   :config
-  (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
+  (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets")
+	yas-fallback-behavior 'call-other-command)
   :bind
-  ("<C-tab>" . yas-insert-snippet)
-  :diminish company-mode
+  (("<C-tab>" . yas-insert-snippet)
+   :map yas-minor-mode-map
+   ("SPC" . yas-expand-from-trigger-key))
   )
 
 ;; With backquote warnings:

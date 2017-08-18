@@ -651,41 +651,43 @@ Company is a completion mechanism that is very flexible
 
 #+BEGIN_SRC emacs-lisp
 
-  ;; Enable Yasnippets
-  (use-package yasnippet
-    :ensure t
-    :diminish yas-minor-mode
-    :init
-    ;; It will test whether it can expand, if yes, cursor color -> green.
-    (defun yasnippet-can-fire-p (&optional field)
-      (interactive)
-      (setq yas--condition-cache-timestamp (current-time))
-      (let (templates-and-pos)
-	(unless (and yas-expand-only-for-last-commands
-		     (not (member last-command yas-expand-only-for-last-commands)))
-	  (setq templates-and-pos (if field
-				      (save-restriction
-					(narrow-to-region (yas--field-start field)
-							  (yas--field-end field))
-					(yas--templates-for-key-at-point))
-				    (yas--templates-for-key-at-point))))
+    ;; Enable Yasnippets
+    (use-package yasnippet
+      :ensure t
+      :diminish yas-minor-mode
+      :init
+      ;; It will test whether it can expand, if yes, cursor color -> green.
+      (defun yasnippet-can-fire-p (&optional field)
+	(interactive)
+	(setq yas--condition-cache-timestamp (current-time))
+	(let (templates-and-pos)
+	  (unless (and yas-expand-only-for-last-commands
+		       (not (member last-command yas-expand-only-for-last-commands)))
+	    (setq templates-and-pos (if field
+					(save-restriction
+					  (narrow-to-region (yas--field-start field)
+							    (yas--field-end field))
+					  (yas--templates-for-key-at-point))
+				      (yas--templates-for-key-at-point))))
 
-	(set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
-			      "#d65d0e" (face-attribute 'default :foreground)))))
-    (add-hook 'post-command-hook 'yasnippet-can-fire-p)  
-    
-    (yas-global-mode 1)
-  
-    (yas-reload-all)
-    :config
-    (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets"))
-    :bind
-    ("<C-tab>" . yas-insert-snippet)
-    :diminish company-mode
-    )
-  
-  ;; With backquote warnings:
-  ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
+	  (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
+				"#d65d0e" (face-attribute 'default :foreground)))))
+      (add-hook 'post-command-hook 'yasnippet-can-fire-p)  
+
+      (yas-global-mode 1)
+
+      (yas-reload-all)
+      :config
+      (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets")
+	    yas-fallback-behavior 'call-other-command)
+      :bind
+      (("<C-tab>" . yas-insert-snippet)
+       :map yas-minor-mode-map
+       ("SPC" . yas-expand-from-trigger-key))
+      )
+
+    ;; With backquote warnings:
+    ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
 
 #+END_SRC
 
