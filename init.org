@@ -3,6 +3,7 @@
 #+STARTUP: content
 #+OPTIONS: num:3 ^:nil toc:nil
 #+LATEX_CLASS: koma-article
+#+LaTeX_CLASS_OPTIONS: [a4paper, 11pt] 
 #+LATEX_HEADER: \usepackage[utf8]{vietnam}
 #+LATEX_HEADER: \usepackage{attachfile}
 
@@ -24,7 +25,6 @@ The whole thing is driven by the following =.emacs=
 #+END_EXAMPLE
 
 The original init.org file that is used to generate this file can be found here : @@latex:\attachfile{init.org}@@
-
 
 * Initiation
 ** Setup and bootstrap
@@ -911,51 +911,6 @@ See [[http://orgmode.org/][here]].
 			  '(("^ +\\([-*]\\) "
 			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-  ;; Highlight code blocks in org-latex-export-to-pdf
-  ;; Minted options can be found in:
-  ;; http://mirror.kku.ac.th/CTAN/macros/latex/contrib/minted/minted.pdf
-  (setq org-latex-listings 'minted
-	org-latex-packages-alist '(("" "minted"))
-	org-latex-minted-options '(("breaklines" "true")
-				   ("breakanywhere" "true")
-				     ("mathescape")
-				     ("linenos" "true")
-				     ("firstnumber" "last")
-				     ("frame" "lines")
-				     ("framesep" "2mm"))
-	  org-latex-pdf-process
-	  '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-	    "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
-	  )
-
-  ;; Writing latex in org-mode
-  (add-hook 'org-mode-hook 'org-cdlatex-mode)
-  (setq org-pretty-entities t)
-
-  ;; Add KOMA-scripts classes to org export
-  (add-to-list 'org-latex-classes
-		 '("koma-article" "\\documentclass{scrartcl}"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-  (add-to-list 'org-latex-classes
-		 '("koma-report" "\\documentclass{scrreprt}"
-		   ("\\part{%s}" . "\\part*{%s}")
-		   ("\\chapter{%s}" . "\\chapter*{%s}")
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
-
-  (add-to-list 'org-latex-classes
-		 '("koma-book" "\\documentclass[11pt]{scrbook}"
-		   ("\\part{%s}" . "\\part*{%s}")
-		   ("\\chapter{%s}" . "\\chapter*{%s}")
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
 
 #+END_SRC
 
@@ -1012,6 +967,60 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 #+END_SRC
 
+*** Exports
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ox-latex
+    :ensure org
+    :config
+    ;; Highlight code blocks in org-latex-export-to-pdf
+    ;; Minted options can be found in:
+    ;; http://mirror.kku.ac.th/CTAN/macros/latex/contrib/minted/minted.pdf
+    (setq org-latex-listings 'minted
+	  org-latex-packages-alist '(("" "minted"))
+	  org-latex-minted-options '(("breaklines" "true")
+				     ("breakanywhere" "true")
+				     ("mathescape")
+				     ("linenos" "true")
+				     ("firstnumber" "last")
+				     ("frame" "lines")
+				     ("framesep" "2mm"))
+	  org-latex-pdf-process
+	  '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+	    "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+	  )
+
+    ;; Writing latex in org-mode
+    (add-hook 'org-mode-hook 'org-cdlatex-mode)
+    (setq org-pretty-entities t)
+
+    ;; Add KOMA-scripts classes to org export
+    (add-to-list 'org-latex-classes
+		 '("koma-article" "\\documentclass{scrartcl}"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+    (add-to-list 'org-latex-classes
+		 '("koma-report" "\\documentclass{scrreprt}"
+		   ("\\part{%s}" . "\\part*{%s}")
+		   ("\\chapter{%s}" . "\\chapter*{%s}")
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+
+    (add-to-list 'org-latex-classes
+		 '("koma-book" "\\documentclass[11pt]{scrbook}"
+		   ("\\part{%s}" . "\\part*{%s}")
+		   ("\\chapter{%s}" . "\\chapter*{%s}")
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+    )
+
+#+END_SRC
 ** Pdf-tools 
 PDF Tools is, among other things, a replacement of DocView for PDF files. 
 The key difference is, that pages are not pre-rendered by e.g. ghostscript and stored in the file-system, but rather created on-demand and stored in memory.

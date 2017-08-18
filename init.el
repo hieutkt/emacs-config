@@ -726,27 +726,6 @@ _c_: Create             _C_: Close              _r_: Rename"
 			'(("^ +\\([-*]\\) "
 			   (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-;; Highlight code blocks in org-latex-export-to-pdf
-;; Minted options can be found in:
-;; http://mirror.kku.ac.th/CTAN/macros/latex/contrib/minted/minted.pdf
-(setq org-latex-listings 'minted
-      org-latex-packages-alist '(("" "minted"))
-      org-latex-minted-options '(("breaklines" "true")
-				 ("breakanywhere" "true")
-				   ("mathescape")
-				   ("linenos" "true")
-				   ("firstnumber" "last")
-				   ("frame" "lines")
-				   ("framesep" "2mm"))
-	org-latex-pdf-process
-	'("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-	  "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
-	)
-
-;; Writing latex in org-mode
-(add-hook 'org-mode-hook 'org-cdlatex-mode)
-(setq org-pretty-entities t)
-
 ;; Org agenda folders
 (setq org-agenda-files '("~/Dropbox/org"))
 
@@ -788,6 +767,56 @@ _c_: Create             _C_: Close              _r_: Rename"
 
 ;; Show inline images
 (setq org-startup-with-inline-images t)
+
+(use-package ox-latex
+  :ensure org
+  :config
+  ;; Highlight code blocks in org-latex-export-to-pdf
+  ;; Minted options can be found in:
+  ;; http://mirror.kku.ac.th/CTAN/macros/latex/contrib/minted/minted.pdf
+  (setq org-latex-listings 'minted
+	org-latex-packages-alist '(("" "minted"))
+	org-latex-minted-options '(("breaklines" "true")
+				   ("breakanywhere" "true")
+				   ("mathescape")
+				   ("linenos" "true")
+				   ("firstnumber" "last")
+				   ("frame" "lines")
+				   ("framesep" "2mm"))
+	org-latex-pdf-process
+	'("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+	  "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+	)
+
+  ;; Writing latex in org-mode
+  (add-hook 'org-mode-hook 'org-cdlatex-mode)
+  (setq org-pretty-entities t)
+
+  ;; Add KOMA-scripts classes to org export
+  (add-to-list 'org-latex-classes
+	       '("koma-article" "\\documentclass{scrartcl}"
+		 ("\\section{%s}" . "\\section*{%s}")
+		 ("\\subsection{%s}" . "\\subsection*{%s}")
+		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+  (add-to-list 'org-latex-classes
+	       '("koma-report" "\\documentclass{scrreprt}"
+		 ("\\part{%s}" . "\\part*{%s}")
+		 ("\\chapter{%s}" . "\\chapter*{%s}")
+		 ("\\section{%s}" . "\\section*{%s}")
+		 ("\\subsection{%s}" . "\\subsection*{%s}")
+		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+
+  (add-to-list 'org-latex-classes
+	       '("koma-book" "\\documentclass[11pt]{scrbook}"
+		 ("\\part{%s}" . "\\part*{%s}")
+		 ("\\chapter{%s}" . "\\chapter*{%s}")
+		 ("\\section{%s}" . "\\section*{%s}")
+		 ("\\subsection{%s}" . "\\subsection*{%s}")
+		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+  )
 
 (use-package pdf-tools
   :ensure t
