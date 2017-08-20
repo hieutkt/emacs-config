@@ -1200,6 +1200,12 @@ _c_: Create             _C_: Close              _r_: Rename"
    ("<tab>" . cdlatex-tab))
   )
 
+(use-package latex-preview-pane
+  :ensure t
+  :config
+  (latex-preview-pane-enable)
+  )
+
 (use-package markdown-mode
 :ensure t
 :commands (markdown-mode gfm-mode)
@@ -1357,29 +1363,6 @@ _c_: Create             _C_: Close              _r_: Rename"
 (shell-command "curl -s https://icanhazdadjoke.com/"))
 
 (run-with-idle-timer 60 t 'dad-joke)
-
-(use-package zone
-  :ensure t
-  :config
-  (zone-when-idle 600)
-  )
-
-
-(use-package zone-select
-  :ensure zone
-  )
-
-(use-package zone-rainbow
-  :ensure zone
-  :config
-  (zone-select-add-program 'zone-pgm-rainbow)
-  )
-
-(use-package zone-nyan
-  :ensure t
-  :config
-  (zone-select-add-program 'zone-nyan)
-  )
 
 (use-package which-key
   :ensure t

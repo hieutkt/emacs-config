@@ -1479,6 +1479,15 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
 
 #+END_SRC
 
+*** Preview-latex-pane
+
+#+BEGIN_SRC emacs-lisp
+  (use-package latex-preview-pane
+    :ensure t
+    :config
+    (latex-preview-pane-enable)
+    )
+#+END_SRC
 ** Markdown
 
    #+BEGIN_SRC emacs-lisp
@@ -1698,34 +1707,6 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
   (run-with-idle-timer 60 t 'dad-joke)
 #+END_SRC
 
-** Zone
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package zone
-    :ensure t
-    :config
-    (zone-when-idle 600)
-    )
-
-
-  (use-package zone-select
-    :ensure zone
-    )
-
-  (use-package zone-rainbow
-    :ensure zone
-    :config
-    (zone-select-add-program 'zone-pgm-rainbow)
-    )
-
-  (use-package zone-nyan
-    :ensure t
-    :config
-    (zone-select-add-program 'zone-nyan)
-    )
-
-#+END_SRC
 * Draft
 Settings in this section are not yet organized but are being used, mostly for testing purposes
 
