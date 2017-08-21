@@ -810,22 +810,6 @@ Company is a completion mechanism that is very flexible
   
 #+END_SRC
 
-** Focus
-[[https://github.com/larstvei/Focus][Focus]] provides focus-mode that dims the text of surrounding sections
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package focus
-    :ensure t
-    :defer t
-    :commands focus-mode
-    :bind ("<f4>" . focus-mode))
-
-
-#+END_SRC
-
-
-#+END_SRC
 * Directories and Files
 ** Dired
 #+BEGIN_SRC emacs-lisp
@@ -1535,7 +1519,7 @@ Customisation to emacs-lisp itself, this is mainly highlighting
 #+BEGIN_SRC emacs-lisp
 
   ;; Keybinding for terminal
-  (global-set-key [f2] 'eshell)
+  ;; (global-set-key [f2] 'eshell)
 
   ;; Company
   (use-package company-shell
