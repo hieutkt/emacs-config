@@ -1572,15 +1572,34 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 [[http://plantuml.com/][PlantUML]] is a component that allows to quickly write different kinds of diagrams
 
 #+BEGIN_SRC emacs-lisp
-  (use-package plantuml-mode
-    :ensure t
-    :mode ("\\.plantuml\\'" . plantuml-mode)
-    :config
-    ;; Path to jar file, remember to put it in the right folder
-    (setq plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
-    ;; Add to org-plantuml
-    (setq org-plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
-    )
+    (use-package plantuml-mode
+      :ensure t
+      :mode ("\\.plantuml\\'" . plantuml-mode)
+      :config
+      ;; Path to jar file, remember to put it in the right folder
+      (setq plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
+      ;; Add a command to render current buffer
+      (defun plantuml-render-this-file ()
+	(interactive)
+	(shell-command
+	 (concat
+	  "java -jar "
+	  plantuml-jar-path
+	  " " buffer-file-name
+	  " -charset UTF-8 -t"
+	  (completing-read "PlantUML output: " '("svg" "png" "pdf" "latex"))
+	  ))
+	)
+      :bind (:map plantuml-mode-map
+		  ("C-c C-r" . plantuml-render-this-file))
+      )
+
+    (use-package ob-plantuml
+      :ensure org
+      :config
+      (setq org-plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
+      )
+
 
 #+END_SRC
 
