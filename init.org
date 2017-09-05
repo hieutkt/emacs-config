@@ -1144,6 +1144,20 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 
 #+END_SRC
 
+** Which-key
+[[https://github.com/justbur/emacs-which-key][which-key]] is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package which-key
+    :ensure t
+    :diminish which-key-mode
+    :config
+    (which-key-mode 1)
+    )
+
+#+END_SRC
+
 * Languages
 ** R
 *** Setting up
@@ -1791,19 +1805,6 @@ Practicing Emacs by disable all normal hot-key
 
 
 #+END_SRC
-** Which-key
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package which-key
-    :ensure t
-    :diminish which-key-mode
-    :config
-    (which-key-mode 1)
-    )
-
-#+END_SRC
-
 ** Vimish-fold
 
 #+BEGIN_SRC emacs-lisp
