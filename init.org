@@ -1720,11 +1720,16 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
 ** Dad Jokes
 
 #+BEGIN_SRC emacs-lisp
-  (defun dad-joke ()
-  (interactive)
-  (shell-command "curl -s https://icanhazdadjoke.com/"))
+  ;; This require pos-tip.el
+  (require 'pos-tip)
 
-  (run-with-idle-timer 60 t 'dad-joke)
+  (defun dad-joke ()
+    (interactive)
+    (pos-tip-show
+     (shell-command-to-string "curl -s https://icanhazdadjoke.com/")
+     nil nil nil 0))
+
+  (run-with-idle-timer (* 60 5) t 'dad-joke)
 #+END_SRC
 
 * Draft
