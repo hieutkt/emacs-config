@@ -1,0 +1,9 @@
+# key: yaml
+# name: rmarkdown YAML header
+# --
+---
+title: "$1"
+output: ${2:$$(yas-choose-value '("html_notebook" "html_document" "pdf_document" "word_document" "odt_document" "rtf_document" "md_document" "ioslides_presentation" "revealjs::revealjs_presentation" "slidy_presentation" "beamer_presentation" "flexdashboard::flex_dashboard" "tufte::tufte_handout" "tufte::tufte_html" "tufte::tufte_book" "html_vignette" "github_document"))}
+---
+
+$0

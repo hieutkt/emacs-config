@@ -488,7 +488,7 @@ sudo fc-cache -f -v
        ("M-p" mc/unmark-previous-like-this "Unmark previous like this")
        ("q" nil "Quit" :exit t))
  
-    ( global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
+    (global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
     )
 
 
@@ -627,7 +627,7 @@ Company is a completion mechanism that is very flexible
 
 #+END_SRC
 ** Auto Highlight Symbol
-**** TODO Remove some lesser used key in auto-highlight-symbol-mode-map to make room for other key bindind, make a hydra instead.
+**** TODO Remove some lesser used key in auto-highlight-symbol-mode-map to make room for other key bindind, make a hydra instead
 
 #+BEGIN_SRC emacs-lisp
 
@@ -1726,8 +1726,7 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
   (defun dad-joke ()
     (interactive)
     (pos-tip-show
-     (shell-command-to-string "curl -s https://icanhazdadjoke.com/")
-     nil nil nil 0))
+     (shell-command-to-string "curl -s https://icanhazdadjoke.com/")))
 
   (run-with-idle-timer (* 60 5) t 'dad-joke)
 #+END_SRC
