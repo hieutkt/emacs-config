@@ -155,7 +155,7 @@ The original init.org file that is used to generate this file can be found here 
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
   ;; Initialize Emacs full screen 
-  (add-to-list 'initial-frame-alist '(fullscreen . maximized))
+  ;; (add-to-list 'initial-frame-alist '(fullscreen . maximized))
   (global-set-key (kbd "<f11>") 'toggle-frame-maximized)
 
   ;; No startup messages on *scratch* buffer
@@ -563,49 +563,49 @@ Company is a completion mechanism that is very flexible
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package company
-    :ensure t
-    :init
-    ;; Activate globally
-    (add-hook 'after-init-hook 'global-company-mode)
+    (use-package company
+      :ensure t
+      :init
+      ;; Activate globally
+      (add-hook 'after-init-hook 'global-company-mode)
   
-    ;; Press <F1> to show the documentation buffer and press C-<F1> to jump to it
-    (defun my/company-show-doc-buffer ()
-      "Temporarily show the documentation buffer for the selection."
-      (interactive)
-      (let* ((selected (nth company-selection company-candidates))
-	     (doc-buffer (or (company-call-backend 'doc-buffer selected)
-			     (error "No documentation available"))))
-	(with-current-buffer doc-buffer
-	  (goto-char (point-min)))
-	(display-buffer doc-buffer t)))  
+      ;; Press <F1> to show the documentation buffer and press C-<F1> to jump to it
+      (defun my/company-show-doc-buffer ()
+	"Temporarily show the documentation buffer for the selection."
+	(interactive)
+	(let* ((selected (nth company-selection company-candidates))
+	       (doc-buffer (or (company-call-backend 'doc-buffer selected)
+			       (error "No documentation available"))))
+	  (with-current-buffer doc-buffer
+	    (goto-char (point-min)))
+	  (display-buffer doc-buffer t)))  
   
-    :config
-    ;; Some useful configs
-    (setq company-selection-wrap-around t
-	  company-tooltip-align-annotations t
-	  company-minimum-prefix-length 2
-	  company-tooltip-limit 10)
+      :config
+      ;; Some useful configs
+      (setq company-selection-wrap-around t
+	    company-tooltip-align-annotations t
+	    company-tooltip-limit 10
+	    company-idle-delay 0.5)
 
-    ;; Add yasnippet support for all company backends
-    ;; https://github.com/syl20bnr/spacemacs/pull/179
-    (defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
+      ;; Add yasnippet support for all company backends
+      ;; https://github.com/syl20bnr/spacemacs/pull/179
+      (defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
 
-    (defun company-mode/backend-with-yas (backend)
-      (if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
-	  backend
-	(append (if (consp backend) backend (list backend))
-		'(:with company-yasnippet))))
+      (defun company-mode/backend-with-yas (backend)
+	(if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
+	    backend
+	  (append (if (consp backend) backend (list backend))
+		  '(:with company-yasnippet))))
 
-    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+      (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
 
-    :bind 
-    (:map company-active-map
-	  ("C-<f1>" . my/company-show-doc-buffer)
-	  ("C-n" . company-select-next)
-	  ("C-p" . company-select-previous)
-	  )
-    )
+      :bind 
+      (:map company-active-map
+	    ("C-<f1>" . my/company-show-doc-buffer)
+	    ("C-n" . company-select-next)
+	    ("C-p" . company-select-previous)
+	    )
+      )
 
 
 #+END_SRC
@@ -651,43 +651,43 @@ Company is a completion mechanism that is very flexible
 
 #+BEGIN_SRC emacs-lisp
 
-    ;; Enable Yasnippets
-    (use-package yasnippet
-      :ensure t
-      :diminish yas-minor-mode
-      :init
-      ;; It will test whether it can expand, if yes, cursor color -> green.
-      (defun yasnippet-can-fire-p (&optional field)
-	(interactive)
-	(setq yas--condition-cache-timestamp (current-time))
-	(let (templates-and-pos)
-	  (unless (and yas-expand-only-for-last-commands
-		       (not (member last-command yas-expand-only-for-last-commands)))
-	    (setq templates-and-pos (if field
-					(save-restriction
-					  (narrow-to-region (yas--field-start field)
-							    (yas--field-end field))
-					  (yas--templates-for-key-at-point))
-				      (yas--templates-for-key-at-point))))
+  ;; Enable Yasnippets
+  (use-package yasnippet
+    :ensure t
+    :diminish yas-minor-mode
+    :init
+    ;; It will test whether it can expand, if yes, cursor color -> green.
+    (defun yasnippet-can-fire-p (&optional field)
+      (interactive)
+      (setq yas--condition-cache-timestamp (current-time))
+      (let (templates-and-pos)
+	(unless (and yas-expand-only-for-last-commands
+		     (not (member last-command yas-expand-only-for-last-commands)))
+	  (setq templates-and-pos (if field
+				      (save-restriction
+					(narrow-to-region (yas--field-start field)
+							  (yas--field-end field))
+					(yas--templates-for-key-at-point))
+				    (yas--templates-for-key-at-point))))
 
-	  (set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
-				"#d65d0e" (face-attribute 'default :foreground)))))
-      (add-hook 'post-command-hook 'yasnippet-can-fire-p)  
+	(set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
+			      "#d65d0e" (face-attribute 'default :foreground)))))
+    (add-hook 'post-command-hook 'yasnippet-can-fire-p)  
 
-      (yas-global-mode 1)
+    (yas-global-mode 1)
 
-      (yas-reload-all)
-      :config
-      (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets")
-	    yas-fallback-behavior 'call-other-command)
-      :bind
-      (("<C-tab>" . yas-insert-snippet)
-       :map yas-minor-mode-map
-       ("SPC" . yas-expand-from-trigger-key))
-      )
+    (yas-reload-all)
+    :config
+    (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets")
+	  yas-fallback-behavior 'call-other-command)
+    :bind
+    (("<C-tab>" . yas-insert-snippet)
+     :map yas-minor-mode-map
+     ("`" . yas-expand-from-trigger-key))
+    )
 
-    ;; With backquote warnings:
-    ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
+  ;; With backquote warnings:
+  ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
 
 #+END_SRC
 
@@ -1321,6 +1321,19 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 
 #+END_SRC
 
+** Stan
+[[https://github.com/stan-dev/stan-mode][stan-mode]] is the Emacs mode for [[http://mc-stan.org/][Stan]].
+
+#+BEGIN_SRC emacs-lisp
+  (use-package stan-mode
+    :ensure t
+    )
+
+  (use-package stan-snippets
+    :ensure t
+    )
+#+END_SRC
+
 ** Python
 
 #+BEGIN_SRC emacs-lisp
@@ -1514,7 +1527,7 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
 
 #+END_SRC
 ** ELisp
-Customisation to emacs-lisp itself, this is mainly highlighting
+Customisation to emacs-lisp itself, this is mainly syntax highlighting
 #+BEGIN_SRC emacs-lisp
 
  (use-package highlight-defined
