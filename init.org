@@ -217,7 +217,8 @@ sudo fc-cache -f -v
 #+BEGIN_SRC emacs-lisp
 
   ;; Default font
-  (set-frame-font "Source Code Pro 10" nil t)
+  (when (member "Source Code Pro" (font-family-list))
+    (set-frame-font "Source Code Pro 10" nil t))
 
 
   ;; Set themes
