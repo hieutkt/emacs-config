@@ -1744,6 +1744,30 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
   (run-with-idle-timer (* 60 5) t 'dad-joke)
 #+END_SRC
 
+** Fortunes
+
+#+BEGIN_SRC emacs-lisp
+  ;; Supply a random fortune cookie as the *scratch* message.
+  (defun fortune-scratch-message ()
+    (interactive)
+    (let ((fortune
+	   (when (and (executable-find "fortune")
+		      (executable-find "cowsay"))
+	     (with-temp-buffer
+	       (shell-command "fortune | cowsay" t)
+	       (let ((comment-start ";;"))
+		 (comment-region (point-min) (point-max)))
+	       (delete-trailing-whitespace (point-min) (point-max))
+	       (concat (buffer-string) "\n")))))
+      (if (called-interactively-p 'any)
+	  (insert fortune)
+	fortune)))
+
+  ;; initial-scratch-message
+  (let ((fortune (fortune-scratch-message)))
+    (when fortune
+      (setq initial-scratch-message fortune)))
+#+END_SRC
 * Draft
 Settings in this section are not yet organized but are being used, mostly for testing purposes
 
