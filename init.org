@@ -50,13 +50,16 @@ The original init.org file that is used to generate this file can be found here 
     (require 'use-package)
     )
 
+  (setq use-package-always-ensure t
+	use-package-always-defer-install t)
+
   (use-package use-package-chords
     :ensure key-chord
     :config (key-chord-mode 1))
 
 
   (use-package hydra
-    :ensure t)
+)
 
   ;; Requice common-lisp library
   (require 'cl-lib)
@@ -195,7 +198,6 @@ The original init.org file that is used to generate this file can be found here 
 
   ;; Smooth scrolling
   (use-package smooth-scrolling 
-    :ensure t
     :config
     (smooth-scrolling-mode t))
 
@@ -223,7 +225,6 @@ sudo fc-cache -f -v
 
   ;; Set themes
   (use-package gruvbox-theme
-    :ensure t
     :init
     :config
     (load-theme 'gruvbox-dark-medium t)
@@ -231,7 +232,6 @@ sudo fc-cache -f -v
     )
 
   (use-package rainbow-delimiters
-    :ensure t
     :config
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
     ;; Custom pallete
@@ -369,7 +369,6 @@ sudo fc-cache -f -v
 #+BEGIN_SRC emacs-lisp
 
   (use-package smartparens
-    :ensure t
     :diminish smartparens-mode
     :config
     (require 'smartparens-config)
@@ -437,7 +436,6 @@ sudo fc-cache -f -v
 
   ;; Expand region with C-' and return to original position with C-g
   (use-package expand-region
-    :ensure t
     :init
     (defadvice keyboard-quit (before collapse-region activate)
       (when (memq last-command '(er/expand-region er/contract-region))
@@ -454,7 +452,6 @@ sudo fc-cache -f -v
 
   ;; Multi-cursor
   (use-package multiple-cursors
-    :ensure t
     :init
     ;; In case commands behavior is messy with multiple-cursors,
     ;; check your ~/.emacs.d/.mc-lists.el
@@ -501,7 +498,6 @@ Since I don't have the habit of using many windows, simple setup is enough.
 #+BEGIN_SRC emacs-lisp
 
   (use-package ace-window
-    :ensure t
     :config
     ;; ace-window uses home row
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
@@ -526,7 +522,6 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
 #+BEGIN_SRC emacs-lisp
 
   (use-package eyebrowse
-    :ensure t
     :config
     (setq eyebrowse-new-workspace t)
 
@@ -565,7 +560,6 @@ Company is a completion mechanism that is very flexible
 #+BEGIN_SRC emacs-lisp
 
     (use-package company
-      :ensure t
       :init
       ;; Activate globally
       (add-hook 'after-init-hook 'global-company-mode)
@@ -615,7 +609,6 @@ Company is a completion mechanism that is very flexible
 [[https://github.com/davidshepherd7/electric-operator][Electric Operator]] is an emacs minor-mode to automatically add spacing around operators.
 #+BEGIN_SRC emacs-lisp
   (use-package electric-operator
-    :ensure t
     :config
     (setq electric-operator-R-named-argument-style 'spaced)
     (add-hook 'ess-mode-hook #'electric-operator-mode)
@@ -633,7 +626,6 @@ Company is a completion mechanism that is very flexible
 #+BEGIN_SRC emacs-lisp
 
   (use-package auto-highlight-symbol
-    :ensure t
     :init (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode)
     :config
     (setq ahs-idle-interval 1.0
@@ -654,7 +646,6 @@ Company is a completion mechanism that is very flexible
 
   ;; Enable Yasnippets
   (use-package yasnippet
-    :ensure t
     :diminish yas-minor-mode
     :init
     ;; It will test whether it can expand, if yes, cursor color -> green.
@@ -696,7 +687,6 @@ Company is a completion mechanism that is very flexible
 #+BEGIN_SRC emacs-lisp
 
   (use-package helm
-    :ensure t
     :diminish helm-mode
     :init
     (helm-mode 1)
@@ -738,7 +728,6 @@ Company is a completion mechanism that is very flexible
   (setq helm-full-frame nil)
   ;; Use "C-:" to switch to Helm interface during company-ing
   (use-package helm-company
-    :ensure t
     :config
     (eval-after-load 'company
       '(progn
@@ -748,7 +737,6 @@ Company is a completion mechanism that is very flexible
 
   ;; Helm-bibtex
   (use-package helm-bibtex
-    :ensure t
     :config
     ;; Set bib folder
     (setq bibtex-completion-bibliography
@@ -779,7 +767,6 @@ Company is a completion mechanism that is very flexible
 #+BEGIN_SRC emacs-lisp
    
   (use-package polymode
-    :ensure t
     :diminish (poly-org-mode
 	       poly-markdown-mode
 	       poly-noweb+r-mode
@@ -815,7 +802,6 @@ Company is a completion mechanism that is very flexible
 ** Dired
 #+BEGIN_SRC emacs-lisp
   (use-package dired+
-    :ensure t
     :config
     (set-face-attribute 'diredp-dir-name nil :foreground "#fe8019")
     (set-face-attribute 'diredp-number nil :foreground "#8ec07c")
@@ -826,7 +812,6 @@ Company is a completion mechanism that is very flexible
 
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
-    :ensure t
     :config
     (projectile-global-mode)
     (setq projectile-completion-system 'helm)
@@ -835,7 +820,6 @@ Company is a completion mechanism that is very flexible
 
   ;; Helm-projectile
   (use-package helm-projectile
-    :ensure t
     :config 
     (helm-projectile-on))
 
@@ -849,7 +833,6 @@ Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/
 #+BEGIN_SRC emacs-lisp
 
   (use-package ag
-    :ensure t
     :init
     ;; Truncate long results
     (add-hook 'ag-mode-hook (lambda () (setq truncate-lines t)))
@@ -864,7 +847,6 @@ Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/
   
 
   (use-package wgrep-ag
-    :ensure t
     :config
     ;; wgrep-ag allows you to edit a ag buffer and apply those changes to
     ;; the file buffer. 
@@ -1027,7 +1009,6 @@ The key difference is, that pages are not pre-rendered by e.g. ghostscript and s
 
 #+BEGIN_SRC emacs-lisp
   (use-package pdf-tools
-    :ensure t
     :init 
     (pdf-tools-install)
     :config
@@ -1044,7 +1025,6 @@ The key difference is, that pages are not pre-rendered by e.g. ghostscript and s
 
 #+BEGIN_SRC emacs-lisp
   (use-package nov
-    :ensure t
     :mode ("\\.epub\\'" . nov-mode)
     :config
     (defun my-nov-font-setup ()
@@ -1061,7 +1041,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 #+BEGIN_SRC emacs-lisp
 
   (use-package magit
-    :ensure t
     :bind
     ;; Set magit-status to F9
     ("<f9>" . magit-status)
@@ -1076,7 +1055,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed
-    :ensure t
     :defer t
     :config
     (setq elfeed-use-curl t)
@@ -1090,7 +1068,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     )
 
   (use-package elfeed-goodies
-    :ensure t
     :after elfeed
     :config
     (elfeed-goodies/setup)
@@ -1098,7 +1075,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
   ;; elfeed-org allows you to organize elfeed with org
   (use-package elfeed-org
-    :ensure t
     :after elfeed
     :config
     (elfeed-org)
@@ -1112,7 +1088,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+BEGIN_SRC emacs-lisp
   (use-package paradox
-    :ensure t
     :config
     (paradox-enable)
     (setq-default
@@ -1127,7 +1102,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buffers much in the same manner as Dired.
 #+BEGIN_SRC emacs-lisp
  (use-package ibuffer
-   :ensure t
    :config
    (setq ibuffer-saved-filter-groups
 	 (quote (("Default"
@@ -1165,7 +1139,6 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 #+BEGIN_SRC emacs-lisp
 
   (use-package which-key
-    :ensure t
     :diminish which-key-mode
     :config
     (which-key-mode 1)
@@ -1341,11 +1314,9 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 
 #+BEGIN_SRC emacs-lisp
   (use-package stan-mode
-    :ensure t
     )
 
   (use-package stan-snippets
-    :ensure t
     )
 #+END_SRC
 
@@ -1357,7 +1328,6 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
   (setq python-shell-interpreter-args "--pprint")
 
   (use-package elpy
-    :ensure t
     :init
     ;; Truncate long line in inferior mode
     (add-hook 'inferior-python-mode-hook (lambda () (setq truncate-lines t)))
@@ -1422,7 +1392,6 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 #+BEGIN_SRC emacs-lisp
   
   (use-package sql
-    :ensure t
     :config
     ;; Use a more friendly keyword face
     (copy-face 'font-lock-keyword-face 'sql-keyword-face)
@@ -1437,7 +1406,6 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 
   ;; Upcase sql keywords
   (use-package sqlup-mode
-    :ensure t
     :diminish sqlup-mode
     :init
     ;; Capitalize keywords in SQL mode
@@ -1485,7 +1453,6 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 
   ;; Completion
   (use-package company-auctex
-    :ensure t
     :init
     (company-auctex-init)
     )
@@ -1498,7 +1465,6 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
 
 #+BEGIN_SRC emacs-lisp
   (use-package cdlatex
-    :ensure t
     :config
     (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
     :bind
@@ -1512,7 +1478,6 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
 
 #+BEGIN_SRC emacs-lisp
   (use-package latex-preview-pane
-    :ensure t
     :config
     (latex-preview-pane-enable)
     )
@@ -1522,7 +1487,6 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
    #+BEGIN_SRC emacs-lisp
 
   (use-package markdown-mode
-  :ensure t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -1546,13 +1510,11 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
 #+BEGIN_SRC emacs-lisp
 
  (use-package highlight-defined
-   :ensure t
    :config
    (add-hook 'emacs-lisp-mode-hook 'highlight-defined-mode)
     )
  
  (use-package highlight-quoted
-   :ensure t
    :config
    (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode)
    (set-face-attribute 'highlight-quoted-symbol nil
@@ -1568,7 +1530,6 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
 
   ;; Company
   (use-package company-shell
-    :ensure t
     :config
     (add-to-list 'company-backends '(company-shell company-shell-env company-fish-shell))
     )
@@ -1580,7 +1541,6 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
 #+BEGIN_SRC emacs-lisp
 
   (use-package web-mode
-    :ensure t
     :mode (("\\.html?\\'" . web-mode))
     :config
     (setq web-mode-enable-css-colorization t)
@@ -1591,7 +1551,6 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
     )
 
   (use-package web-beautify
-    :ensure t
     :config
     :bind (:map web-mode-map
 		("C-c b" . web-beautify-html)
@@ -1607,7 +1566,6 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 #+BEGIN_SRC emacs-lisp
 
   (use-package gnuplot-mode
-    :ensure t
     :mode ("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)
     )
 
@@ -1618,7 +1576,6 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 
 #+BEGIN_SRC emacs-lisp
     (use-package plantuml-mode
-      :ensure t
       :mode ("\\.plantuml\\'" . plantuml-mode)
       :config
       ;; Path to jar file, remember to put it in the right folder
@@ -1658,7 +1615,6 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
   
   ;; Use flyspell for English spell-checking
   (use-package flyspell
-    :ensure t
     :config
     ;; (add-hook 'text-mode-hook 'flyspell-mode)
     (set-face-attribute 'flyspell-duplicate nil :underline "DeepPink")
@@ -1675,7 +1631,6 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
 #+BEGIN_SRC emacs-lisp
   
   ;; (use-package langtool
-  ;;   :ensure t
   ;;   :config
   ;;   ;; Set path to the Java tool
   ;;   (setq langtool-language-tool-jar 
@@ -1693,7 +1648,6 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
 
 
   ;; (use-package writegood-mode
-  ;;   :ensure t
   ;;   :config
   ;;   (set-face-attribute 'writegood-duplicates-face nil :underline "DeepPink")
   ;;   (set-face-attribute 'writegood-passive-voice-face nil :underline "Cyan")
@@ -1704,7 +1658,6 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
 
 
   (use-package flycheck
-    :ensure t
     :diminish flycheck-mode
     )
 
@@ -1724,7 +1677,6 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
 
 
   (use-package flycheck-pos-tip
-    :ensure t
     :diminish flycheck-pos-tip-mode
     :config
     (with-eval-after-load 'flycheck
@@ -1737,7 +1689,6 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
 #+BEGIN_SRC emacs-lisp
 
   (use-package define-word
-    :ensure t
     :bind
     (:map pdf-view-mode-map
 	  ("l" . define-word)
@@ -1796,7 +1747,6 @@ Currently disabled, I will test this later when I'm more familiar with emacs.
 
 
   (use-package evil
-    :ensure t
     :init
     :config
     ;; Set insert state as default
@@ -1818,7 +1768,6 @@ Currently disabled, I will test this later when I'm more familiar with emacs.
 Practicing Emacs by disable all normal hot-key
 #+BEGIN_SRC emacs-lisp :tangle no
   (use-package guru-mode
-    :ensure t
     :diminish guru-mode
     :config
     (guru-global-mode)
@@ -1830,7 +1779,6 @@ Practicing Emacs by disable all normal hot-key
 #+BEGIN_SRC emacs-lisp :tangle no
   
   (use-package key-combo
-    :ensure t
     :diminish (key-combo-mode)
     :config
     (key-combo-mode 1)
@@ -1868,7 +1816,6 @@ Practicing Emacs by disable all normal hot-key
 #+BEGIN_SRC emacs-lisp
 
   (use-package vimish-fold
-    :ensure t
     :config
     (setq vimish-fold-header-width '79)
     )
@@ -1876,7 +1823,6 @@ Practicing Emacs by disable all normal hot-key
 
   (use-package selected
     :defer t
-    :ensure t
     :bind
     (:map selected-keymap
 	  ("C-c c"       . capitalize-region)
