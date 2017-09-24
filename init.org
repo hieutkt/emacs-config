@@ -872,7 +872,7 @@ See [[http://orgmode.org/][here]].
   (setq org-hide-leading-stars t)
 
   ;; Hide emphasis markers
-  (setq org-hide-emphasis-markers t)
+  ;; (setq org-hide-emphasis-markers t)
 
   ;; Enable shift selection
   (setq org-support-shift-select t)
