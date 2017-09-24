@@ -1010,6 +1010,9 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
     :config
     (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
     )
+
+  (use-package htmlize
+    :after ox-reveal)
 #+END_SRC
 ** Pdf-tools 
 PDF Tools is, among other things, a replacement of DocView for PDF files. 
