@@ -3,5 +3,4 @@
 # key: use
 # --
 (use-package ${1:package}
-    :ensure t
     $0)

@@ -158,7 +158,7 @@ The original init.org file that is used to generate this file can be found here 
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
   ;; Initialize Emacs full screen 
-  ;; (add-to-list 'initial-frame-alist '(fullscreen . maximized))
+  (add-to-list 'initial-frame-alist '(fullscreen . maximized))
   (global-set-key (kbd "<f11>") 'toggle-frame-maximized)
 
   ;; No startup messages on *scratch* buffer
@@ -1042,7 +1042,6 @@ The key difference is, that pages are not pre-rendered by e.g. ghostscript and s
       (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
 			       :height 1.2))
     (add-hook 'nov-mode-hook 'my-nov-font-setup)
-
     )
 #+END_SRC
 ** Magit
@@ -1157,6 +1156,17 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 
 #+END_SRC
 
+** JSON
+#+BEGIN_SRC emacs-lisp
+  (use-package json-mode
+    :mode ("\\.json\\'" . json-mode)
+    )
+
+  (use-package json-navigator
+    :after json-mode
+    )
+
+#+END_SRC
 * Languages
 ** R
 *** Setting up
