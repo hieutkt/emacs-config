@@ -1036,7 +1036,6 @@ The key difference is, that pages are not pre-rendered by e.g. ghostscript and s
 
 #+BEGIN_SRC emacs-lisp
   (use-package nov
-    :mode ("\\.epub\\'" . nov-mode)
     :config
     (defun my-nov-font-setup ()
       (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
@@ -1346,7 +1345,7 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 #+BEGIN_SRC emacs-lisp
   
   (setq python-shell-interpreter "ipython3")
-  (setq python-shell-interpreter-args "--pprint")
+  (setq python-shell-interpreter-args "--pprint --colors='Linux'")
 
   (use-package elpy
     :init
