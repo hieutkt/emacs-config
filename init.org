@@ -18,7 +18,7 @@ The whole thing is driven by the following =.emacs=
 
 (require 'org)
 
-(setq config-directory "~/Emacs/emacs-config/")
+(setq config-directory "~/Documents/Emacs/emacs-config/")
 (org-babel-load-file
 (expand-file-name "init.org" config-directory))		   
 
@@ -59,7 +59,7 @@ The original init.org file that is used to generate this file can be found here 
 
 
   (use-package hydra
-)
+    )
 
   ;; Requice common-lisp library
   (require 'cl-lib)
@@ -80,7 +80,7 @@ The original init.org file that is used to generate this file can be found here 
 	(current (float-time (current-time))))
     (dolist (file (directory-files temporary-file-directory t))
       (when (and (backup-file-name-p file)
-		 (> (- current (float-time (fifth (file-attributes file))))
+		 (> (- current (float-time (nth 5 (file-attributes file))))
 		    week))
 	(message "%s" file)
 	(delete-file file))))
