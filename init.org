@@ -184,7 +184,7 @@ The original init.org file that is used to generate this file can be found here 
   ;; Disable tool bar, menu bar, and scroll bar
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (menu-bar-mode 1)
+  (menu-bar-mode -1)
 
   ;; Diminish some modes
   (diminish 'visual-line-mode)
@@ -641,6 +641,7 @@ Company is a completion mechanism that is very flexible
 
 #+END_SRC
 ** Yasnippets
+**** TODO There is some errors if yasnippets is not pre-installed, at least on window machine
 
 #+BEGIN_SRC emacs-lisp
 
@@ -923,6 +924,15 @@ See [[http://orgmode.org/][here]].
   (global-set-key (kbd "<f8>") 'org-agenda)
   
 #+END_SRC
+*** Org-ref
+
+#+BEGIN_SRC emacs-lisp
+    (use-package org-ref
+      :after org
+      :config
+      (setq org-ref-default-bibliography
+	  (expand-file-name "~/Dropbox/references.bib")))
+#+END_SRC
 *** Org-babel
 Babel is Org-mode's ability to execute source code within Org-mode documents.
 
@@ -970,8 +980,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 				     ("frame" "lines")
 				     ("framesep" "2mm"))
 	  org-latex-pdf-process
-	  '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-	    "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f")
+	  '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f")
 	  )
 
     ;; Writing latex in org-mode
@@ -1460,16 +1469,21 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 	TeX-save-query nil
 	TeX-PDF-mode t	    
 	font-latex-fontify-sectioning 'color
-	font-latex-fontify-script nil)    
+	font-latex-fontify-script nil
+	)    
 
   ;; Turn on RefTeX in AUCTeX
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+
+  ;; Reftex default bibfile
+  (setq reftex-default-bibliography
+	(expand-file-name "~/Dropbox/references.bib"))
+
   ;; Activate nice interface between RefTeX and AUCTeX
   (setq reftex-plug-into-AUCTeX t)
 
   ;; Word-wrap
    (add-hook 'TeX-mode-hook (lambda () (visual-line-mode 1)))
-
 
   ;; Completion
   (use-package company-auctex
