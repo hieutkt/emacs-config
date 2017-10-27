@@ -314,7 +314,22 @@ sudo fc-cache -f -v
 ** Functions
 
 #+BEGIN_SRC emacs-lisp
-
+  ;; Rename file and buffer
+  ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
+  (defun rename-file-and-buffer (new-name)
+    "Renames both current buffer and file it's visiting to NEW-NAME."
+    (interactive "sNew name: ")
+    (let ((name (buffer-name))
+	  (filename (buffer-file-name)))
+      (if (not filename)
+	  (message "Buffer '%s' is not visiting a file!" name)
+	(if (get-buffer new-name)
+	    (message "A buffer named '%s' already exists!" new-name)
+	  (progn
+	    (rename-file filename new-name 1)
+	    (rename-buffer new-name)
+	    (set-visited-file-name new-name)
+	    (set-buffer-modified-p nil))))))
 
   ;; Define function: fill character to 80
   (defun fill-to-end (char)
