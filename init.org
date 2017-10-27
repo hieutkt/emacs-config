@@ -228,8 +228,11 @@ sudo fc-cache -f -v
     (use-package gruvbox-theme
       :init
       :config
-      (load-theme 'gruvbox-dark-medium t)
+      (load-theme 'gruvbox t)
       (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
+      (set-face-attribute 'mode-line nil :box '(:line-width 2 :color "#665c54"))
+(set-face-attribute 'mode-line-inactive nil :box '(:line-width 2 :color "#3c3836"))
+
       )
 
     (use-package rainbow-delimiters
@@ -273,6 +276,7 @@ sudo fc-cache -f -v
     :config
     (setq spaceline-window-numbers-unicode t)
     (setq spaceline-workspace-numbers-unicode t)
+    (setq powerline-height 20)
     (spaceline-helm-mode)
     (spaceline-info-mode)
     (setq-default
