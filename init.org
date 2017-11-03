@@ -396,10 +396,10 @@ sudo fc-cache -f -v
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package smartparens
+  (use-package smartparens-config
+    :ensure smartparens
     :diminish smartparens-mode
     :config
-    (require 'smartparens-config)
     (smartparens-global-mode 1)
     (add-hook 'comint-mode-hook 'smartparens-mode)
 
@@ -540,7 +540,7 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
     
     :bind*
     (("M-p" . ace-window)
-     ("C-x =" . window-hydra/body))
+     ("C-x C-=" . window-hydra/body))
     )
 
 #+END_SRC
@@ -989,86 +989,87 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 #+END_SRC
 
-*** COMMENT Exports
+*** Exports
 
 #+BEGIN_SRC emacs-lisp
-  (use-package ox-latex
-    :ensure org
-    :config
-    ;; Highlight code blocks in org-latex-export-to-pdf
-    ;; Minted options can be found in:
-    ;; http://mirror.kku.ac.th/CTAN/macros/latex/contrib/minted/minted.pdf
-    (setq org-latex-listings 'minted
-	  org-latex-packages-alist '(("" "minted"))
-	  org-latex-minted-options '(("breaklines" "true")
-				     ("breakanywhere" "true")
-				     ("mathescape")
-				     ("linenos" "true")
-				     ("firstnumber" "last")
-				     ("frame" "lines")
-				     ("framesep" "2mm"))
-	  org-latex-pdf-process
-	  '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f")
+    (use-package ox-latex
+      :ensure org
+      :config
+      ;; Highlight code blocks in org-latex-export-to-pdf
+      ;; Minted options can be found in:
+      ;; http://mirror.kku.ac.th/CTAN/macros/latex/contrib/minted/minted.pdf
+      (setq org-latex-listings 'minted
+	    org-latex-packages-alist '(("" "minted"))
+	    org-latex-minted-options '(("breaklines" "true")
+				       ("breakanywhere" "true")
+				       ("mathescape")
+				       ("linenos" "true")
+				       ("firstnumber" "last")
+				       ("frame" "lines")
+				       ("framesep" "2mm"))
+	    org-latex-pdf-process
+	    '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f")
+	    )
+
+      ;; Default packages
+      (setq org-latex-default-packages-alist
+	  '(("AUTO" "inputenc" t
+	     ("pdflatex"))
+	    ("T1" "fontenc" t
+	     ("pdflatex"))
+	    ("" "graphicx" t)
+	    ("" "grffile" t)
+	    ("" "longtable" nil)
+	    ("" "wrapfig" nil)
+	    ("" "rotating" nil)
+	    ("normalem" "ulem" t)
+	    ("" "amsmath" t)
+	    ("" "textcomp" t)
+	    ("" "amssymb" t)
+	    ("" "capt-of" nil)
+	    ("colorlinks=true,linkcolor=blue" "hyperref" nil)
+	    ("" "indentfirst" nil))
 	  )
-
-    ;; Default packages
-    (setq org-latex-default-packages-alist
-	'(("AUTO" "inputenc" t
-	   ("pdflatex"))
-	  ("T1" "fontenc" t
-	   ("pdflatex"))
-	  ("" "graphicx" t)
-	  ("" "grffile" t)
-	  ("" "longtable" nil)
-	  ("" "wrapfig" nil)
-	  ("" "rotating" nil)
-	  ("normalem" "ulem" t)
-	  ("" "amsmath" t)
-	  ("" "textcomp" t)
-	  ("" "amssymb" t)
-	  ("" "capt-of" nil)
-	  ("colorlinks=true,linkcolor=blue" "hyperref" nil))
-	)
   
-    ;; Writing latex in org-mode
-    (add-hook 'org-mode-hook 'org-cdlatex-mode)
-    (setq org-pretty-entities t)
+      ;; Writing latex in org-mode
+      (add-hook 'org-mode-hook 'org-cdlatex-mode)
+      (setq org-pretty-entities t)
 
-    ;; Add KOMA-scripts classes to org export
-    (add-to-list 'org-latex-classes
-		 '("koma-article" "\\documentclass{scrartcl}"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+      ;; Add KOMA-scripts classes to org export
+      (add-to-list 'org-latex-classes
+		   '("koma-article" "\\documentclass{scrartcl}"
+		     ("\\section{%s}" . "\\section*{%s}")
+		     ("\\subsection{%s}" . "\\subsection*{%s}")
+		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		     ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
-    (add-to-list 'org-latex-classes
-		 '("koma-report" "\\documentclass{scrreprt}"
-		   ("\\part{%s}" . "\\part*{%s}")
-		   ("\\chapter{%s}" . "\\chapter*{%s}")
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+      (add-to-list 'org-latex-classes
+		   '("koma-report" "\\documentclass{scrreprt}"
+		     ("\\part{%s}" . "\\part*{%s}")
+		     ("\\chapter{%s}" . "\\chapter*{%s}")
+		     ("\\section{%s}" . "\\section*{%s}")
+		     ("\\subsection{%s}" . "\\subsection*{%s}")
+		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
 
-    (add-to-list 'org-latex-classes
-		 '("koma-book" "\\documentclass[11pt]{scrbook}"
-		   ("\\part{%s}" . "\\part*{%s}")
-		   ("\\chapter{%s}" . "\\chapter*{%s}")
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
-    )
+      (add-to-list 'org-latex-classes
+		   '("koma-book" "\\documentclass[11pt]{scrbook}"
+		     ("\\part{%s}" . "\\part*{%s}")
+		     ("\\chapter{%s}" . "\\chapter*{%s}")
+		     ("\\section{%s}" . "\\section*{%s}")
+		     ("\\subsection{%s}" . "\\subsection*{%s}")
+		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+      )
 
 
-  (use-package ox-reveal
-    :ensure org
-    :config
-    (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
-    )
+    (use-package ox-reveal
+      :ensure org
+      :config
+      (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
+      )
 
-  (use-package htmlize
-    :after ox-reveal)
+    (use-package htmlize
+      :after ox-reveal)
 #+END_SRC
 ** Pdf-tools 
 PDF Tools is, among other things, a replacement of DocView for PDF files. 
