@@ -185,7 +185,7 @@ The original init.org file that is used to generate this file can be found here 
   ;; Disable tool bar, menu bar, and scroll bar
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (menu-bar-mode -1)
+  (menu-bar-mode 1)
 
   ;; Diminish some modes
   (diminish 'visual-line-mode)
@@ -701,7 +701,7 @@ Company is a completion mechanism that is very flexible
     :config
     (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets")
 	  yas-fallback-behavior 'call-other-command)
-    :bind
+    :bind*
     (("<C-tab>" . yas-insert-snippet)
      :map yas-minor-mode-map
      ("`" . yas-expand-from-trigger-key))
@@ -732,7 +732,7 @@ Company is a completion mechanism that is very flexible
 	  helm-M-x-fuzzy-match t
 	  helm-autoresize-max-height 0
 	  helm-autoresize-min-height 30)
-    
+
     (helm-autoresize-mode 1)
 
     :bind-keymap
@@ -741,19 +741,19 @@ Company is a completion mechanism that is very flexible
     ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
     ("C-c h" . helm-command-prefix)  
     :bind (
- 	   ("C-x b" . helm-buffers-list)
- 	   ("M-x" . helm-M-x)
- 	   ("C-x C-f" . helm-find-files)
+	   ("C-x b" . helm-buffers-list)
+	   ("M-x" . helm-M-x)
+	   ("C-x C-f" . helm-find-files)
 	   ("M-y" . helm-show-kill-ring)
- 	   :map helm-map
- 	   ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
- 	   ("C-i" . helm-execute-persistent-action)   ; make TAB work in terminal
- 	   ("M-x" . helm-select-action)              ; list actions using C-z    
- 	   )
+	   :map helm-map
+	   ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
+	   ("C-i" . helm-execute-persistent-action)   ; make TAB work in terminal
+	   ("M-x" . helm-select-action)              ; list actions using C-z    
+	   )
     :diminish helm-mode
     )
 
-  
+
   (setq helm-full-frame nil)
   ;; Use "C-:" to switch to Helm interface during company-ing
   (use-package helm-company
@@ -780,6 +780,8 @@ Company is a completion mechanism that is very flexible
 	    (incollection  . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
 	    (inproceedings . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
 	    (t             . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*}")))
+
+    (setq bibtex-completion-cite-default-command "textcite")
     :bind(
 	  :map helm-command-map
 	       ("b" . helm-bibtex)
@@ -894,33 +896,36 @@ See [[http://orgmode.org/][here]].
 
 #+BEGIN_SRC emacs-lisp
 
-  ;; Word-wrap
-  ;; (add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
+  (use-package org
+    :config
+    ;; Word-wrap
+    ;; (add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
 
-  ;; Omit the headline-asterisks except the last one:
-  (setq org-hide-leading-stars t)
+    ;; Omit the headline-asterisks except the last one:
+    (setq org-hide-leading-stars t)
 
-  ;; Hide emphasis markers
-  ;; (setq org-hide-emphasis-markers t)
+    ;; Hide emphasis markers
+    ;; (setq org-hide-emphasis-markers t)
 
-  ;; Enable shift selection
-  (setq org-support-shift-select t)
+    ;; Enable shift selection
+    (setq org-support-shift-select t)
 
-  ;; Fontification
-  (set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
-  (set-face-attribute 'org-level-2 nil :weight 'bold)
-  (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
-  (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
-
-
-  (set-face-attribute 'org-block nil :background
-		      (color-lighten-name
-		       (face-attribute 'default :background) 2))
+    ;; Fontification
+    (set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
+    (set-face-attribute 'org-level-2 nil :weight 'bold)
+    (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
+    (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
 
 
-  (font-lock-add-keywords 'org-mode
-			  '(("^ +\\([-*]\\) "
-			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+    (set-face-attribute 'org-block nil :background
+			(color-lighten-name
+			 (face-attribute 'default :background) 2))
+
+
+    (font-lock-add-keywords 'org-mode
+			    '(("^ +\\([-*]\\) "
+			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+    )
 
 
 #+END_SRC
@@ -992,84 +997,86 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 *** Exports
 
 #+BEGIN_SRC emacs-lisp
-    (use-package ox-latex
-      :ensure org
-      :config
-      ;; Highlight code blocks in org-latex-export-to-pdf
-      ;; Minted options can be found in:
-      ;; http://mirror.kku.ac.th/CTAN/macros/latex/contrib/minted/minted.pdf
-      (setq org-latex-listings 'minted
-	    org-latex-packages-alist '(("" "minted"))
-	    org-latex-minted-options '(("breaklines" "true")
-				       ("breakanywhere" "true")
-				       ("mathescape")
-				       ("linenos" "true")
-				       ("firstnumber" "last")
-				       ("frame" "lines")
-				       ("framesep" "2mm"))
-	    org-latex-pdf-process
-	    '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f")
-	    )
-
-      ;; Default packages
-      (setq org-latex-default-packages-alist
-	  '(("AUTO" "inputenc" t
-	     ("pdflatex"))
-	    ("T1" "fontenc" t
-	     ("pdflatex"))
-	    ("" "graphicx" t)
-	    ("" "grffile" t)
-	    ("" "longtable" nil)
-	    ("" "wrapfig" nil)
-	    ("" "rotating" nil)
-	    ("normalem" "ulem" t)
-	    ("" "amsmath" t)
-	    ("" "textcomp" t)
-	    ("" "amssymb" t)
-	    ("" "capt-of" nil)
-	    ("colorlinks=true,linkcolor=blue" "hyperref" nil)
-	    ("" "indentfirst" nil))
+  (use-package ox-latex
+    :ensure org
+    :config
+    ;; Highlight code blocks in org-latex-export-to-pdf
+    ;; Minted options can be found in:
+    ;; http://mirror.kku.ac.th/CTAN/macros/latex/contrib/minted/minted.pdf
+    (setq org-latex-listings 'minted
+	  org-latex-packages-alist '(("" "minted"))
+	  org-latex-minted-options '(("breaklines" "true")
+				     ("breakanywhere" "true")
+				     ("mathescape")
+				     ("linenos" "true")
+				     ("firstnumber" "last")
+				     ("frame" "lines")
+				     ("framesep" "2mm"))
+	  org-latex-pdf-process
+	  '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f")
 	  )
-  
-      ;; Writing latex in org-mode
-      (add-hook 'org-mode-hook 'org-cdlatex-mode)
-      (setq org-pretty-entities t)
 
-      ;; Add KOMA-scripts classes to org export
-      (add-to-list 'org-latex-classes
-		   '("koma-article" "\\documentclass{scrartcl}"
-		     ("\\section{%s}" . "\\section*{%s}")
-		     ("\\subsection{%s}" . "\\subsection*{%s}")
-		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		     ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-      (add-to-list 'org-latex-classes
-		   '("koma-report" "\\documentclass{scrreprt}"
-		     ("\\part{%s}" . "\\part*{%s}")
-		     ("\\chapter{%s}" . "\\chapter*{%s}")
-		     ("\\section{%s}" . "\\section*{%s}")
-		     ("\\subsection{%s}" . "\\subsection*{%s}")
-		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
-
-      (add-to-list 'org-latex-classes
-		   '("koma-book" "\\documentclass[11pt]{scrbook}"
-		     ("\\part{%s}" . "\\part*{%s}")
-		     ("\\chapter{%s}" . "\\chapter*{%s}")
-		     ("\\section{%s}" . "\\section*{%s}")
-		     ("\\subsection{%s}" . "\\subsection*{%s}")
-		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
-      )
+    ;; Default packages
+    (setq org-latex-default-packages-alist
+	'(("AUTO" "inputenc" t
+	   ("pdflatex"))
+	  ("T1" "fontenc" t
+	   ("pdflatex"))
+	  ("" "graphicx" t)
+	  ("" "grffile" t)
+	  ("" "longtable" nil)
+	  ("" "wrapfig" nil)
+	  ("" "rotating" nil)
+	  ("normalem" "ulem" t)
+	  ("" "amsmath" t)
+	  ("" "textcomp" t)
+	  ("" "amssymb" t)
+	  ("" "capt-of" nil)
+ 	  ("dvipsnames" "xcolor" nil)
+	  ("colorlinks=true,linkcolor=Blue,citecolor=BrickRed" "hyperref" nil)
+	  ("" "indentfirst" nil))
+	)
 
 
-    (use-package ox-reveal
-      :ensure org
-      :config
-      (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
-      )
+    ;; Writing latex in org-mode
+    (add-hook 'org-mode-hook 'org-cdlatex-mode)
+    (setq org-pretty-entities t)
 
-    (use-package htmlize
-      :after ox-reveal)
+    ;; Add KOMA-scripts classes to org export
+    (add-to-list 'org-latex-classes
+		 '("koma-article" "\\documentclass{scrartcl}"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+    (add-to-list 'org-latex-classes
+		 '("koma-report" "\\documentclass{scrreprt}"
+		   ("\\part{%s}" . "\\part*{%s}")
+		   ("\\chapter{%s}" . "\\chapter*{%s}")
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+
+    (add-to-list 'org-latex-classes
+		 '("koma-book" "\\documentclass[11pt]{scrbook}"
+		   ("\\part{%s}" . "\\part*{%s}")
+		   ("\\chapter{%s}" . "\\chapter*{%s}")
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+    )
+
+
+  (use-package ox-reveal
+    :ensure org
+    :config
+    (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
+    )
+
+  (use-package htmlize
+    :after ox-reveal)
 #+END_SRC
 ** Pdf-tools 
 PDF Tools is, among other things, a replacement of DocView for PDF files. 

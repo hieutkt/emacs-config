@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: header
+# key: header
+# --
+#+TITLE: ${1:Title}
+#+AUTHOR: ${2:Nguyễn Đức Hiếu}
+#+STARTUP: ${3:content}
+#+OPTIONS: ${4:num:3 ^:nil toc:nil}

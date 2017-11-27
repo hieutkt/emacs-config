@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: header_latex_biblatex
+# key: header_latex_biblatex
+# --
+#+latex_header: \\usepackage[backend=bibtex,sorting=ydnt,style=authoryear]{biblatex}
+#+latex_header: \\addbibresource{~/Dropbox/references.bib}

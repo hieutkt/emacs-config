@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: header_latex_vietnam
+# key: header_latex_vietnam
+# --
+#+LATEX_HEADER: \\usepackage[utf8]{vietnam}
+#+LATEX_HEADER: \\usepackage{mathptmx}

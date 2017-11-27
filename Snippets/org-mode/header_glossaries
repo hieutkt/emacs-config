@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: header_latex_glossaries
+# key: header_latex_glossaries
+# --
+#+LATEX_HEADER: \\usepackage{glossaries}
+#+LATEX_HEADER: \\makeglossaries
