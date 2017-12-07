@@ -36,7 +36,7 @@ The original init.org file that is used to generate this file can be found here 
 
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+  ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
   (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
 
   (package-initialize)
@@ -57,9 +57,8 @@ The original init.org file that is used to generate this file can be found here 
     :ensure key-chord
     :config (key-chord-mode 1))
 
-
-  (use-package hydra
-    )
+  (use-package diminish)
+  (use-package hydra)
 
   ;; Requice common-lisp library
   (require 'cl-lib)
@@ -229,7 +228,7 @@ sudo fc-cache -f -v
       :init
       :config
       (load-theme 'gruvbox t)
-      (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
+      ;; (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
       (set-face-attribute 'mode-line nil :box '(:line-width 2 :color "#665c54"))
 (set-face-attribute 'mode-line-inactive nil :box '(:line-width 2 :color "#3c3836"))
 
@@ -1033,7 +1032,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 	  ("" "amssymb" t)
 	  ("" "capt-of" nil)
  	  ("dvipsnames" "xcolor" nil)
-	  ("colorlinks=true,linkcolor=Blue,citecolor=BrickRed" "hyperref" nil)
+	  ("colorlinks=true, linkcolor=Blue, citecolor=BrickRed, urlcolor=PineGreen" "hyperref" nil)
 	  ("" "indentfirst" nil))
 	)
 
