@@ -157,14 +157,14 @@ The original init.org file that is used to generate this file can be found here 
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
   ;; Initialize Emacs full screen 
-  (add-to-list 'initial-frame-alist '(fullscreen . maximized))
+  ;; (add-to-list 'initial-frame-alist '(fullscreen . maximized))
   (global-set-key (kbd "<f11>") 'toggle-frame-maximized)
 
   ;; No startup messages on *scratch* buffer
   (setq initial-scratch-message "")
 
   ;; Cursor type
-  (setq-default cursor-type 'bar
+  (setq-default cursor-type 'hbar
 		cursor-in-non-selected-windows nil)
 
   ;; Global font-lock mode
@@ -263,7 +263,8 @@ sudo fc-cache -f -v
 #+BEGIN_SRC emacs-lisp
   (use-package hl-line
     :config
-    (global-hl-line-mode)
+    (add-hook 'prog-mode-hook 'hl-line-mode)
+    (add-hook 'text-mode-hook 'hl-line-mode)
     )
 #+END_SRC
 *** Mode-line
@@ -1125,7 +1126,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 ** Elfeed
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
   (use-package elfeed
     :defer t
     :config
@@ -1408,7 +1409,7 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 #+BEGIN_SRC emacs-lisp
   
   (setq python-shell-interpreter "ipython3")
-  (setq python-shell-interpreter-args "--pprint --colors='Linux'")
+  (setq python-shell-interpreter-args "--pprint --colors=Linux")
 
   (use-package elpy
     :init
