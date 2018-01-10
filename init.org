@@ -975,6 +975,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((R . t)
+     (latex . t)
      (emacs-lisp . t)
      (gnuplot . t)
      (plantuml . t)
