@@ -1240,16 +1240,13 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 ** R
 *** Setting up
 #+BEGIN_SRC emacs-lisp
+
   (use-package ess-site
     :ensure ess
     :init
     ;; Auto set width and length options when initiate new Ess processes
     (add-hook 'ess-post-run-hook 'ess-execute-screen-options)
-    :config
-    ;; Some how ess-mode is not derived from prog-mode
-    (add-hook 'ess-mode-hook (lambda ()  (run-hooks 'prog-mode-hook)))
     )
-
 
 #+END_SRC
 
