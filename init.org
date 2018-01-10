@@ -1410,7 +1410,7 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 ** Python
 
 #+BEGIN_SRC emacs-lisp
-  
+
   (setq python-shell-interpreter "ipython3")
   (setq python-shell-interpreter-args "--pprint --colors=Linux")
 
@@ -1430,10 +1430,12 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
     ;; Do not enable elpy flymake for now
     (remove-hook 'elpy-modules 'elpy-module-flymake)
     (remove-hook 'elpy-modules 'elpy-module-highlight-indentation)
-    
-    ;; Use python3
-    (elpy-use-ipython "ipython3")
-    ;;     (setq python-shell-interpreter-args "--simple-prompt --pprint")
+
+    ;; The old `elpy-use-ipython' is obseleted, see:
+    ;; https://elpy.readthedocs.io/en/latest/ide.html#interpreter-setup
+    (setq python-shell-interpreter "ipython"
+	  python-shell-interpreter-args "-i --simple-prompt")
+
     (setq elpy-rpc-python-command "python3")
 
     ;; Completion backend
@@ -1459,9 +1461,9 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
     ;; Font-lock
     (add-hook 'python-mode-hook
       '(lambda()
-         (font-lock-add-keywords
-          nil
-          '(("\\<\\([_A-Za-z0-9]*\\)(" 1
+	 (font-lock-add-keywords
+	  nil
+	  '(("\\<\\([_A-Za-z0-9]*\\)(" 1
 	     font-lock-function-name-face) ; highlight function names
 	    ))))
 
@@ -1470,7 +1472,7 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 	  ("C-c <RET>" . elpy-shell-send-region-or-buffer)
 	  ("C-c C-c" . elpy-send-current-block))
     )
-  
+
 
 #+END_SRC
 
