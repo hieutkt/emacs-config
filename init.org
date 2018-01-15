@@ -5,7 +5,6 @@
 #+LATEX_CLASS: koma-article
 #+LaTeX_CLASS_OPTIONS: [a4paper, 11pt] 
 #+LATEX_HEADER: \usepackage[utf8]{vietnam}
-#+LATEX_HEADER: \usepackage{attachfile}
 
 * Prerequisite
 
@@ -24,7 +23,6 @@ The whole thing is driven by the following =.emacs=
 
 #+END_EXAMPLE
 
-The original init.org file that is used to generate this file can be found here : @@latex:\attachfile{init.org}@@
 
 * Initiation
 ** Setup and bootstrap
