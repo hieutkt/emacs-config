@@ -1502,46 +1502,34 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
     )
 
 #+END_SRC
-** TeX and LaTeX
+** LaTeX
 *** AUCTeX
     
 #+BEGIN_SRC emacs-lisp
 
-  (use-package tex 
-    :ensure auctex)
+  (use-package latex 
+    :ensure auctex
+    :config
+    (setq TeX-master nil
+	  TeX-auto-save t			    
+	  TeX-parse-self t
+	  TeX-PDF-mode t	    
+	  TeX-electric-escape t
+	  )
 
-  ;; Appearance
-  (require 'font-latex)
+    ;; Turn on RefTeX in AUCTeX
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
 
-  ;; Preview-latex
-  ;; (set-default 'preview-scale-function 1.2)
+    ;; Reftex default bibfile
+    (setq reftex-default-bibliography
+	  (expand-file-name "~/Dropbox/references.bib"))
 
-  ;; Math mode
-  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-  ;; (set-face-attribute 'font-latex-math-face nil :foreground "#ffffff")
+    ;; Activate nice interface between RefTeX and AUCTeX
+    (setq reftex-plug-into-AUCTeX t)
 
-  ;; Enable query for master file
-  (setq-default TeX-master nil)		    
-  (setq TeX-auto-save t			    
-	TeX-parse-self t
-	TeX-save-query nil
-	TeX-PDF-mode t	    
-	font-latex-fontify-sectioning 'color
-	font-latex-fontify-script nil
-	)    
-
-  ;; Turn on RefTeX in AUCTeX
-  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-
-  ;; Reftex default bibfile
-  (setq reftex-default-bibliography
-	(expand-file-name "~/Dropbox/references.bib"))
-
-  ;; Activate nice interface between RefTeX and AUCTeX
-  (setq reftex-plug-into-AUCTeX t)
-
-  ;; Word-wrap
-   (add-hook 'TeX-mode-hook (lambda () (visual-line-mode 1)))
+    ;; Word-wrap
+    (add-hook 'TeX-mode-hook (lambda () (visual-line-mode 1)))
+    )
 
   ;; Completion
   (use-package company-auctex
@@ -1558,22 +1546,10 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
 #+BEGIN_SRC emacs-lisp
   (use-package cdlatex
     :config
-    (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
-    :bind
-    (:map LaTeX-mode-map
-     ("<tab>" . cdlatex-tab))
-    )
-
-#+END_SRC
-
-*** Preview-latex-pane
-
-#+BEGIN_SRC emacs-lisp
-  (use-package latex-preview-pane
-    :config
-    (latex-preview-pane-enable)
+    (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex)
     )
 #+END_SRC
+
 ** Markdown
 
    #+BEGIN_SRC emacs-lisp
