@@ -1041,7 +1041,6 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
     ;; Writing latex in org-mode
     (add-hook 'org-mode-hook 'org-cdlatex-mode)
-    (setq org-pretty-entities t)
 
     ;; Add KOMA-scripts classes to org export
     (add-to-list 'org-latex-classes
