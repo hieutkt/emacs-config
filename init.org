@@ -1906,3 +1906,14 @@ Practicing Emacs by disable all normal hot-key
 
 
 #+END_SRC
+** Org-rich-yank
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package org-rich-yank
+    :ensure t
+    :after org
+    :bind (:map org-mode-map
+		("C-M-y" . org-rich-yank)))
+
+#+END_SRC
