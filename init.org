@@ -27,70 +27,79 @@ The whole thing is driven by the following =.emacs=
 * Initiation
 ** Setup and bootstrap
 #+BEGIN_SRC emacs-lisp
-  ;; Increase garbage collection threshold to improve emacs init time
-  (setq gc-cons-threshold 100000000)
-  (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
+    ;; Increase garbage collection threshold to improve emacs init time
+    (setq gc-cons-threshold 100000000)
+    (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
 
 
-  (require 'package)
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-  ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
-  (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
+    (require 'package)
+    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+    ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+    ;; (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
 
-  (package-initialize)
+    (package-initialize)
 
-  ;; Bootstrap `use-package'
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
-  ;; Use use-package to reduce load time
-  (eval-when-compile
-    (require 'use-package)
-    )
+    ;; Bootstrap `use-package'
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+    ;; Use use-package to reduce load time
+    (eval-when-compile
+      (require 'use-package)
+      )
 
-  (setq use-package-always-ensure t
-	use-package-always-defer-install t)
+    (setq use-package-always-ensure t
+	  use-package-always-defer-install t
+	  use-package-verbose t)
 
-  (use-package use-package-chords
-    :ensure key-chord
-    :config (key-chord-mode 1))
+    (use-package use-package-chords
+      :ensure key-chord
+      :config (key-chord-mode 1))
 
-  (use-package diminish)
-  (use-package hydra)
+    (use-package diminish)
+    (use-package hydra)
 
-  ;; Requice common-lisp library
-  (require 'cl-lib)
+    ;; Requice common-lisp library
+    (require 'cl-lib)
 
-  ;; Auto-revert mode
-  (global-auto-revert-mode 1)
-  (setq auto-revert-interval 0.5)
+    ;; Auto-revert mode
+    (global-auto-revert-mode 1)
+    (setq auto-revert-interval 0.5)
 
-  ;; Backup stored in /tmp
-  (setq backup-directory-alist
-	`((".*" . ,temporary-file-directory)))
-  (setq auto-save-file-name-transforms
-	`((".*" , temporary-file-directory t)))
+    ;; Backup stored in /tmp
+    (setq backup-directory-alist
+	  `((".*" . ,temporary-file-directory)))
+    (setq auto-save-file-name-transforms
+	  `((".*" , temporary-file-directory t)))
 
-  ;; Delete old backup
-  (message "Deleting old backup files...")
-  (let ((week (* 60 60 24 7))
-	(current (float-time (current-time))))
-    (dolist (file (directory-files temporary-file-directory t))
-      (when (and (backup-file-name-p file)
-		 (> (- current (float-time (nth 5 (file-attributes file))))
-		    week))
-	(message "%s" file)
-	(delete-file file))))
+    ;; Delete old backup
+    (message "Deleting old backup files...")
+    (let ((week (* 60 60 24 7))
+	  (current (float-time (current-time))))
+      (dolist (file (directory-files temporary-file-directory t))
+	(when (and (backup-file-name-p file)
+		   (> (- current (float-time (nth 5 (file-attributes file))))
+		      week))
+	  (message "%s" file)
+	  (delete-file file))))
 
-  ;; Information settings
-  (setq user-full-name "Nguyễn Đức Hiếu"
-	user-mail-address "hieunguyen31371@gmail.com")
+    ;; Information settings
+    (setq user-full-name "Nguyễn Đức Hiếu"
+	  user-mail-address "hieunguyen31371@gmail.com")
 
-  ;; Set emacs as a client
-  ;; (server-start)
+    ;; Set emacs as a client
+    ;; (server-start)
 
 #+END_SRC
 
+** Emacsclient
+
+#+BEGIN_SRC emacs-lisp
+  (use-package server
+    :config
+    (unless (server-running-p)
+      (server-start)))
+#+END_SRC
 ** Better Defaults
 
 #+BEGIN_SRC emacs-lisp
@@ -924,7 +933,6 @@ See [[http://orgmode.org/][here]].
 			    '(("^ +\\([-*]\\) "
 			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
     )
-
 
 #+END_SRC
 
@@ -1915,5 +1923,15 @@ Practicing Emacs by disable all normal hot-key
     :after org
     :bind (:map org-mode-map
 		("C-M-y" . org-rich-yank)))
+
+#+END_SRC
+** Org-bullets
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package org-bullets
+    :hook 
+    (org-mode . org-bullets-mode)
+    )
 
 #+END_SRC
