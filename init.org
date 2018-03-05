@@ -182,9 +182,9 @@ The whole thing is driven by the following =.emacs=
   (setq column-number-mode t)
 
   ;; Display line number
-  (add-hook 'text-mode-hook (lambda () (setq display-line-numbers 'relative)))
-  (add-hook 'prog-mode-hook (lambda () (setq display-line-numbers 'relative)))
-  (add-hook 'conf-mode-hook (lambda () (setq display-line-numbers 'relative)))
+  ;; (add-hook 'text-mode-hook (lambda () (setq display-line-numbers 'relative)))
+  ;; (add-hook 'prog-mode-hook (lambda () (setq display-line-numbers 'relative)))
+  ;; (add-hook 'conf-mode-hook (lambda () (setq display-line-numbers 'relative)))
   (setq-default display-line-numbers-width 4)
   (setq-default display-line-numbers-widen t)
 
