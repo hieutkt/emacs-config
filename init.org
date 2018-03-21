@@ -1183,41 +1183,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     )
 #+END_SRC
 
-** Ibuffer
-Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buffers much in the same manner as Dired.
-#+BEGIN_SRC emacs-lisp
- (use-package ibuffer
-   :config
-   (setq ibuffer-saved-filter-groups
-	 (quote (("Default"
-		  ("Dired" (mode . dired-mode))
-		  ("Org" (name . "^.*org$"))
-		  ("Process" (or (mode . inferior-ess-mode)
-				 (mode . shell-mode)))
-		  ("Programming" (or
-				  (mode . ess-mode)
-				  (mode . python-mode)
-				  (mode . c++-mode)))
-		  ("Helm" (mode . Hmm-mode))
-		  ("Emacs" (or
-			    (name . "^\\*scratch\\*$")
-			    (name . "^\\*Messages\\*$")
-			    (name . "^\\*dashboard\\*$")))
-		  ))))
-   
-   (add-hook 'ibuffer-mode-hook
-	     (lambda ()
-	       (ibuffer-auto-mode 1)
-	       (ibuffer-switch-to-saved-filter-groups "default")))
-
-   ;; Don't show filter groups if there are no buffers in that group
-   (setq ibuffer-show-empty-filter-groups nil)
-
-   :bind
-   ("C-x C-b" . ibuffer))
-
-#+END_SRC
-
 ** Which-key
 [[https://github.com/justbur/emacs-which-key][which-key]] is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
 
