@@ -904,6 +904,7 @@ See [[http://orgmode.org/][here]].
 #+BEGIN_SRC emacs-lisp
 
   (use-package org
+    :hook (org-mode . auto-fill-mode)
     :config
     ;; Word-wrap
     ;; (add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
