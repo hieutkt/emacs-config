@@ -1597,21 +1597,6 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
 		       :inherit 'font-lock-string-face))
   
 #+END_SRC
-** Shell
-
-#+BEGIN_SRC emacs-lisp
-
-  ;; Keybinding for terminal
-  ;; (global-set-key [f2] 'eshell)
-
-  ;; Company
-  (use-package company-shell
-    :config
-    (add-to-list 'company-backends '(company-shell company-shell-env company-fish-shell))
-    )
-
-#+END_SRC
-
 ** Web
 
 #+BEGIN_SRC emacs-lisp
