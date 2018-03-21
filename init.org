@@ -1482,34 +1482,6 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 
 #+END_SRC
 
-** SQL
-
-#+BEGIN_SRC emacs-lisp
-  
-  (use-package sql
-    :config
-    ;; Use a more friendly keyword face
-    (copy-face 'font-lock-keyword-face 'sql-keyword-face)
-    (set-face-attribute 'sql-keyword-face nil 
-			:foreground "#fabd2f"
-			:weight 'bold)
-    (add-hook 'sql-mode-hook (lambda ()
-			       (set (make-local-variable 'font-lock-keyword-face)
-				    'sql-keyword-face)))
-    
-    )
-
-  ;; Upcase sql keywords
-  (use-package sqlup-mode
-    :diminish sqlup-mode
-    :init
-    ;; Capitalize keywords in SQL mode
-    (add-hook 'sql-mode-hook 'sqlup-mode)
-    ;; Capitalize keywords in an interactive session (e.g. psql)
-    (add-hook 'sql-interactive-mode-hook 'sqlup-mode)
-    )
-
-#+END_SRC
 ** LaTeX
 *** AUCTeX
     
