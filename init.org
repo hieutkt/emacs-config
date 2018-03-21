@@ -1365,6 +1365,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 #+BEGIN_SRC emacs-lisp
   (use-package stan-mode
     :mode ("\\.stan\\'" . stan-mode)
+    )
 
   (use-package stan-snippets
     :after (stan)
