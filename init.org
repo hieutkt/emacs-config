@@ -1201,11 +1201,13 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 *** Setting up
 #+BEGIN_SRC emacs-lisp
 
-  (use-package ess-site
-    :ensure ess
+  (use-package ess
+    :defer t
     :init
+    (require 'ess-site)
     ;; Auto set width and length options when initiate new Ess processes
     (add-hook 'ess-post-run-hook 'ess-execute-screen-options)
+    (add-hook 'ess-mode-hook (lambda () (run-hooks 'prog-mode-hook)))
     )
 
 #+END_SRC
@@ -1241,7 +1243,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
   (setq inferior-ess-r-font-lock-keywords 
 	'((ess-S-fl-keyword:prompt . t)
 	  (ess-R-fl-keyword:messages . t)
-	  (ess-R-fl-keyword:modifiers . t)
+	  (ess-R-fl-keyword:modifiers . nil)
 	  (ess-R-fl-keyword:fun-defs . t)
 	  (ess-R-fl-keyword:keywords . nil)
 	  (ess-R-fl-keyword:assign-ops . t)
@@ -1249,7 +1251,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 	  (ess-fl-keyword:matrix-labels . t)
 	  (ess-fl-keyword:fun-calls . nil)
 	  (ess-fl-keyword:numbers . nil)
-	  (ess-fl-keyword:operators . t)
+	  (ess-fl-keyword:operators . nil)
 	  (ess-fl-keyword:delimiters . nil)
 	  (ess-fl-keyword:= . t)
 	  (ess-R-fl-keyword:F&T . nil))
