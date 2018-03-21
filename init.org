@@ -1370,11 +1370,15 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 ** Python
 
 #+BEGIN_SRC emacs-lisp
-
-  (setq python-shell-interpreter "ipython3")
-  (setq python-shell-interpreter-args "--pprint --colors=Linux")
+  (use-package python
+    :mode ("\\.py\\'" . python-mode)
+    :config
+    (setq python-shell-interpreter "ipython3")
+    (setq python-shell-interpreter-args "--pprint --colors=Linux")
+    )
 
   (use-package elpy
+    :after python
     :init
     ;; Truncate long line in inferior mode
     (add-hook 'inferior-python-mode-hook (lambda () (setq truncate-lines t)))
@@ -1420,12 +1424,12 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
     ;; Font-lock
     (add-hook 'python-mode-hook
-      '(lambda()
-	 (font-lock-add-keywords
-	  nil
-	  '(("\\<\\([_A-Za-z0-9]*\\)(" 1
-	     font-lock-function-name-face) ; highlight function names
-	    ))))
+	      '(lambda()
+		 (font-lock-add-keywords
+		  nil
+		  '(("\\<\\([_A-Za-z0-9]*\\)(" 1
+		     font-lock-function-name-face) ; highlight function names
+		    ))))
 
     :bind
     (:map python-mode-map
