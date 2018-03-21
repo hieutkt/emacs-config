@@ -1515,7 +1515,8 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
     
 #+BEGIN_SRC emacs-lisp
 
-  (use-package latex 
+  (use-package tex 
+    :mode ("\\.tex\\'" . TeX-latex-mode)
     :ensure auctex
     :config
     (setq TeX-master nil
@@ -1541,6 +1542,7 @@ Ibuffer is an advanced replacement for BufferMenu, which lets you operate on buf
 
   ;; Completion
   (use-package company-auctex
+    :after (tex)
     :init
     (company-auctex-init)
     )
@@ -1553,6 +1555,7 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
 
 #+BEGIN_SRC emacs-lisp
   (use-package cdlatex
+    :after (tex)
     :config
     (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex)
     )
