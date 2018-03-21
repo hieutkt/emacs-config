@@ -1196,17 +1196,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+END_SRC
 
-** JSON
-#+BEGIN_SRC emacs-lisp
-  (use-package json-mode
-    :mode ("\\.json\\'" . json-mode)
-    )
-
-  (use-package json-navigator
-    :after json-mode
-    )
-
-#+END_SRC
 * Languages
 ** R
 *** Setting up
@@ -1537,6 +1526,18 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
 		       :inherit 'font-lock-string-face))
   
 #+END_SRC
+** JSON
+#+BEGIN_SRC emacs-lisp
+  (use-package json-mode
+    :mode ("\\.json\\'" . json-mode)
+    )
+
+  (use-package json-navigator
+    :after json-mode
+    )
+
+#+END_SRC
+
 ** Web
 
 #+BEGIN_SRC emacs-lisp
