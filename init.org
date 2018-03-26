@@ -58,9 +58,6 @@ The whole thing is driven by the following =.emacs=
     (use-package diminish)
     (use-package hydra)
 
-    ;; Requice common-lisp library
-    (require 'cl-lib)
-
     ;; Auto-revert mode
     (global-auto-revert-mode 1)
     (setq auto-revert-interval 0.5)
@@ -1633,7 +1630,7 @@ This part of Emacs is mostly for text-derived modes, mainly for normal (English)
 * Fun
 ** Dad Jokes
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
   ;; This require pos-tip.el
   (require 'pos-tip)
 
