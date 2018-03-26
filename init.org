@@ -1133,38 +1133,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+END_SRC  
 
-** Elfeed
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (use-package elfeed
-    :defer t
-    :config
-    (setq elfeed-use-curl t)
-    (setq elfeed-search-filter "@3-days-ago")
-    (setq elfeed-db-directory "~/Dropbox/Emacs/db.elfeed")
-    (add-hook 'elfeed-show-mode-hook (lambda () (visual-line-mode 1)))
-
-    :commands elfeed
-    :bind 
-    ("C-x w" . elfeed)
-    )
-
-  (use-package elfeed-goodies
-    :after elfeed
-    :config
-    (elfeed-goodies/setup)
-    )
-
-  ;; elfeed-org allows you to organize elfeed with org
-  (use-package elfeed-org
-    :after elfeed
-    :config
-    (elfeed-org)
-    (setq rmh-elfeed-org-files 
-	  (list "~/Dropbox/org/elfeed.org"))
-    )
-#+END_SRC
-
 ** Paradox
 [[https://github.com/Malabarba/paradox][Paradox]] is a project for modernizing Emacs' Package Menu. With improved appearance, mode-line information. Github integration, customizability, asynchronous upgrading, and more.
 
