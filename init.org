@@ -1092,16 +1092,16 @@ The key difference is, that pages are not pre-rendered by e.g. ghostscript and s
 
 #+BEGIN_SRC emacs-lisp
   (use-package pdf-tools
-    :init 
-    (pdf-tools-install)
+    :magic ("%PDF" . pdf-view-mode)
     :config
+    (pdf-tools-install)
     (setq pdf-view-display-size "fit-page"
 	  auto-revert-interval 0
 	  ess-pdf-viewer-pref "emacsclient"
 	  TeX-view-program-selection '((output-pdf "PDF Tools"))
 	  pdf-view-midnight-colors '("#ffffc8" . "#1d2021"))
     )
-  
+
 #+END_SRC
 
 ** Nov.el
