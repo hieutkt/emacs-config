@@ -667,8 +667,6 @@ Company is a completion mechanism that is very flexible
 				  font-lock-doc-face))
     (set-face-attribute 'ahs-plugin-whole-buffer-face nil :background "#ffaf00")
     (set-face-attribute 'ahs-plugin-defalt-face nil :background "#afaf00")
-
-    (unbind-key "M--" auto-highlight-symbol-mode-map)
     )
 
 #+END_SRC
