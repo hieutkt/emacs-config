@@ -667,6 +667,7 @@ Company is a completion mechanism that is very flexible
 				  font-lock-doc-face))
     (set-face-attribute 'ahs-plugin-whole-buffer-face nil :background "#ffaf00")
     (set-face-attribute 'ahs-plugin-defalt-face nil :background "#afaf00")
+    (unbind-key "M--" auto-highlight-symbol-mode-map)
     )
 
 #+END_SRC
@@ -1341,8 +1342,8 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
   (use-package python
     :mode ("\\.py\\'" . python-mode)
     :config
-    (setq python-shell-interpreter "ipython3")
-    (setq python-shell-interpreter-args "--pprint --colors=Linux")
+    (setq python-shell-interpreter "python3")
+    ;; (setq python-shell-interpreter-args "--pprint --colors=Linux")
     )
 
   (use-package elpy
@@ -1365,8 +1366,8 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
     ;; The old `elpy-use-ipython' is obseleted, see:
     ;; https://elpy.readthedocs.io/en/latest/ide.html#interpreter-setup
-    (setq python-shell-interpreter "ipython"
-	  python-shell-interpreter-args "-i --simple-prompt")
+    ;; (setq python-shell-interpreter "ipython3"
+	  ;; python-shell-interpreter-args "-i --simple-prompt")
 
     (setq elpy-rpc-python-command "python3")
 
