@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Hugo colortext shortcodes
+# key: color
+# --
+{{<color ${1:$$(yas-choose-value '("darkred" "darkgreen" "darkblue"))} "${2:text}">}}$0
