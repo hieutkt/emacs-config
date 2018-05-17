@@ -119,6 +119,9 @@ The whole thing is driven by the following =.emacs=
   ;; Pressing TAB indents first then complete
   (setq tab-always-indent 'complete)
 
+  ;; Indent always use spaces instead of tabs
+  (setq indent-tabs-mode nil)
+
   ;; Global mark ring
   (setq global-mark-ring-max 50000)
 
