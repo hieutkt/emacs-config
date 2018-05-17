@@ -1510,6 +1510,16 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
     )
 
 #+END_SRC
+
+** CSS
+
+#+BEGIN_SRC emacs-lisp
+  (use-package css-mode
+    :mode (("\\.css?\\'" . css-mode))
+    :config
+    (setq css-indent-offset 2)
+    )
+#+END_SRC
 ** GNUplot
 Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms.
 
