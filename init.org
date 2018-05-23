@@ -163,7 +163,7 @@ The whole thing is driven by the following =.emacs=
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
   ;; Initialize Emacs full screen 
-  ;; (add-to-list 'initial-frame-alist '(fullscreen . maximized))
+  (add-to-list 'initial-frame-alist '(fullscreen . maximized))
   (global-set-key (kbd "<f11>") 'toggle-frame-maximized)
 
   ;; No startup messages on *scratch* buffer
@@ -207,6 +207,18 @@ The whole thing is driven by the following =.emacs=
   (use-package smooth-scrolling 
     :config
     (smooth-scrolling-mode t))
+
+#+END_SRC
+
+*** Visual fill colunmn
+    
+[[https://github.com/joostkremers/visual-fill-column][visual-fill-column-mode]] is a better default replacement for visual-fill-mode.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package visual-fill-column
+    :hook (text-mode . visual-fill-column-mode)
+    :init
+    (setq visual-fill-column-width 80))
 
 #+END_SRC
 
@@ -903,10 +915,7 @@ See [[http://orgmode.org/][here]].
 #+BEGIN_SRC emacs-lisp
 
   (use-package org
-    :hook (org-mode . auto-fill-mode)
     :config
-    ;; Word-wrap
-    ;; (add-hook 'org-mode-hook (lambda () (visual-line-mode 1)))
 
     ;; Omit the headline-asterisks except the last one:
     (setq org-hide-leading-stars t)
@@ -1411,8 +1420,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     ;; Activate nice interface between RefTeX and AUCTeX
     (setq reftex-plug-into-AUCTeX t)
 
-    ;; Word-wrap
-    (add-hook 'TeX-mode-hook (lambda () (visual-line-mode 1)))
     )
 
   ;; Completion
