@@ -1391,7 +1391,8 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 	  ("C-c C-c" . elpy-send-current-block))
     )
 
-
+  (use-package pipenv
+    :hook (python-mode . pipenv-mode))
 #+END_SRC
 
 ** LaTeX
