@@ -334,7 +334,7 @@ sudo fc-cache -f -v
 
 #+END_SRC
 * Editing
-** Functions
+** Self-defined commands
 
 #+BEGIN_SRC emacs-lisp
   ;; Rename file and buffer
@@ -408,7 +408,12 @@ sudo fc-cache -f -v
   (global-set-key [\M-up] 'move-text-up)
   (global-set-key [\M-down] 'move-text-down)
 
+  (defun open-gnome-terminal ()
+    "Open an instance of gnome-terminal on Ubuntu machine"
+    (interactive)
+    (shell-command "gnome-terminal"))
 
+  (global-set-key (kbd "<f10>") 'open-gnome-terminal)
 #+END_SRC
 
 ** Smartparens
