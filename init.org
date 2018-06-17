@@ -191,7 +191,7 @@ The whole thing is driven by the following =.emacs=
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (menu-bar-mode 1)
-  (window-divider-mode -1)
+  (add-hook 'after-init-hook (lambda () (window-divider-mode -1)))
 
   ;; Diminish some modes
   (diminish 'visual-line-mode)
