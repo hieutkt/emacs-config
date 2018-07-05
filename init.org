@@ -216,10 +216,16 @@ The whole thing is driven by the following =.emacs=
 
 #+BEGIN_SRC emacs-lisp
   (use-package visual-fill-column
-    :hook (text-mode . visual-fill-column-mode)
     :init
-    (setq visual-fill-column-width 80))
-
+    (dolist (hook '(visual-line-mode-hook
+		    prog-mode-hook
+		    text-mode-hook))
+      (add-hook hook #'visual-fill-column-mode))
+    (setq visual-fill-column-width 80)
+    :config
+    (setq-default visual-fill-column-center-text t
+		  visual-fill-column-fringes-outside-margins nil
+		  split-window-preferred-function 'visual-fill-column-split-window-sensibly))
 #+END_SRC
 
 ** Aesthetics
