@@ -1075,18 +1075,6 @@ The key difference is, that pages are not pre-rendered by e.g. ghostscript and s
 
 #+END_SRC
 
-** Nov.el
-
-#+BEGIN_SRC emacs-lisp
-  (use-package nov
-    :mode ("\\.epub\\'" . nov-mode)
-    :config
-    (defun my-nov-font-setup ()
-      (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
-			       :height 1.2))
-    (add-hook 'nov-mode-hook 'my-nov-font-setup)
-    )
-#+END_SRC
 ** Magit
 Magit is an interface to the version control system Git, implemented as an Emacs package. 
 Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
