@@ -479,22 +479,6 @@ sudo fc-cache -f -v
     )
 #+END_SRC
 
-** Expand-region
-
-#+BEGIN_SRC emacs-lisp
-
-  ;; Expand region with C-' and return to original position with C-g
-  (use-package expand-region
-    :init
-    (defadvice keyboard-quit (before collapse-region activate)
-      (when (memq last-command '(er/expand-region er/contract-region))
-	(er/contract-region 0)))
-    :bind 
-    ("C-'" . er/expand-region)
-    )
-
-#+END_SRC
-
 ** Multiple-cursor
 
 #+BEGIN_SRC emacs-lisp
