@@ -163,8 +163,8 @@ The whole thing is driven by the following =.emacs=
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
   ;; Initialize Emacs full screen 
-  (add-to-list 'initial-frame-alist '(fullscreen . maximized))
-  (global-set-key (kbd "<f11>") 'toggle-frame-maximized)
+  ;; (add-to-list 'initial-frame-alist '(fullscreen . maximized))
+  ;; (global-set-key (kbd "<f11>") 'toggle-frame-maximized)
 
   ;; No startup messages on *scratch* buffer
   (setq initial-scratch-message "")
@@ -225,7 +225,16 @@ The whole thing is driven by the following =.emacs=
     :config
     (setq-default visual-fill-column-center-text t
 		  visual-fill-column-fringes-outside-margins nil
-		  split-window-preferred-function 'visual-fill-column-split-window-sensibly))
+		  split-window-preferred-function 'visual-fill-column-split-window-sensibly)
+    :init
+    (defun toggle-frame-fullscreen-and-visual-fill-adjust ()
+      (interactive)
+      (toggle-frame-fullscreen)
+      (run-with-timer 0.1 nil 'visual-fill-column--adjust-window)
+      )
+    :bind
+    ("<f11>" . toggle-frame-fullscreen-and-visual-fill-adjust)
+    )
 #+END_SRC
 
 ** Aesthetics
