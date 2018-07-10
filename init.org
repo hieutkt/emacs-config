@@ -1555,21 +1555,6 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 
 #+END_SRC
 
-* Writing
-This part of Emacs is mostly for text-derived modes, mainly for normal (English) text writings.
-
-** Dictionary
-#+BEGIN_SRC emacs-lisp
-
-  (use-package define-word
-    :bind
-    (:map pdf-view-mode-map
-	  ("l" . define-word)
-     :map nov-mode-map
-	  ("l" . define-word))
-    )
-
- #+END_SRC
 * Fun
 ** Dad Jokes
 
