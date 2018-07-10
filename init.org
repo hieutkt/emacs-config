@@ -243,44 +243,26 @@ sudo fc-cache -f -v
 
 #+BEGIN_SRC emacs-lisp
 
-    ;; Default font
-    (when (member "Source Code Pro" (font-family-list))
-      (set-frame-font "Source Code Pro 10" nil t))
+  ;; Default font
+  (when (member "Source Code Pro" (font-family-list))
+    (set-frame-font "Source Code Pro 10" nil t))
 
 
-    ;; Set themes
-    (use-package gruvbox-theme
-      :init
-      :config
-      (load-theme 'gruvbox t)
-      ;; (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
-      (set-face-attribute 'mode-line nil :box '(:line-width 2 :color "#665c54"))
-(set-face-attribute 'mode-line-inactive nil :box '(:line-width 2 :color "#3c3836"))
+  ;; Set themes
+  (use-package gruvbox-theme
+    :init
+    :config
+    (load-theme 'gruvbox t)
+    ;; (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
+    (set-face-attribute 'mode-line nil :box '(:line-width 2 :color "#665c54"))
+    (set-face-attribute 'mode-line-inactive nil :box '(:line-width 2 :color "#3c3836"))
 
-      )
+    )
 
-    (use-package rainbow-delimiters
-      :config
-      (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-      ;; Custom pallete
-      (custom-set-faces
-       '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
-       '(rainbow-delimiters-depth-2-face ((t (:foreground "Darkolivegreen3"))))
-       '(rainbow-delimiters-depth-3-face ((t (:foreground "IndianRed"))))
-       '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue"))))
-       '(rainbow-delimiters-depth-5-face ((t (:foreground "Gold"))))
-       '(rainbow-delimiters-depth-6-face ((t (:foreground "DeepPink"))))
-       '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
-       '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1")))))
-      )
-
-      (use-package popup
-      :config
-      (set-face-attribute 'popup-tip-face nil 
-			  :foreground "#1d2021"
-			  :background "#f9f5d7")
-      )
-
+  (use-package rainbow-delimiters
+    :config
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+    )
 #+END_SRC
 
 *** Highlight current line
