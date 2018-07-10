@@ -1445,17 +1445,24 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
 Customisation to emacs-lisp itself, this is mainly syntax highlighting
 #+BEGIN_SRC emacs-lisp
 
- (use-package highlight-defined
-   :config
-   (add-hook 'emacs-lisp-mode-hook 'highlight-defined-mode)
+  (use-package highlight-defined
+    :config
+    (add-hook 'emacs-lisp-mode-hook 'highlight-defined-mode)
     )
- 
- (use-package highlight-quoted
-   :config
-   (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode)
-   (set-face-attribute 'highlight-quoted-symbol nil
-		       :inherit 'font-lock-string-face))
-  
+
+  (use-package highlight-quoted
+    :config
+    (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode)
+    (set-face-attribute 'highlight-quoted-symbol nil
+			:inherit 'font-lock-string-face))
+
+  (use-package helpful
+    :bind
+    (("C-h f" . helpful-callable)
+     ("C-h v" . helpful-variable)
+     ("C-h k" . helpful-key))
+    )
+
 #+END_SRC
 ** JSON
 #+BEGIN_SRC emacs-lisp
