@@ -824,6 +824,8 @@ Company is a completion mechanism that is very flexible
 
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
+    :init
+    (setq projectile-keymap-prefix (kbd "C-c C-p"))
     :config
     (projectile-mode)
     (setq projectile-completion-system 'helm)
