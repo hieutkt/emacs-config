@@ -769,30 +769,6 @@ Company is a completion mechanism that is very flexible
 	 (define-key company-active-map (kbd "C-:") 'helm-company)))    
     )
 
-  ;; Helm-bibtex
-  (use-package helm-bibtex
-    :config
-    ;; Set bib folder
-    (setq bibtex-completion-bibliography
-	  (expand-file-name "~/Dropbox/references.bib"))
-    (setq bibtex-completion-library-path
-	  (append (f-directories "~/Dropbox" nil t)
-		  (f-directories "~/Documents" nil t)))
-    ;; Set display format    
-    (setq bibtex-completion-display-formats
-	  '((article       . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${journal:40}")
-	    (inbook        . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
-	    (incollection  . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-	    (inproceedings . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-	    (t             . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*}")))
-
-    (setq bibtex-completion-cite-default-command "textcite")
-    :bind(
-	  :map helm-command-map
-	       ("b" . helm-bibtex)
-	       )
-    )
-
   (helm-autoresize-mode t)
 
 
@@ -932,16 +908,6 @@ See [[http://orgmode.org/][here]].
 					     (match-end 1) "•"))))))
     )
 
-#+END_SRC
-
-*** Org-ref
-
-#+BEGIN_SRC emacs-lisp
-    (use-package org-ref
-      :after org
-      :config
-      (setq org-ref-default-bibliography
-	  (expand-file-name "~/Dropbox/references.bib")))
 #+END_SRC
 
 *** Org-babel
@@ -1605,6 +1571,54 @@ Settings in this section are not yet organized but are being used, mostly for te
   (use-package org-bullets
     :hook 
     (org-mode . org-bullets-mode)
+    )
+
+#+END_SRC
+** Research
+*** Org-ref
+
+#+BEGIN_SRC emacs-lisp
+    (use-package org-ref
+      :after org
+      :config
+
+      (setq org-ref-default-bibliography '("~/Dropbox/references/articles.bib")
+	    org-ref-bibliography-notes "~/Dropbox/references/articles.org"
+	    org-ref-pdf-directory "~/Dropbox/references/pdfs/")
+      )
+#+END_SRC
+
+*** Interleave
+
+#+BEGIN_SRC emacs-lisp
+  (use-package interleave
+    :commands interleave)
+#+END_SRC
+
+*** Helm-bibtex
+
+#+BEGIN_SRC emacs-lisp
+  ;; Helm-bibtex
+  (use-package helm-bibtex
+    :config
+    ;; Set bib folder
+    (setq helm-bibtex-bibliography '("~/Dropbox/references/articles.bib"
+				     "~/Dropbox/references.bib")
+	  helm-bibtex-library-path "~/Dropbox/references/pdfs"
+	  helm-bibtex-notes-path "~/Dropbox/references/articles.org")
+
+    ;; Set display format    
+    (setq bibtex-completion-display-formats
+	  '((article       . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${journal:40}")
+	    (inbook        . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
+	    (incollection  . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
+	    (inproceedings . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
+	    (t             . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*}")))
+
+    :bind(
+	  :map helm-command-map
+	  ("b" . helm-bibtex)
+	  )
     )
 
 #+END_SRC
