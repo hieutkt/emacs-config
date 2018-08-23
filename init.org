@@ -948,40 +948,44 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
     ;; Minted options can be found in:
     ;; http://mirror.kku.ac.th/CTAN/macros/latex/contrib/minted/minted.pdf
     (setq org-latex-listings 'minted
-	  org-latex-packages-alist '(("" "minted"))
-	  org-latex-minted-options '(("breaklines" "true")
-				     ("breakanywhere" "true")
-				     ("mathescape")
-				     ;; ("linenos" "true")
-				     ;; ("firstnumber" "last")
-				     ("frame" "lines")
-				     ("bgcolor" "yellow!5")
-				     ;; ("framesep" "2mm")
-				     )
-	  org-latex-pdf-process
-	  '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f")
-	  )
+          org-latex-packages-alist '(("" "minted"))
+          org-latex-minted-options '(
+                                     ;; ("breaklines" "true")
+                                     ;; ("breakanywhere" "true")
+                                     ;; ("mathescape")
+                                     ;; ("linenos" "true")
+                                     ;; ("firstnumber" "last")
+                                     ;; ("frame" "lines")
+                                     ("fontsize" "\\footnotesize")
+                                     ("bgcolor" "yellow!5")
+                                     ;; ("framesep" "2mm")
+                                     )
+          org-latex-pdf-process
+          '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f")
+          )
 
     ;; Default packages
     (setq org-latex-default-packages-alist
-	'(("AUTO" "inputenc" t
-	   ("pdflatex"))
-	  ("T1" "fontenc" t
-	   ("pdflatex"))
-	  ("" "graphicx" t)
-	  ("" "grffile" t)
-	  ("" "longtable" nil)
-	  ("" "wrapfig" nil)
-	  ("" "rotating" nil)
-	  ("normalem" "ulem" t)
-	  ("" "amsmath" t)
-	  ("" "textcomp" t)
-	  ("" "amssymb" t)
-	  ("" "capt-of" nil)
-	  ("dvipsnames" "xcolor" nil)
-	  ("colorlinks=true, linkcolor=Blue, citecolor=BrickRed, urlcolor=PineGreen" "hyperref" nil)
-	  ("" "indentfirst" nil))
-	)
+        '(("AUTO" "inputenc" t
+           ("pdflatex"))
+          ("T1" "fontenc" t
+           ("pdflatex"))
+          ("" "fontspec" t
+           ("xelatex"))
+          ("" "graphicx" t)
+          ("" "grffile" t)
+          ("" "longtable" nil)
+          ("" "wrapfig" nil)
+          ("" "rotating" nil)
+          ("normalem" "ulem" t)
+          ("" "amsmath" t)
+          ("" "textcomp" t)
+          ("" "amssymb" t)
+          ("" "capt-of" nil)
+          ("dvipsnames" "xcolor" nil)
+          ("colorlinks=true, linkcolor=Blue, citecolor=BrickRed, urlcolor=PineGreen" "hyperref" nil)
+          ("" "indentfirst" nil))
+        )
 
 
     ;; Writing latex in org-mode
@@ -989,28 +993,28 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
     ;; Add KOMA-scripts classes to org export
     (add-to-list 'org-latex-classes
-		 '("koma-article" "\\documentclass{scrartcl}"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+                 '("koma-article" "\\documentclass{scrartcl}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
     (add-to-list 'org-latex-classes
-		 '("koma-report" "\\documentclass{scrreprt}"
-		   ("\\part{%s}" . "\\part*{%s}")
-		   ("\\chapter{%s}" . "\\chapter*{%s}")
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+                 '("koma-report" "\\documentclass{scrreprt}"
+                   ("\\part{%s}" . "\\part*{%s}")
+                   ("\\chapter{%s}" . "\\chapter*{%s}")
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
 
     (add-to-list 'org-latex-classes
-		 '("koma-book" "\\documentclass[11pt]{scrbook}"
-		   ("\\part{%s}" . "\\part*{%s}")
-		   ("\\chapter{%s}" . "\\chapter*{%s}")
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+                 '("koma-book" "\\documentclass[11pt]{scrbook}"
+                   ("\\part{%s}" . "\\part*{%s}")
+                   ("\\chapter{%s}" . "\\chapter*{%s}")
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
     )
 
   (use-package ox-beamer
