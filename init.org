@@ -1059,6 +1059,19 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+END_SRC  
 
+** Which-key
+[[https://github.com/justbur/emacs-which-key][which-key]] is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package which-key
+    :diminish which-key-mode
+    :config
+    (which-key-mode 1)
+    )
+
+#+END_SRC
+
 ** Paradox
 [[https://github.com/Malabarba/paradox][Paradox]] is a project for modernizing Emacs' Package Menu. With improved appearance, mode-line information. Github integration, customizability, asynchronous upgrading, and more.
 
@@ -1072,19 +1085,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
      paradox-execute-asynchronously t
      paradox-github-token t)
     )
-#+END_SRC
-
-** Which-key
-[[https://github.com/justbur/emacs-which-key][which-key]] is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package which-key
-    :diminish which-key-mode
-    :config
-    (which-key-mode 1)
-    )
-
 #+END_SRC
 
 * Languages
