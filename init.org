@@ -1622,3 +1622,12 @@ Settings in this section are not yet organized but are being used, mostly for te
     )
 
 #+END_SRC
+** Git gutter
+
+#+BEGIN_SRC emacs-lisp
+  (use-package git-gutter-fringe
+    :ensure git-gutter
+    :config
+    (global-git-gutter-mode)
+    )
+#+END_SRC
