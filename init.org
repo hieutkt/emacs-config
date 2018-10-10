@@ -166,9 +166,10 @@ The whole thing is driven by the following =.emacs=
   (setq initial-scratch-message "")
 
   ;; Cursor type
-  (setq-default cursor-type 'hbar
+  (setq-default cursor-type 'bar
 		cursor-in-non-selected-windows nil)
-
+  (blink-cursor-mode 0)
+  
   ;; Global font-lock mode
   (setq global-font-lock-mode t)
 
