@@ -51,10 +51,6 @@ The whole thing is driven by the following =.emacs=
 	  use-package-always-defer-install t
 	  use-package-verbose t)
 
-    (use-package use-package-chords
-      :ensure key-chord
-      :config (key-chord-mode 1))
-
     (use-package diminish)
     (use-package hydra)
 
