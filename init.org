@@ -1024,7 +1024,7 @@ The key difference is, that pages are not pre-rendered by e.g. ghostscript and s
 
 #+BEGIN_SRC emacs-lisp
   (use-package pdf-tools
-    :magic ("%PDF" . pdf-view-mode)
+    :mode ("\\.pdf\\'" . pdf-view-mode)
     :config
     (pdf-tools-install)
     (setq pdf-view-display-size "fit-page"
