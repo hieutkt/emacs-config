@@ -808,15 +808,6 @@ Company is a completion mechanism that is very flexible
 #+END_SRC
 
 * Directories and Files
-** Dired
-#+BEGIN_SRC emacs-lisp
-  (use-package dired+
-    :config
-    (set-face-attribute 'diredp-dir-name nil :foreground "#fe8019")
-    (set-face-attribute 'diredp-number nil :foreground "#8ec07c")
-    (setq dired-listing-switches "-alh")
-    )
-#+END_SRC
 ** Projectile
 
 #+BEGIN_SRC emacs-lisp
