@@ -226,7 +226,7 @@ The whole thing is driven by the following =.emacs=
     :init
     (defun toggle-frame-fullscreen-and-visual-fill-adjust ()
       (interactive)
-      (toggle-frame-fullscreen)
+      (toggle-frame-maximized)
       (run-with-timer 0.1 nil 'visual-fill-column--adjust-window)
       )
     :bind
