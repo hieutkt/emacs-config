@@ -1092,164 +1092,70 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 * Languages
 ** R
-*** Setting up
-#+BEGIN_SRC emacs-lisp
 
+#+BEGIN_SRC emacs-lisp
   (use-package ess
     :defer t
     :init
-    (require 'ess-site)
-    ;; Auto set width and length options when initiate new Ess processes
+    ;; Execute screen options after initialize process
     (add-hook 'ess-post-run-hook 'ess-execute-screen-options)
-    (add-hook 'ess-mode-hook (lambda () (run-hooks 'prog-mode-hook)))
+
+    ;; Disable IDO so helm is used instead
+    (setq ess-use-ido nil)
+    
+    ;; Hot key C-S-m for pipe operator in ESS
+    (defun pipe_R_operator ()
+      "R - %>% operator or 'then' pipe operator"
+      (interactive)
+      (just-one-space 1)
+      (insert "%>%")
+      (just-one-space 1))
+
+    ;; Unbind ess-insert-assign (defaut value is "_")
+    (setq ess-smart-S-assign-key nil)
+
+    ;; ESS syntax highlight  
+    (setq ess-R-font-lock-keywords 
+	  '((ess-R-fl-keyword:keywords . t)
+	     (ess-R-fl-keyword:constants . t)
+	     (ess-R-fl-keyword:modifiers . t)
+	     (ess-R-fl-keyword:fun-defs . t)
+	     (ess-R-fl-keyword:assign-ops . t)
+	     (ess-fl-keyword:fun-calls . t)
+	     (ess-fl-keyword:numbers . t)
+	     (ess-fl-keyword:operators . t)
+	     (ess-fl-keyword:delimiters . t)
+	     (ess-fl-keyword:= . t)
+	     (ess-R-fl-keyword:F&T . t)
+	     (ess-R-fl-keyword:%op% . t)))
+    
+    (setq inferior-ess-r-font-lock-keywords 
+	  '((ess-S-fl-keyword:prompt . t)
+ 	    (ess-R-fl-keyword:messages . t)
+	    (ess-R-fl-keyword:modifiers . nil)
+	    (ess-R-fl-keyword:fun-defs . t)
+	    (ess-R-fl-keyword:keywords . nil)
+	    (ess-R-fl-keyword:assign-ops . t)
+	    (ess-R-fl-keyword:constants . t)
+	    (ess-fl-keyword:matrix-labels . t)
+	    (ess-fl-keyword:fun-calls . nil)
+	    (ess-fl-keyword:numbers . nil)
+	    (ess-fl-keyword:operators . nil)
+	    (ess-fl-keyword:delimiters . nil)
+	    (ess-fl-keyword:= . t)
+	    (ess-R-fl-keyword:F&T . nil)))
+
+	  
+    :bind
+    (:map
+     ess-mode-map
+     ("M--" . ess-insert-assign)
+     ("C-S-m" . pipe_R_operator)
+     :map
+     inferior-ess-mode-map
+     ("M--" . ess-insert-assign)
+     ("C-S-m" . pipe_R_operator))
     )
-
-#+END_SRC
-
-*** Appearance
-#+BEGIN_SRC emacs-lisp
-
-  ;; ;; Truncate long lines
-  ;; (add-hook 'special-mode-hook (lambda () (setq truncate-lines t)))
-  ;; (add-hook 'inferior-ess-mode-hook (lambda () (setq truncate-lines t)))
-  ;; (add-hook 'ess-mode-hook (lambda () (setq truncate-lines t)))
-
-  ;; ;; Indentation style
-  (setq ess-default-style 'DEFAULT)
-
-  ;; ESS syntax highlight  
-  (setq ess-R-font-lock-keywords 
-	'((ess-R-fl-keyword:modifiers . t)
-	  (ess-R-fl-keyword:fun-defs . t)
-	  (ess-R-fl-keyword:keywords . nil)
-	  (ess-R-fl-keyword:assign-ops . t)
-	  (ess-R-fl-keyword:constants . t)
-	  (ess-fl-keyword:fun-calls . t)
-	  (ess-fl-keyword:numbers . t)
-	  (ess-fl-keyword:operators . t)
-	  (ess-fl-keyword:delimiters . t)
-	  (ess-fl-keyword:= . t)
-	  (ess-R-fl-keyword:F&T . t)
-	  )
-	)
-
-
-  (setq inferior-ess-r-font-lock-keywords 
-	'((ess-S-fl-keyword:prompt . t)
-	  (ess-R-fl-keyword:messages . t)
-	  (ess-R-fl-keyword:modifiers . nil)
-	  (ess-R-fl-keyword:fun-defs . t)
-	  (ess-R-fl-keyword:keywords . nil)
-	  (ess-R-fl-keyword:assign-ops . t)
-	  (ess-R-fl-keyword:constants . t)
-	  (ess-fl-keyword:matrix-labels . t)
-	  (ess-fl-keyword:fun-calls . nil)
-	  (ess-fl-keyword:numbers . nil)
-	  (ess-fl-keyword:operators . nil)
-	  (ess-fl-keyword:delimiters . nil)
-	  (ess-fl-keyword:= . t)
-	  (ess-R-fl-keyword:F&T . nil))
-	 )
-
-  (set-face-attribute 'ess-numbers-face nil :foreground "#8ec07c")
-  ;; Disable IDO so helm is used instead
-  (setq ess-use-ido nil)
-
-#+END_SRC
-*** Code completion
-#+BEGIN_SRC emacs-lisp
-
-  (setq ess-use-company 'script-only)
-  (setq ess-tab-complete-in-script t)	;; Press <tab> inside functions for completions
-
-
-#+END_SRC
-
-*** Functions and key bindind
-#+BEGIN_SRC emacs-lisp
-  ;; Describe object
-  (setq ess-R-describe-object-at-point-commands
-  	'(("str(%s)")
-  	  ("options(tibble.print_max = Inf);skimr::skim(%s);options(tibble.print_max = Inf)")
-  	  ("summary(%s, maxsum = 20)")))
-
-  (define-key ess-doc-map (kbd "C-r") 'ess-rdired)
-  (define-key ess-doc-map (kbd "r") 'ess-rdired)
-
-  ;; Returm C-c h as prefix to Helm"
-  (defun ess-map-control-h-to-helm ()
-    "Return C-c h to helm prefix instead of ess-handy-commands"
-    (interactive)
-    (local-unset-key (kbd "C-c h"))
-    (local-set-key (kbd "C-c h") 'helm-command-prefix))
-
-  (add-hook 'ess-mode-hook 'ess-map-control-h-to-helm)
-
-  ;; Remap "<-" key to M-- instead of smart bind to "_"
-  (ess-toggle-underscore nil)
-  (define-key ess-mode-map (kbd "M--") 'ess-smart-S-assign)
-  (define-key inferior-ess-mode-map (kbd "M--") 'ess-smart-S-assign)
-
-  ;; Hot key C-S-m for pipe operator in ESS
-  ;; Temporary removed and use Yasnippet instead
-  (defun then_R_operator ()
-    "R - %>% operator or 'then' pipe operator"
-    (interactive)
-    (just-one-space 1)
-    (insert "%>%")
-    (just-one-space 1))
-
-  (define-key ess-mode-map (kbd "C-S-m") 'then_R_operator)
-  (define-key inferior-ess-mode-map (kbd "C-S-m") 'then_R_operator)
-
-
-
-  (defun ess-rmarkdown ()
-    "Compile R markdown (.Rmd). Should work for any output type."
-    (interactive)
-    ;; Check if attached R-session
-    (condition-case nil
-	(ess-get-process)
-      (error
-       (ess-switch-process)))
-    (let* ((rmd-buf (current-buffer)))
-      (save-excursion
-	(let* ((sprocess (ess-get-process ess-current-process-name))
-	       (sbuffer (process-buffer sprocess))
-	       (buf-coding (symbol-name buffer-file-coding-system))
-	       (R-cmd
-		(format "library(rmarkdown); rmarkdown::render(\"%s\")"
-			buffer-file-name)))
-	  (message "Running rmarkdown on %s" buffer-file-name)
-	  (ess-execute R-cmd 'buffer nil nil)
-	  (switch-to-buffer rmd-buf)
-	  (ess-show-buffer (buffer-name sbuffer) nil)))))
-
-  (define-key polymode-mode-map "\M-ns" 'ess-rmarkdown)
-
-  (defun ess-rshiny ()
-    "Compile R markdown (.Rmd). Should work for any output type."
-    (interactive)
-    ;; Check if attached R-session
-    (condition-case nil
-	(ess-get-process)
-      (error
-       (ess-switch-process)))
-    (let* ((rmd-buf (current-buffer)))
-      (save-excursion
-	(let* ((sprocess (ess-get-process ess-current-process-name))
-	       (sbuffer (process-buffer sprocess))
-	       (buf-coding (symbol-name buffer-file-coding-system))
-	       (R-cmd
-		(format "library(rmarkdown);rmarkdown::run(\"%s\")"
-			buffer-file-name)))
-	  (message "Running shiny on %s" buffer-file-name)
-	  (ess-execute R-cmd 'buffer nil nil)
-	  (switch-to-buffer rmd-buf)
-	  (ess-show-buffer (buffer-name sbuffer) nil)))))
-
-  (define-key polymode-mode-map "\M-nr" 'ess-rshiny)
-
 #+END_SRC
 
 ** Stan
