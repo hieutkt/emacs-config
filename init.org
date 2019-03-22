@@ -742,37 +742,14 @@ Company is a completion mechanism that is very flexible
 ** Polymode
 
 #+BEGIN_SRC emacs-lisp
-   
-  (use-package polymode
-    :diminish (poly-org-mode
-	       poly-markdown-mode
-	       poly-noweb+r-mode
-	       poly-noweb+r-mode
-	       poly-markdown+r-mode
-	       poly-rapport-mode
-	       poly-html+r-mode
-	       poly-brew+r-mode
-	       poly-r+c++-mode
-	       poly-c++r-mode)
-    :init 
-    (require 'poly-R)
-    (require 'poly-markdown)
-    
-    :mode (
-	   ;; ("\\.org" . poly-org-mode)
-	   ("\\.md" . poly-markdown-mode)
-	   ("\\.Snw$" . poly-noweb+r-mode)
-	   ("\\.Rnw$" . poly-noweb+r-mode)
-	   ("\\.Rmd$" . poly-markdown+r-mode)
-	   ("\\.rapport$" . poly-rapport-mode)
-	   ("\\.Rhtml$" . poly-html+r-mode)
-	   ("\\.Rbrew$" . poly-brew+r-mode)
-	   ("\\.Rcpp$" . poly-r+c++-mode)
-	   ("\\.cppR$" . poly-c++r-mode))
+
+  (use-package poly-markdown
     :config
     (setq polymode-exporter-output-file-format "%s")
+    :mode
+    ("\\.rmd$" . poly-markdown-mode)
     )
-  
+
 #+END_SRC
 
 * Directories and Files
