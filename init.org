@@ -1045,15 +1045,16 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 ** R
 
 #+BEGIN_SRC emacs-lisp
+
   (use-package ess
-    :defer t
     :init
+    (require 'ess-site)
     ;; Execute screen options after initialize process
     (add-hook 'ess-post-run-hook 'ess-execute-screen-options)
 
     ;; Disable IDO so helm is used instead
     (setq ess-use-ido nil)
-    
+
     ;; Hot key C-S-m for pipe operator in ESS
     (defun pipe_R_operator ()
       "R - %>% operator or 'then' pipe operator"
@@ -1068,21 +1069,21 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     ;; ESS syntax highlight  
     (setq ess-R-font-lock-keywords 
 	  '((ess-R-fl-keyword:keywords . t)
-	     (ess-R-fl-keyword:constants . t)
-	     (ess-R-fl-keyword:modifiers . t)
-	     (ess-R-fl-keyword:fun-defs . t)
-	     (ess-R-fl-keyword:assign-ops . t)
-	     (ess-fl-keyword:fun-calls . t)
-	     (ess-fl-keyword:numbers . t)
-	     (ess-fl-keyword:operators . t)
-	     (ess-fl-keyword:delimiters . t)
-	     (ess-fl-keyword:= . t)
-	     (ess-R-fl-keyword:F&T . t)
-	     (ess-R-fl-keyword:%op% . t)))
-    
+	    (ess-R-fl-keyword:constants . t)
+	    (ess-R-fl-keyword:modifiers . t)
+	    (ess-R-fl-keyword:fun-defs . t)
+	    (ess-R-fl-keyword:assign-ops . t)
+	    (ess-fl-keyword:fun-calls . t)
+	    (ess-fl-keyword:numbers . t)
+	    (ess-fl-keyword:operators . t)
+	    (ess-fl-keyword:delimiters . t)
+	    (ess-fl-keyword:= . t)
+	    (ess-R-fl-keyword:F&T . t)
+	    (ess-R-fl-keyword:%op% . t)))
+
     (setq inferior-ess-r-font-lock-keywords 
 	  '((ess-S-fl-keyword:prompt . t)
- 	    (ess-R-fl-keyword:messages . t)
+	    (ess-R-fl-keyword:messages . t)
 	    (ess-R-fl-keyword:modifiers . nil)
 	    (ess-R-fl-keyword:fun-defs . t)
 	    (ess-R-fl-keyword:keywords . nil)
@@ -1096,7 +1097,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 	    (ess-fl-keyword:= . t)
 	    (ess-R-fl-keyword:F&T . nil)))
 
-	  
+
     :bind
     (:map
      ess-mode-map
