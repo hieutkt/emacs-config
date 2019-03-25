@@ -645,9 +645,8 @@ Company is a completion mechanism that is very flexible
 
   ;; Enable Yasnippets
   (use-package yasnippet
-    :diminish yas-minor-mode
     :init
-    ;; It will test whether it can expand, if yes, cursor color -> green.
+    ;; It will test whether it can expand, if yes, change cursor color}
     (defun yasnippet-can-fire-p (&optional field)
       (interactive)
       (setq yas--condition-cache-timestamp (current-time))
@@ -667,10 +666,13 @@ Company is a completion mechanism that is very flexible
 
     (yas-global-mode 1)
 
-    (yas-reload-all)
     :config
-    (setq yas-snippet-dirs (format "%s/%s" config-directory "Snippets")
-	  yas-fallback-behavior 'call-other-command)
+    (setq yas-fallback-behavior 'call-other-command)
+
+    (setq yas-snippet-dirs-custom (format "%s/%s" config-directory "Snippets/"))
+    (add-to-list' yas-snippet-dirs 'yas-snippet-dirs-custom)
+    (yas-reload-all)
+
     :bind*
     (("<C-tab>" . yas-insert-snippet)
      :map yas-minor-mode-map
