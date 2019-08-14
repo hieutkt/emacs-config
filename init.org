@@ -25,73 +25,65 @@ The whole thing is driven by the following =.emacs=
 
 
 * Initiation
-** Setup and bootstrap
+** COMMENT Setup and bootstrap
 #+BEGIN_SRC emacs-lisp
-    ;; Increase garbage collection threshold to improve emacs init time
-    (setq gc-cons-threshold 100000000)
-    (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
+  ;; Increase garbage collection threshold to improve emacs init time
+  (setq gc-cons-threshold 100000000)
+  (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
 
 
-    (require 'package)
-    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-    ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
-    ;; (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
+  (require 'package)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+  ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+  ;; (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
+  (package-initialize)
 
+  ;; Bootstrap `use-package'
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  ;; Use use-package to reduce load time
+  (eval-when-compile
+    (require 'use-package)
+    )
 
-    ;; Bootstrap `use-package'
-    (unless (package-installed-p 'use-package)
-      (package-refresh-contents)
-      (package-install 'use-package))
-    ;; Use use-package to reduce load time
-    (eval-when-compile
-      (require 'use-package)
-      )
+  (setq use-package-always-ensure t
+	use-package-always-defer-install t
+	use-package-verbose t)
 
-    (setq use-package-always-ensure t
-	  use-package-always-defer-install t
-	  use-package-verbose t)
+  (use-package diminish)
+  (use-package hydra)
 
-    (use-package diminish)
-    (use-package hydra)
+  ;; Auto-revert mode
+  (global-auto-revert-mode 1)
+  (setq auto-revert-interval 0.5)
 
-    ;; Auto-revert mode
-    (global-auto-revert-mode 1)
-    (setq auto-revert-interval 0.5)
+  ;; Backup stored in /tmp
+  (setq backup-directory-alist
+	`((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+	`((".*" , temporary-file-directory t)))
 
-    ;; Backup stored in /tmp
-    (setq backup-directory-alist
-	  `((".*" . ,temporary-file-directory)))
-    (setq auto-save-file-name-transforms
-	  `((".*" , temporary-file-directory t)))
+  ;; Delete old backup
+  (message "Deleting old backup files...")
+  (let ((week (* 60 60 24 7))
+	(current (float-time (current-time))))
+    (dolist (file (directory-files temporary-file-directory t))
+      (when (and (backup-file-name-p file)
+		 (> (- current (float-time (nth 5 (file-attributes file))))
+		    week))
+	(message "%s" file)
+	(delete-file file))))
 
-    ;; Delete old backup
-    (message "Deleting old backup files...")
-    (let ((week (* 60 60 24 7))
-	  (current (float-time (current-time))))
-      (dolist (file (directory-files temporary-file-directory t))
-	(when (and (backup-file-name-p file)
-		   (> (- current (float-time (nth 5 (file-attributes file))))
-		      week))
-	  (message "%s" file)
-	  (delete-file file))))
+  ;; Information settings
+  (setq user-full-name "Nguyễn Đức Hiếu"
+	user-mail-address "hieunguyen31371@gmail.com")
 
-    ;; Information settings
-    (setq user-full-name "Nguyễn Đức Hiếu"
-	  user-mail-address "hieunguyen31371@gmail.com")
-
-    ;; Set emacs as a client
-    ;; (server-start)
+  ;; Set emacs as a client
+  ;; (server-start)
 
 #+END_SRC
 
-** Emacsclient
-
-#+BEGIN_SRC emacs-lisp
-  (use-package server
-    :config
-    (unless (server-running-p)
-      (server-start)))
-#+END_SRC
 ** Better Defaults
 
 #+BEGIN_SRC emacs-lisp
@@ -271,16 +263,6 @@ sudo fc-cache -f -v
     )
 #+END_SRC
 
-*** Highlight current line
-
-#+BEGIN_SRC emacs-lisp
-  (use-package hl-line
-    :if window-system
-    :config
-    (add-hook 'prog-mode-hook 'hl-line-mode)
-    (add-hook 'text-mode-hook 'hl-line-mode)
-    )
-#+END_SRC
 *** Mode-line
 
 #+BEGIN_SRC emacs-lisp
@@ -1174,6 +1156,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
   (use-package pipenv
     :hook (python-mode . pipenv-mode))
+
 #+END_SRC
 
 ** LaTeX
@@ -1218,11 +1201,13 @@ CDLaTeX is a minor mode for Emacs supporting fast insertion of environment templ
 For more information see [[https://github.com/cdominik/cdlatex][here]]
 
 #+BEGIN_SRC emacs-lisp
+
   (use-package cdlatex
     :after (tex)
     :config
     (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex)
     )
+
 #+END_SRC
 
 ** Markdown
@@ -1283,30 +1268,6 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
 
 #+END_SRC
 
-** Web
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package web-mode
-    :mode (("\\.html?\\'" . web-mode))
-    :config
-    (setq web-mode-enable-css-colorization t)
-    (setq web-mode-enable-current-element-highlight t)
-    (set-face-attribute 'web-mode-current-element-highlight-face nil
-			:weight 'bold
-			:background "#665c54")
-    )
-
-  (use-package web-beautify
-    :config
-    :bind (:map web-mode-map
-		("C-c b" . web-beautify-html)
-	   :map css-mode-map
-	        ("C-c b". web-beautify-css))
-    )
-
-#+END_SRC
-
 ** CSS
 
 #+BEGIN_SRC emacs-lisp
@@ -1316,18 +1277,6 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
     (setq css-indent-offset 2)
     )
 #+END_SRC
-** GNUplot
-Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms.
-
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package gnuplot-mode
-    :mode ("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)
-    )
-
-#+END_SRC
-
 ** Plantuml
 [[http://plantuml.com/][PlantUML]] is a component that allows to quickly write different kinds of diagrams
 
@@ -1461,13 +1410,4 @@ Settings in this section are not yet organized but are being used, mostly for te
 	  )
     )
 
-#+END_SRC
-** Git gutter
-
-#+BEGIN_SRC emacs-lisp
-  (use-package git-gutter-fringe
-    :ensure git-gutter
-    :config
-    (global-git-gutter-mode)
-    )
 #+END_SRC
