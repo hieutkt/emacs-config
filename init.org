@@ -23,9 +23,8 @@ The whole thing is driven by the following =.emacs=
 
 #+END_EXAMPLE
 
-
 * Initiation
-** COMMENT Setup and bootstrap
+** Setup and bootstrap
 #+BEGIN_SRC emacs-lisp
   ;; Increase garbage collection threshold to improve emacs init time
   (setq gc-cons-threshold 100000000)
@@ -34,7 +33,7 @@ The whole thing is driven by the following =.emacs=
 
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-  ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
   ;; (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
   (package-initialize)
 
@@ -137,7 +136,6 @@ The whole thing is driven by the following =.emacs=
 
 #+END_SRC
 
-
 * Appearence
 ** Interface
 
@@ -161,7 +159,7 @@ The whole thing is driven by the following =.emacs=
   (setq-default cursor-type 'bar
 		cursor-in-non-selected-windows nil)
   (blink-cursor-mode 0)
-  
+
   ;; Global font-lock mode
   (setq global-font-lock-mode t)
 
@@ -171,9 +169,9 @@ The whole thing is driven by the following =.emacs=
 
   ;; Display line number
   ;; (add-hook 'text-mode-hook (lambda () (setq display-line-numbers 'relative)))
-  ;; (add-hook 'prog-mode-hook (lambda () (setq display-line-numbers 'relative)))
-  ;; (add-hook 'conf-mode-hook (lambda () (setq display-line-numbers 'relative)))
-  (setq-default display-line-numbers-width 4)
+  (add-hook 'prog-mode-hook (lambda () (setq display-line-numbers 'relative)))
+  (add-hook 'conf-mode-hook (lambda () (setq display-line-numbers 'relative)))
+  (setq-default display-line-numbers-width 2)
   (setq-default display-line-numbers-widen t)
 
   ;; Disable tool bar, menu bar, and scroll bar
@@ -207,7 +205,7 @@ The whole thing is driven by the following =.emacs=
   (use-package visual-fill-column
     :init
     (dolist (hook '(visual-line-mode-hook
-		    prog-mode-hook
+		    ;; prog-mode-hook
 		    text-mode-hook))
       (add-hook hook #'visual-fill-column-mode))
     (setq visual-fill-column-width 80)
@@ -228,33 +226,18 @@ The whole thing is driven by the following =.emacs=
 
 ** Aesthetics
 *** Faces
-[[https://github.com/adobe-fonts/source-code-pro][Source Code Pro]] is a beautiful programming font with Unicode supports
-Install it on Ubuntu by the following script:
-
-#+BEGIN_EXAMPLE sh
-
-[ -d /usr/share/fonts/opentype ] || sudo mkdir /usr/share/fonts/opentype
-sudo git clone --depth 1 --branch release https://github.com/adobe-fonts/source-code-pro.git /usr/share/fonts/opentype/scp
-sudo fc-cache -f -v
-
-#+END_EXAMPLE
 
 #+BEGIN_SRC emacs-lisp
 
   ;; Default font
-  (when (member "Source Code Pro" (font-family-list))
-    (set-frame-font "Source Code Pro 10" nil t))
-
+  (when (member "Iosevka" (font-family-list))
+    (set-frame-font "Iosevka Semibold 10" nil t))
 
   ;; Set themes
   (use-package gruvbox-theme
     :init
     :config
     (load-theme 'gruvbox t)
-    ;; (set-face-attribute 'font-lock-comment-face nil :foreground "#27ae60")
-    (set-face-attribute 'mode-line nil :box '(:line-width 2 :color "#665c54"))
-    (set-face-attribute 'mode-line-inactive nil :box '(:line-width 2 :color "#3c3836"))
-
     )
 
   (use-package rainbow-delimiters
@@ -278,6 +261,7 @@ sudo fc-cache -f -v
     )
 
 #+END_SRC
+
 * Editing
 ** Self-defined commands
 
@@ -298,14 +282,6 @@ sudo fc-cache -f -v
 	    (rename-buffer new-name)
 	    (set-visited-file-name new-name)
 	    (set-buffer-modified-p nil))))))
-
-  ;; Define function: fill character to 80
-  (defun fill-to-end (char)
-    (interactive "HcFill Character:")
-    (save-excursion
-      (end-of-line)
-      (while (< (current-column) 80)
-	(insert-char char))))
 
   ;; Eval and replace lisp expression
   (defun fc-eval-and-replace ()
@@ -535,6 +511,7 @@ _[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
     :bind* ("C-c C-w" . eyebrowse-hydra/body)
   )
 #+END_SRC
+
 ** Company
 Company is a completion mechanism that is very flexible 
 
@@ -595,14 +572,14 @@ Company is a completion mechanism that is very flexible
     (add-hook 'ess-mode-hook #'electric-operator-mode)
     (add-hook 'python-mode-hook #'electric-operator-mode)
     
-    (electric-operator-add-rules-for-mode 'ess-mode
+    (electric-operator-add-rules-for-mode 'ess-r-mode
 					  (cons ":=" " := ")
 					  )
     )
 
 #+END_SRC
+
 ** Auto Highlight Symbol
-**** TODO Remove some lesser used key in auto-highlight-symbol-mode-map to make room for other key bindind, make a hydra instead
 
 #+BEGIN_SRC emacs-lisp
 
@@ -620,8 +597,8 @@ Company is a completion mechanism that is very flexible
     )
 
 #+END_SRC
+
 ** Yasnippets
-**** TODO There is some errors if yasnippets is not pre-installed, at least on window machine
 
 #+BEGIN_SRC emacs-lisp
 
@@ -723,23 +700,12 @@ Company is a completion mechanism that is very flexible
 
 #+end_SRC
 
-** Polymode
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package poly-markdown
-    :config
-    (setq polymode-exporter-output-file-format "%s")
-    :mode
-    ("\\.rmd$" . poly-markdown-mode)
-    )
-
-#+END_SRC
 
 * Directories and Files
 ** Projectile
 
 #+BEGIN_SRC emacs-lisp
+
   (use-package projectile
     :init
     (setq projectile-keymap-prefix (kbd "C-c C-p"))
@@ -767,25 +733,19 @@ Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/
     :init
     ;; Truncate long results
     (add-hook 'ag-mode-hook (lambda () (setq truncate-lines t)))
-  
     :config
     ;; Add highlighting
     (setq ag-highlight-search t)
-
     ;; Set ag to reuse the same buffer
     (setq ag-reuse-buffers nil)
     )
-  
 
   (use-package wgrep-ag
+    :after ag
     :config
-    ;; wgrep-ag allows you to edit a ag buffer and apply those changes to
-    ;; the file buffer. 
     (autoload 'wgrep-ag-setup "wgrep-ag")
-    (setq wgrep-auto-save-buffer t)
     (add-hook 'ag-mode-hook 'wgrep-ag-setup)
-    )
-
+  )
 #+END_SRC
 
 * Utilities
@@ -793,12 +753,11 @@ Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/
 Org mode is for keeping notes, maintaining TODO lists, planning projects, and authoring documents with a fast and effective plain-text system.
 See [[http://orgmode.org/][here]].
 *** Setting up
-
+    
 #+BEGIN_SRC emacs-lisp
 
   (use-package org
     :config
-
     ;; Omit the headline-asterisks except the last one:
     (setq org-hide-leading-stars t)
 
@@ -809,7 +768,7 @@ See [[http://orgmode.org/][here]].
     (setq org-support-shift-select t)
 
     ;; Fontification
-    (set-face-attribute 'org-level-1 nil :weight 'bold :height 120)
+    (set-face-attribute 'org-level-1 nil :weight 'bold)
     (set-face-attribute 'org-level-2 nil :weight 'bold)
     (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
     (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
@@ -818,7 +777,6 @@ See [[http://orgmode.org/][here]].
     (set-face-attribute 'org-block nil :background
 			(color-lighten-name
 			 (face-attribute 'default :background) 2))
-
 
     (font-lock-add-keywords 'org-mode
 			    '(("^ +\\([-*]\\) "
@@ -829,7 +787,7 @@ See [[http://orgmode.org/][here]].
 
 #+END_SRC
 
-*** Org-babel
+*** org-babel
 Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 #+BEGIN_SRC emacs-lisp
@@ -854,7 +812,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
     )
 #+END_SRC
 
-*** Org_exports
+*** org-exports
 
 #+BEGIN_SRC emacs-lisp
   (use-package ox-latex
@@ -865,44 +823,44 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
     ;; Minted options can be found in:
     ;; http://mirror.kku.ac.th/CTAN/macros/latex/contrib/minted/minted.pdf
     (setq org-latex-listings 'minted
-          org-latex-packages-alist '(("" "minted"))
-          org-latex-minted-options '(
-                                     ;; ("breaklines" "true")
-                                     ;; ("breakanywhere" "true")
-                                     ;; ("mathescape")
-                                     ;; ("linenos" "true")
-                                     ;; ("firstnumber" "last")
-                                     ;; ("frame" "lines")
-                                     ("fontsize" "\\footnotesize")
-                                     ("bgcolor" "yellow!5")
-                                     ;; ("framesep" "2mm")
-                                     )
-          org-latex-pdf-process
-          '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f")
-          )
+	  org-latex-packages-alist '(("" "minted"))
+	  org-latex-minted-options '(
+				     ;; ("breaklines" "true")
+				     ;; ("breakanywhere" "true")
+				     ;; ("mathescape")
+				     ;; ("linenos" "true")
+				     ;; ("firstnumber" "last")
+				     ;; ("frame" "lines")
+				     ("fontsize" "\\footnotesize")
+				     ("bgcolor" "yellow!5")
+				     ;; ("framesep" "2mm")
+				     )
+	  org-latex-pdf-process
+	  '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f")
+	  )
 
     ;; Default packages
     (setq org-latex-default-packages-alist
-        '(("AUTO" "inputenc" t
-           ("pdflatex"))
-          ("T1" "fontenc" t
-           ("pdflatex"))
-          ("" "fontspec" t
-           ("xelatex"))
-          ("" "graphicx" t)
-          ("" "grffile" t)
-          ("" "longtable" nil)
-          ("" "wrapfig" nil)
-          ("" "rotating" nil)
-          ("normalem" "ulem" t)
-          ("" "amsmath" t)
-          ("" "textcomp" t)
-          ("" "amssymb" t)
-          ("" "capt-of" nil)
-          ("dvipsnames" "xcolor" nil)
-          ("colorlinks=true, linkcolor=Blue, citecolor=BrickRed, urlcolor=PineGreen" "hyperref" nil)
-          ("" "indentfirst" nil))
-        )
+	  '(("AUTO" "inputenc" t
+	     ("pdflatex"))
+	    ("T1" "fontenc" t
+	     ("pdflatex"))
+	    ("" "fontspec" t
+	     ("xelatex"))
+	    ("" "graphicx" t)
+	    ("" "grffile" t)
+	    ("" "longtable" nil)
+	    ("" "wrapfig" nil)
+	    ("" "rotating" nil)
+	    ("normalem" "ulem" t)
+	    ("" "amsmath" t)
+	    ("" "textcomp" t)
+	    ("" "amssymb" t)
+	    ("" "capt-of" nil)
+	    ("dvipsnames" "xcolor" nil)
+	    ("colorlinks=true, linkcolor=Blue, citecolor=BrickRed, urlcolor=PineGreen" "hyperref" nil)
+	    ("" "indentfirst" nil))
+	  )
 
 
     ;; Writing latex in org-mode
@@ -910,51 +868,49 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
     ;; Add KOMA-scripts classes to org export
     (add-to-list 'org-latex-classes
-                 '("koma-article" "\\documentclass{scrartcl}"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+		 '("koma-article" "\\documentclass{scrartcl}"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
     (add-to-list 'org-latex-classes
-                 '("koma-report" "\\documentclass{scrreprt}"
-                   ("\\part{%s}" . "\\part*{%s}")
-                   ("\\chapter{%s}" . "\\chapter*{%s}")
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+		 '("koma-report" "\\documentclass{scrreprt}"
+		   ("\\part{%s}" . "\\part*{%s}")
+		   ("\\chapter{%s}" . "\\chapter*{%s}")
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
 
     (add-to-list 'org-latex-classes
-                 '("koma-book" "\\documentclass[11pt]{scrbook}"
-                   ("\\part{%s}" . "\\part*{%s}")
-                   ("\\chapter{%s}" . "\\chapter*{%s}")
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+		 '("koma-book" "\\documentclass[11pt]{scrbook}"
+		   ("\\part{%s}" . "\\part*{%s}")
+		   ("\\chapter{%s}" . "\\chapter*{%s}")
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+    )
+
+
+  ;; Convenience functions for org export https://code.orgmode.org/bzg/org-mode/raw/master/contrib/lisp/ox-extra.el
+  (use-package ox-extra
+    :ensure org-plus-contrib
+    :config
+    (ox-extras-activate '(ignore-headlines))
     )
 
   (use-package ox-beamer
     :ensure org
     )
-
 #+END_SRC
-** Pdf-tools 
-PDF Tools is, among other things, a replacement of DocView for PDF files. 
-The key difference is, that pages are not pre-rendered by e.g. ghostscript and stored in the file-system, but rather created on-demand and stored in memory.
+
+*** org-ref
 
 #+BEGIN_SRC emacs-lisp
-  (use-package pdf-tools
-    :mode ("\\.pdf\\'" . pdf-view-mode)
-    :config
-    (pdf-tools-install)
-    (setq pdf-view-display-size "fit-page"
-	  auto-revert-interval 0
-	  ess-pdf-viewer-pref "emacsclient"
-	  TeX-view-program-selection '((output-pdf "PDF Tools"))
-	  pdf-view-midnight-colors '("#ffffc8" . "#1d2021"))
+  (use-package org-ref
+    :after org
     )
-
 #+END_SRC
 
 ** Magit
@@ -967,11 +923,19 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     :bind
     ;; Set magit-status to F9
     ("<f9>" . magit-status)
-    )
-
+    :config
     ;; Currently magit cause some error when auto revert mode is on
     (setq magit-auto-revert-mode nil)
+    )
 
+  (use-package git-gutter
+    :ensure t
+    :init
+    (global-git-gutter-mode)
+  
+    :config
+    (use-package git-gutter-fringe
+      :ensure t))
 #+END_SRC  
 
 ** Which-key
@@ -1007,9 +971,9 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package ess
-    :init
-    (require 'ess-site)
+  (use-package ess-site
+    :ensure ess
+    :config
     ;; Execute screen options after initialize process
     (add-hook 'ess-post-run-hook 'ess-execute-screen-options)
 
@@ -1058,7 +1022,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 	    (ess-fl-keyword:= . t)
 	    (ess-R-fl-keyword:F&T . nil)))
 
-
     :bind
     (:map
      ess-mode-map
@@ -1068,19 +1031,6 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
      inferior-ess-mode-map
      ("M--" . ess-insert-assign)
      ("C-S-m" . pipe_R_operator))
-    )
-#+END_SRC
-
-** Stan
-[[https://github.com/stan-dev/stan-mode][stan-mode]] is the Emacs mode for [[http://mc-stan.org/][Stan]].
-
-#+BEGIN_SRC emacs-lisp
-  (use-package stan-mode
-    :mode ("\\.stan\\'" . stan-mode)
-    )
-
-  (use-package stan-snippets
-    :after (stan)
     )
 #+END_SRC
 
@@ -1212,7 +1162,7 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
 
 ** Markdown
 
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 
   (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
@@ -1233,8 +1183,10 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
 
 
 #+END_SRC
+
 ** ELisp
 Customisation to emacs-lisp itself, this is mainly syntax highlighting
+
 #+BEGIN_SRC emacs-lisp
 
   (use-package highlight-defined
@@ -1256,17 +1208,6 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
     )
 
 #+END_SRC
-** JSON
-#+BEGIN_SRC emacs-lisp
-  (use-package json-mode
-    :mode ("\\.json\\'" . json-mode)
-    )
-
-  (use-package json-navigator
-    :after json-mode
-    )
-
-#+END_SRC
 
 ** CSS
 
@@ -1277,137 +1218,4 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
     (setq css-indent-offset 2)
     )
 #+END_SRC
-** Plantuml
-[[http://plantuml.com/][PlantUML]] is a component that allows to quickly write different kinds of diagrams
 
-#+BEGIN_SRC emacs-lisp
-    (use-package plantuml-mode
-      :mode ("\\.plantuml\\'" . plantuml-mode)
-      :config
-      ;; Path to jar file, remember to put it in the right folder
-      (setq plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
-      ;; Add a command to render current buffer
-      (defun plantuml-render-this-file ()
-	(interactive)
-	(shell-command
-	 (concat
-	  "java -jar "
-	  plantuml-jar-path
-	  " " buffer-file-name
-	  " -charset UTF-8 -t"
-	  (completing-read "PlantUML output: " '("svg" "png" "pdf" "latex"))
-	  ))
-	)
-      :bind (:map plantuml-mode-map
-		  ("C-c C-r" . plantuml-render-this-file))
-      )
-
-    (use-package ob-plantuml
-      :ensure org
-      :config
-      (setq org-plantuml-jar-path (expand-file-name "~/Java/plantuml.jar"))
-      )
-
-
-#+END_SRC
-
-* Fun
-** Dad Jokes
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  ;; This require pos-tip.el
-  (require 'pos-tip)
-
-  (defun dad-joke ()
-    (interactive)
-    (pos-tip-show
-     (shell-command-to-string "curl -s https://icanhazdadjoke.com/")))
-
-  (run-with-idle-timer (* 60 5) t 'dad-joke)
-#+END_SRC
-
-** Fortunes
-
-#+BEGIN_SRC emacs-lisp
-  ;; Supply a random fortune cookie as the *scratch* message.
-  (defun fortune-scratch-message ()
-    (interactive)
-    (let ((fortune
-	   (when (and (executable-find "fortune")
-		      (executable-find "cowsay"))
-	     (with-temp-buffer
-	       (shell-command "fortune | cowsay" t)
-	       (let ((comment-start ";;"))
-		 (comment-region (point-min) (point-max)))
-	       (delete-trailing-whitespace (point-min) (point-max))
-	       (concat (buffer-string) "\n")))))
-      (if (called-interactively-p 'any)
-	  (insert fortune)
-	fortune)))
-
-  ;; initial-scratch-message
-  (let ((fortune (fortune-scratch-message)))
-    (when fortune
-      (setq initial-scratch-message fortune)))
-#+END_SRC
-* Draft
-Settings in this section are not yet organized but are being used, mostly for testing purposes
-
-** Org-bullets
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package org-bullets
-    :hook 
-    (org-mode . org-bullets-mode)
-    )
-
-#+END_SRC
-** Research
-*** Org-ref
-
-#+BEGIN_SRC emacs-lisp
-    (use-package org-ref
-      :after org
-      :config
-
-      (setq org-ref-default-bibliography '("~/Dropbox/references/articles.bib")
-	    org-ref-bibliography-notes "~/Dropbox/references/articles.org"
-	    org-ref-pdf-directory "~/Dropbox/references/pdfs/")
-      )
-#+END_SRC
-
-*** Interleave
-
-#+BEGIN_SRC emacs-lisp
-  (use-package interleave
-    :commands interleave)
-#+END_SRC
-
-*** Helm-bibtex
-
-#+BEGIN_SRC emacs-lisp
-  ;; Helm-bibtex
-  (use-package helm-bibtex
-    :config
-    ;; Set bib folder
-    (setq helm-bibtex-bibliography '("~/Dropbox/references/articles.bib"
-				     "~/Dropbox/references.bib")
-	  helm-bibtex-library-path "~/Dropbox/references/pdfs"
-	  helm-bibtex-notes-path "~/Dropbox/references/articles.org")
-
-    ;; Set display format    
-    (setq bibtex-completion-display-formats
-	  '((article       . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${journal:40}")
-	    (inbook        . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} Chapter ${chapter:32}")
-	    (incollection  . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-	    (inproceedings . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*} ${booktitle:40}")
-	    (t             . "${=has-pdf=:1}${=has-note=:1} ${=type=:3} ${year:4} ${author:36} ${title:*}")))
-
-    :bind(
-	  :map helm-command-map
-	  ("b" . helm-bibtex)
-	  )
-    )
-
-#+END_SRC
