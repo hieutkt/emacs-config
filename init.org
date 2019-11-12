@@ -93,7 +93,7 @@ The whole thing is driven by the following =.emacs=
   (set-keyboard-coding-system 'utf-8)
   (set-buffer-file-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
-
+  (setq default-input-method 'vietnamese-telex)
 
   ;; Set some annoying command disabled
   (unbind-key "<insert>") 		;overwrite-mode
