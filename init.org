@@ -262,8 +262,7 @@ The whole thing is driven by the following =.emacs=
 
 #+END_SRC
 
-* Editing
-** Self-defined commands
+* Self-defined commands
 
 #+BEGIN_SRC emacs-lisp
   ;; Rename file and buffer
@@ -329,14 +328,28 @@ The whole thing is driven by the following =.emacs=
   (global-set-key [\M-up] 'move-text-up)
   (global-set-key [\M-down] 'move-text-down)
 
+
+  ;; Open the gnome terminal
   (defun open-gnome-terminal ()
     "Open an instance of gnome-terminal on Ubuntu machine"
     (interactive)
     (shell-command "gnome-terminal"))
 
   (global-set-key (kbd "<f10>") 'open-gnome-terminal)
+
+  ;; Insert current date (and time)
+  (defun insert-current-date () (interactive)
+	 (insert (shell-command-to-string "echo -n $(date +%Y-%m-%d)")))
+
+  (defun insert-current-time () (interactive)
+	 (insert (shell-command-to-string "echo -n $(date +%H:%M)")))
+
+  (global-set-key (kbd "C-x M-d") 'insert-current-date)
+  (global-set-key (kbd "C-x M-t") 'insert-current-time)
 #+END_SRC
 
+* Editing
+Various packages that helps with editing
 ** Smartparens
 
 #+BEGIN_SRC emacs-lisp
