@@ -872,7 +872,12 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 	     ("xelatex"))
 	    ("" "graphicx" t)
 	    ("" "grffile" t)
-	    ("" "longtable" nil)
+	    ;; Array, tabularx, booktabs are for tables
+	    ("" "array" nil)
+	    ("" "tabularx" nil)
+	    ("" "booktabs" nil)
+	    ("" "multirow" nil)
+	    ("" "siunitx" nil)
 	    ("" "wrapfig" nil)
 	    ("" "rotating" nil)
 	    ("normalem" "ulem" t)
