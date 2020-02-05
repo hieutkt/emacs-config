@@ -1047,11 +1047,11 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
     :bind
     (:map
-     ess-mode-map
+     ess-r-mode-map
      ("M--" . ess-insert-assign)
      ("C-S-m" . pipe_R_operator)
      :map
-     inferior-ess-mode-map
+     inferior-ess-r-mode-map
      ("M--" . ess-insert-assign)
      ("C-S-m" . pipe_R_operator))
     )
