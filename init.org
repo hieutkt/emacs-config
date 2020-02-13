@@ -1236,3 +1236,77 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
     )
 #+END_SRC
 
+* Testing Feature
+** org-roam
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package org-roam
+    :after org
+    :hook (org-mode . org-roam-mode)
+    :straight (:host github :repo "jethrokuan/org-roam")
+    :custom
+    (org-roam-directory "~/Dropbox/Notes/Roam/")
+    :bind
+    ("C-c n l" . org-roam)      
+    ("C-c n t" . org-roam-today)
+    ("C-c n f" . org-roam-find-file)
+    ("C-c n i" . org-roam-insert)
+    ("C-c n g" . org-roam-show-graph))
+
+#+END_SRC
+
+** org-agenda and org-capture
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package org-agenda
+    :ensure org
+    :bind
+    ("<f1>" . org-agenda)
+    :config
+    (setq org-agenda-files '("~/Dropbox/Notes/Agenda"))
+    (setq org-default-notes-file "~/Dropbox/Notes/Agenda/inbox.org")
+    )
+
+  (use-package org-capture
+    :ensure org
+    :bind
+    ("C-c c" . org-capture))
+
+#+END_SRC
+
+** org-journal
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package org-journal
+    :bind
+    ("C-c n j" . org-journal-new-entry)
+    :init
+    (setq org-journal-date-prefix "#+TITLE: "
+	  org-journal-file-format "%Y-%m-%d.org"
+	  org-journal-dir "~/Dropbox/Notes/Roam/journal/"
+	  org-journal-date-format "%Y-%m-%d %a"
+	  org-journal-enable-agenda-integration t)
+    )
+
+#+END_SRC
+
+** deft
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package deft
+    :config
+    (setq deft-extensions '("org")
+	  deft-directory "~/Dropbox/Notes/Roam/"
+	  deft-recursive t
+	  deft-use-filter-string-for-filename t
+	  deft-use-filename-as-title t)
+    :bind
+    ("C-c n d" . deft)
+    :commands (deft)
+    )
+
+#+END_SRC
