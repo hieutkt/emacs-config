@@ -119,6 +119,11 @@ The whole thing is driven by the following =.emacs=
   (unbind-key "<insert>") 		;overwrite-mode
   (unbind-key "C-x C-z")		;suspend-frame
   (unbind-key "C-x m")			;compose-mail
+  (unbind-key "C-x o")
+  (bind-key "M-p" 'other-window)
+
+  ;; And keep quited please
+  (setq visible-bell 1)
 
   ;; Delete marked region when input
   (delete-selection-mode 1)
@@ -479,31 +484,6 @@ Various packages that helps with editing
     (global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
     )
 
-
-#+END_SRC
-
-** Ace Window
-[[https://github.com/abo-abo/ace-window][Ace-window]] makes it easy to navigate between windows.
-Since I don't have the habit of using many windows, simple setup is enough.
-#+BEGIN_SRC emacs-lisp
-
-  (use-package ace-window
-    :config
-    ;; ace-window uses home row
-    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-
-    (defhydra window-hydra (:hint nil :color red)
-      "
-_[_ : Shrink window _]_ : Enlarge windows _=_ : Balance windows"
-      ("[" shrink-window-horizontally)
-      ("]" enlarge-window-horizontally)
-      ("=" balance-windows :exit t)
-      )
-    
-    :bind*
-    (("M-p" . ace-window)
-     ("C-x C-=" . window-hydra/body))
-    )
 
 #+END_SRC
 
