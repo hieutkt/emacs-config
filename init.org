@@ -33,7 +33,7 @@ The whole thing is driven by the following =.emacs=
 
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+  ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
   ;; (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
   (package-initialize)
 
@@ -940,17 +940,6 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
     )
 
-
-  ;; Convenience functions for org export https://code.orgmode.org/bzg/org-mode/raw/master/contrib/lisp/ox-extra.el
-  (use-package ox-extra
-    :ensure org-plus-contrib
-    :config
-    (ox-extras-activate '(ignore-headlines))
-    )
-
-  (use-package ox-beamer
-    :ensure org
-    )
 #+END_SRC
 
 *** org-ref
