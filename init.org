@@ -610,8 +610,6 @@ Company is a completion mechanism that is very flexible
 	  ahs-inhibit-face-list '(font-lock-comment-delimiter-face
 				  font-lock-comment-face
 				  font-lock-doc-face))
-    (set-face-attribute 'ahs-plugin-whole-buffer-face nil :background "#ffaf00")
-    (set-face-attribute 'ahs-plugin-defalt-face nil :background "#afaf00")
     (unbind-key "M--" auto-highlight-symbol-mode-map)
     )
 
@@ -750,21 +748,13 @@ See [[http://orgmode.org/][here]].
     (setq org-support-shift-select t)
 
     ;; Fontification
+    (set-face-attribute 'org-document-title nil :height 150)
     (set-face-attribute 'org-level-1 nil :weight 'bold)
     (set-face-attribute 'org-level-2 nil :weight 'bold)
-    (set-face-attribute 'org-block-begin-line nil :foreground "#d5c4a1")
-    (set-face-attribute 'org-block-end-line nil :foreground "#d5c4a1")
-
-
     (set-face-attribute 'org-block nil :background
 			(color-lighten-name
 			 (face-attribute 'default :background) 2))
 
-    (font-lock-add-keywords 'org-mode
-			    '(("^ +\\([-*]\\) "
-			       (0 (prog1 () (compose-region
-					     (match-beginning 1)
-					     (match-end 1) "•"))))))
     ;; Make latex preview with "C-c C-x C-l" slightly bigger
     (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
     )
