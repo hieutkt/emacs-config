@@ -25,83 +25,59 @@ The whole thing is driven by the following =.emacs=
 
 * Initiation
 ** Setup and bootstrap
-#+BEGIN_SRC emacs-lisp
-  ;; Increase garbage collection threshold to improve emacs init time
-  (setq gc-cons-threshold 100000000)
-  (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
+ #+BEGIN_SRC emacs-lisp
+   ;; Increase garbage collection threshold to improve emacs init time
+   (setq gc-cons-threshold 100000000)
+   (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
 
+   (defvar bootstrap-version)
+   (let ((bootstrap-file
+	  (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+	 (bootstrap-version 5))
+     (unless (file-exists-p bootstrap-file)
+       (with-current-buffer
+	   (url-retrieve-synchronously  "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+					'silent 'inhibit-cookies)
+	 (goto-char (point-max))
+	 (eval-print-last-sexp)))
+     (load bootstrap-file nil 'nomessage))
 
-  (require 'package)
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-  ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
-  ;; (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
-  (package-initialize)
+   ;; Install use-package
+   (straight-use-package 'use-package)
+   (setq straight-use-package-by-default t
+	 use-package-always-defer-install t
+	 use-package-verbose t)
+   (use-package diminish)
+   (use-package bind-key :straight use-package) 
+   ;; Auto-revert mode
+   (global-auto-revert-mode 1)
+   (setq auto-revert-interval 0.5)
 
-  ;; Bootstrap `use-package'
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
-  ;; Use use-package to reduce load time
-  (eval-when-compile
-    (require 'use-package)
-    )
+   ;; Backup stored in /tmp
+   (setq backup-directory-alist
+	 `((".*" . ,temporary-file-directory)))
+   (setq auto-save-file-name-transforms
+	 `((".*" , temporary-file-directory t)))
 
-  (setq use-package-always-ensure t
-	use-package-always-defer-install t
-	use-package-verbose t)
+   ;; Delete old backup
+   (message "Deleting old backup files...")
+   (let ((week (* 60 60 24 7))
+	 (current (float-time (current-time))))
+     (dolist (file (directory-files temporary-file-directory t))
+       (when (and (backup-file-name-p file)
+		  (> (- current (float-time (nth 5 (file-attributes file))))
+		     week))
+	 (message "%s" file)
+	 (delete-file file))))
 
-  (use-package diminish)
-  (use-package hydra)
+   ;; Information settings
+   (setq user-full-name "Nguyễn Đức Hiếu"
+	 user-mail-address "hieunguyen31371@gmail.com")
 
-  ;; Auto-revert mode
-  (global-auto-revert-mode 1)
-  (setq auto-revert-interval 0.5)
+   ;; Set emacs as a client
+   (server-start)
 
-  ;; Backup stored in /tmp
-  (setq backup-directory-alist
-	`((".*" . ,temporary-file-directory)))
-  (setq auto-save-file-name-transforms
-	`((".*" , temporary-file-directory t)))
-
-  ;; Delete old backup
-  (message "Deleting old backup files...")
-  (let ((week (* 60 60 24 7))
-	(current (float-time (current-time))))
-    (dolist (file (directory-files temporary-file-directory t))
-      (when (and (backup-file-name-p file)
-		 (> (- current (float-time (nth 5 (file-attributes file))))
-		    week))
-	(message "%s" file)
-	(delete-file file))))
-
-  ;; Information settings
-  (setq user-full-name "Nguyễn Đức Hiếu"
-	user-mail-address "hieunguyen31371@gmail.com")
-
-  ;; Set emacs as a client
-  ;; (server-start)
-
-#+END_SRC
-
-** Straight.el
-
-#+BEGIN_SRC emacs-lisp
-  (defvar bootstrap-version)
-  (let ((bootstrap-file
-	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-	(bootstrap-version 5))
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-	  (url-retrieve-synchronously  "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-	   'silent 'inhibit-cookies)
-	(goto-char (point-max))
-	(eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage))
-
-;; Install use-package
-(straight-use-package 'use-package)
-
-#+END_SRC
+ #+END_SRC
 
 ** Better Defaults
 
@@ -116,9 +92,11 @@ The whole thing is driven by the following =.emacs=
   (setq default-input-method 'vietnamese-telex)
 
   ;; Set some annoying command disabled
+  ;; the function `unbind-key` require `use-package`
   (unbind-key "<insert>") 		;overwrite-mode
-  (unbind-key "C-x C-z")		;suspend-frame
+  (unbind-key "C-x C-z"   )		;suspend-frame
   (unbind-key "C-x m")			;compose-mail
+  (unbind-key "C-x C-l")                ;downcase region
   (unbind-key "C-x o")
   (bind-key "M-p" 'other-window)
 
@@ -151,7 +129,6 @@ The whole thing is driven by the following =.emacs=
 
   ;; Bound undo to C-z
   (global-set-key (kbd "C-z") 'undo)
-
 
   ;; Scrolling
   (setq scroll-step 1) ; keyboard scroll one line at a time
@@ -238,7 +215,7 @@ The whole thing is driven by the following =.emacs=
     (setq-default visual-fill-column-center-text t
 		  visual-fill-column-fringes-outside-margins nil
 		  split-window-preferred-function 'visual-fill-column-split-window-sensibly)
-    :init
+ 
     (defun toggle-frame-fullscreen-and-visual-fill-adjust ()
       (interactive)
       (toggle-frame-maximized)
@@ -256,7 +233,9 @@ The whole thing is driven by the following =.emacs=
 
   ;; Default font
   (when (member "Iosevka" (font-family-list))
-    (set-frame-font "Iosevka Semibold 10" nil t))
+    (set-frame-font "Iosevka Semibold 11" nil t))
+  (when (member "Source Han Sans" (font-family-list))
+    (set-fontset-font t 'han (font-spec :name "Source Han Sans")))
 
   ;; Set themes
   (use-package gruvbox-theme
@@ -276,7 +255,7 @@ The whole thing is driven by the following =.emacs=
 #+BEGIN_SRC emacs-lisp
 
   (use-package spaceline-config
-    :ensure spaceline
+    :straight (spaceline :host github :repo "TheBB/spaceline" :branch "master")
     :config
     (setq spaceline-workspace-numbers-unicode t)
     (spaceline-toggle-minor-modes-off)
@@ -287,7 +266,7 @@ The whole thing is driven by the following =.emacs=
 
 #+END_SRC
 
-* Self-defined commands
+* Hydra/Self-defined commands
 
 #+BEGIN_SRC emacs-lisp
   ;; Rename file and buffer
@@ -314,7 +293,8 @@ The whole thing is driven by the following =.emacs=
     (backward-kill-sexp)
     (prin1 (eval (read (current-kill 0)))
 	   (current-buffer)))
-  (global-set-key (kbd "C-c e") 'fc-eval-and-replace)
+
+  (bind-key "C-c e" 'fc-eval-and-replace)
 
   ;; Move line/region up/down
   (defun move-text-internal (arg)
@@ -350,9 +330,8 @@ The whole thing is driven by the following =.emacs=
     (interactive "*p")
     (move-text-internal (- arg)))
 
-  (global-set-key [\M-up] 'move-text-up)
-  (global-set-key [\M-down] 'move-text-down)
-
+  (bind-key "M-<up>" 'move-text-up)
+  (bind-key "M-<down>" 'move-text-down)
 
   ;; Open the gnome terminal
   (defun open-gnome-terminal ()
@@ -360,7 +339,7 @@ The whole thing is driven by the following =.emacs=
     (interactive)
     (shell-command "gnome-terminal"))
 
-  (global-set-key (kbd "<f10>") 'open-gnome-terminal)
+  (bind-key "<f10>" 'open-gnome-terminal)
 
   ;; Insert current date (and time)
   (defun insert-current-date () (interactive)
@@ -369,8 +348,44 @@ The whole thing is driven by the following =.emacs=
   (defun insert-current-time () (interactive)
 	 (insert (shell-command-to-string "echo -n $(date +%H:%M)")))
 
-  (global-set-key (kbd "C-x M-d") 'insert-current-date)
-  (global-set-key (kbd "C-x M-t") 'insert-current-time)
+  (bind-key "C-x M-d" 'insert-current-date)
+  (bind-key "C-x M-t" 'insert-current-time)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package hydra
+    :config
+    (defhydra hydra-straight-helper (:hint nil)
+      "
+    _c_heck all       |_f_etch all     |_m_erge all      |_n_ormalize all   |p_u_sh all
+    _C_heck package   |_F_etch package |_M_erge package  |_N_ormlize package|p_U_sh package
+    ----------------^^+--------------^^+---------------^^+----------------^^+------------||_q_uit||
+    _r_ebuild all     |_p_ull all      |_v_ersions freeze|_w_atcher start   |_g_et recipe
+    _R_ebuild package |_P_ull package  |_V_ersions thaw  |_W_atcher quit    |prun_e_ build"
+      ("c" straight-check-all)
+      ("C" straight-check-package)
+      ("r" straight-rebuild-all)
+      ("R" straight-rebuild-package)
+      ("f" straight-fetch-all)
+      ("F" straight-fetch-package)
+      ("p" straight-pull-all)
+      ("P" straight-pull-package)
+      ("m" straight-merge-all)
+      ("M" straight-merge-package)
+      ("n" straight-normalize-all)
+      ("N" straight-normalize-package)
+      ("u" straight-push-all)
+      ("U" straight-push-package)
+      ("v" straight-freeze-versions)
+      ("V" straight-thaw-versions)
+      ("w" straight-watcher-start)
+      ("W" straight-watcher-quit)
+      ("g" straight-get-recipe)
+      ("e" straight-prune-build)
+      ("q" nil))
+    )
+
 #+END_SRC
 
 * Editing
@@ -379,9 +394,7 @@ Various packages that helps with editing
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package smartparens-config
-    :ensure smartparens
-    :diminish smartparens-mode
+  (use-package smartparens
     :config
     (smartparens-global-mode 1)
     (add-hook 'comint-mode-hook 'smartparens-mode)
@@ -439,6 +452,7 @@ Various packages that helps with editing
     (bind-key "M-<backspace>" 'sp-unwrap-sexp)
     (bind-key "C-c s" 'hydra-smartparens/body)
     )
+
 #+END_SRC
 
 ** Multiple-cursor
@@ -456,7 +470,7 @@ Various packages that helps with editing
       (interactive)
       (find-file "~/.emacs.d/.mc-lists.el"))  
     :config
-    (defhydra multiple-cursors-hydra (:columns 3 :idle 1.0)
+    (defhydra hydra-multiple-cursors (:columns 3 :idle 1.0)
       "Multiple cursors"
       ("l" mc/edit-lines "Edit lines in region" :exit t)
       ("b" mc/edit-beginnings-of-lines "Edit beginnings of lines in region" :exit t)
@@ -480,8 +494,8 @@ Various packages that helps with editing
        ("P" mc/skip-to-previous-like-this "Skip to previous like this")
        ("M-p" mc/unmark-previous-like-this "Unmark previous like this")
        ("q" nil "Quit" :exit t))
- 
-    (global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
+    :bind
+    ("C-c m" . multiple-cursors-hydra/body)
     )
 
 
@@ -494,8 +508,9 @@ Various packages that helps with editing
   (use-package eyebrowse
     :config
     (setq eyebrowse-new-workspace t)
-
-    (defhydra eyebrowse-hydra (:hint nil :color red)
+    (eyebrowse-mode 1)
+    ;; define hydra
+    (defhydra hydra-eyebrowse (:hint nil :color red)
       "
   Window Manager
   _0_ to _9_, _s_: Switch     _<left>_: Previous      _<right>_: Next
@@ -518,11 +533,8 @@ Various packages that helps with editing
       ("<left>" eyebrowse-prev-window-config)
       ("<right>" eyebrowse-next-window-config)
       )
-
-    (eyebrowse-mode 1)
-
-    :bind* ("C-c C-w" . eyebrowse-hydra/body)
-  )
+    :bind* ("C-c C-w" . hydra-eyebrowse/body)
+    )
 #+END_SRC
 
 ** Company
@@ -530,49 +542,43 @@ Company is a completion mechanism that is very flexible
 
 #+BEGIN_SRC emacs-lisp
 
-    (use-package company
-      :init
-      ;; Activate globally
-      (add-hook 'after-init-hook 'global-company-mode)
-  
-      ;; Press <F1> to show the documentation buffer and press C-<F1> to jump to it
-      (defun my/company-show-doc-buffer ()
-	"Temporarily show the documentation buffer for the selection."
-	(interactive)
-	(let* ((selected (nth company-selection company-candidates))
-	       (doc-buffer (or (company-call-backend 'doc-buffer selected)
-			       (error "No documentation available"))))
-	  (with-current-buffer doc-buffer
-	    (goto-char (point-min)))
-	  (display-buffer doc-buffer t)))  
-  
-      :config
-      ;; Some useful configs
-      (setq company-selection-wrap-around t
-	    company-tooltip-align-annotations t
-	    company-tooltip-limit 10
-	    company-idle-delay 0.5)
+  (use-package company
+    :init
+    ;; Activate globally
+    (add-hook 'after-init-hook 'global-company-mode)
+    ;; Press <F1> to show the documentation buffer and press C-<F1> to jump to it
+    (defun my/company-show-doc-buffer ()
+      "Temporarily show the documentation buffer for the selection."
+      (interactive)
+      (let* ((selected (nth company-selection company-candidates))
+	     (doc-buffer (or (company-call-backend 'doc-buffer selected)
+			     (error "No documentation available"))))
+	(with-current-buffer doc-buffer
+	  (goto-char (point-min)))
+	(display-buffer doc-buffer t)))  
 
-      ;; Add yasnippet support for all company backends
-      ;; https://github.com/syl20bnr/spacemacs/pull/179
-      (defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
-
-      (defun company-mode/backend-with-yas (backend)
-	(if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
-	    backend
-	  (append (if (consp backend) backend (list backend))
-		  '(:with company-yasnippet))))
-
-      (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
-
-      :bind 
-      (:map company-active-map
-	    ("C-<f1>" . my/company-show-doc-buffer)
-	    ("C-n" . company-select-next)
-	    ("C-p" . company-select-previous)
-	    )
-      )
-
+    :config
+    ;; Some useful configs
+    (setq company-selection-wrap-around t
+	  company-tooltip-align-annotations t
+	  company-tooltip-limit 10
+	  company-idle-delay 0.5)
+    ;; Add yasnippet support for all company backends
+    ;; https://github.com/syl20bnr/spacemacs/pull/179
+    (defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
+    (defun company-mode/backend-with-yas (backend)
+      (if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
+	  backend
+	(append (if (consp backend) backend (list backend))
+		'(:with company-yasnippet))))
+    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+    :bind 
+    (:map company-active-map
+	  ("C-<f1>" . my/company-show-doc-buffer)
+	  ("C-n" . company-select-next)
+	  ("C-p" . company-select-previous)
+	  )
+    )
 
 #+END_SRC
 
@@ -660,7 +666,7 @@ Company is a completion mechanism that is very flexible
 #+BEGIN_SRC emacs-lisp
 
   (use-package helm-config
-    :ensure helm
+    :straight helm
     :init
     (helm-mode 1)
     :config
@@ -697,7 +703,7 @@ Company is a completion mechanism that is very flexible
 
     (add-hook 'helm-minibuffer-set-up-hook
 	      'spacemacs//helm-hide-minibuffer-maybe)
-  
+
     :bind (
 	   ("C-x b" . helm-mini)
 	   ("M-x" . helm-M-x)
@@ -714,64 +720,16 @@ Company is a completion mechanism that is very flexible
 
   ;; Use "C-:" to switch to Helm interface during company-ing
   (use-package helm-company
-    :config
-    (eval-after-load 'company
-      '(progn
-	 (define-key company-mode-map (kbd "C-:") 'helm-company)
-	 (define-key company-active-map (kbd "C-:") 'helm-company)))    
-    )
+    :after company
+    :bind (:map company-mode-map
+	   (("C-:" . helm-company))
+	   :map company-active-map
+	   (("C-:" . helm-company))))
 
 
 #+end_SRC
 
-* Directories and Files
-** Projectile
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package projectile
-    :init
-    (setq projectile-keymap-prefix (kbd "C-c C-p"))
-    :config
-    (projectile-mode)
-    (setq projectile-completion-system 'helm)
-    (setq projectile-mode-line '(:eval (format " 𝐏[%s]" (projectile-project-name))))
-    )
-
-  ;; Helm-projectile
-  (use-package helm-projectile
-    :config 
-    (helm-projectile-on))
-
-
-  
-#+END_SRC
-
-** Ag and Wgrep
-Ag is an Emacs frontend to The Silver Searcher [[http://agel.readthedocs.org/en/latest/][(Documentation)]]
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package ag
-    :init
-    ;; Truncate long results
-    (add-hook 'ag-mode-hook (lambda () (setq truncate-lines t)))
-    :config
-    ;; Add highlighting
-    (setq ag-highlight-search t)
-    ;; Set ag to reuse the same buffer
-    (setq ag-reuse-buffers nil)
-    )
-
-  (use-package wgrep-ag
-    :after ag
-    :config
-    (autoload 'wgrep-ag-setup "wgrep-ag")
-    (add-hook 'ag-mode-hook 'wgrep-ag-setup)
-  )
-#+END_SRC
-
-* Utilities
+* Everything org-mode
 ** Org-mode
 Org mode is for keeping notes, maintaining TODO lists, planning projects, and authoring documents with a fast and effective plain-text system.
 See [[http://orgmode.org/][here]].
@@ -780,6 +738,7 @@ See [[http://orgmode.org/][here]].
 #+BEGIN_SRC emacs-lisp
 
   (use-package org
+    :straight org-plus-contrib
     :config
     ;; Omit the headline-asterisks except the last one:
     (setq org-hide-leading-stars t)
@@ -806,32 +765,8 @@ See [[http://orgmode.org/][here]].
 			       (0 (prog1 () (compose-region
 					     (match-beginning 1)
 					     (match-end 1) "•"))))))
-    )
-
-#+END_SRC
-
-*** org-babel
-Babel is Org-mode's ability to execute source code within Org-mode documents.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package ob
-    :ensure org
-    :after org
-    :config
-    ;; Active Babel languages:
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((R . t)
-       (latex . t)
-       (emacs-lisp . t)
-       (gnuplot . t)
-       (plantuml . t)
-       ))
-
-    (setq org-src-tab-acts-natively t     ;Indent normally in source code
-	  org-src-fontify-natively t      ;Fontification in org source block
-	  org-confirm-babel-evaluate nil  ;Inhibit execute messages
-	  )
+    ;; Make latex preview with "C-c C-x C-l" slightly bigger
+    (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
     )
 #+END_SRC
 
@@ -839,8 +774,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 #+BEGIN_SRC emacs-lisp
   (use-package ox-latex
-    :ensure org
-    :after org
+    :straight org
     :config
     ;; Highlight code blocks in org-latex-export-to-pdf
     ;; Minted options can be found in:
@@ -859,7 +793,7 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 				     ;; ("framesep" "2mm")
 				     )
 	  org-latex-pdf-process
-	  '("latexmk -pdflatex='%latex -shell-escape -interaction nonstopmode' -pdf -output-directory=%o -f %f")
+	  '("latexmk -pdflatex='%latex -shell-escape -bibtex -interaction nonstopmode' -pdf -output-directory=%o -f %f")
 	  )
 
     ;; Default packages
@@ -889,7 +823,6 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 	    ("colorlinks=true, linkcolor=Blue, citecolor=BrickRed, urlcolor=PineGreen" "hyperref" nil)
 	    ("" "indentfirst" nil))
 	  )
-
 
     ;; Writing latex in org-mode
     (add-hook 'org-mode-hook 'org-cdlatex-mode)
@@ -922,12 +855,99 @@ Babel is Org-mode's ability to execute source code within Org-mode documents.
 
 #+END_SRC
 
-*** org-ref
+** Note-taking
 
 #+BEGIN_SRC emacs-lisp
+
+  (use-package org-roam
+	:after org
+	:hook 
+	(after-init . org-roam-mode)
+	:straight (:host github :repo "jethrokuan/org-roam" :branch "develop")
+	:custom
+	(org-roam-directory "~/Dropbox/Notes/Roam/")
+	:bind (:map org-roam-mode-map
+		(("C-c n l" . org-roam)
+		 ("C-c n f" . org-roam-find-file)
+		 ("C-c n g" . org-roam-show-graph))
+		:map org-mode-map
+		(("C-c n i" . org-roam-insert))))
+
+  (use-package org-agenda
+    :straight org
+    :bind
+    ("<f1>" . org-agenda)
+    :config
+    (setq org-agenda-files '("~/Dropbox/Notes/Agenda"))
+    (setq org-default-notes-file "~/Dropbox/Notes/Agenda/inbox.org")
+    )
+
+
+  (use-package org-capture
+    :straight org
+    :bind
+    ("C-c c" . org-capture))
+
+
+  (use-package org-journal
+    :straight (:host github :repo "bastibe/org-journal" :branch "master")
+    :bind
+    ("C-c n j" . org-journal-new-entry)
+    :init
+    (setq org-journal-date-prefix "#+TITLE: "
+	  org-journal-file-format "%Y-%m-%d.org"
+	  org-journal-dir "~/Dropbox/Notes/Roam/"
+	  org-journal-date-format "%Y-%m-%d %a"
+	  org-journal-enable-agenda-integration t)
+    )
+
+  (use-package org-download
+    :after org
+    :bind
+    (:map org-mode-map
+	  (("s-Y" . org-download-screenshot)
+	   ("s-y" . org-download-yank)))
+    )
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+
   (use-package org-ref
     :after org
+    :config
+    (setq 
+     org-ref-default-bibliography '("~/Dropbox/Notes/Research/papers.bib")
+     org-ref-pdf-directory "~/Dropbox/Notes/Papers/"
+     bibtex-dialect 'biblatex
+     bibtex-completion-notes-path "~/Dropbox/Notes/Roam/"
+     bibtex-completion-bibliography "~/Dropbox/Notes/Research/papers.bib"
+     bibtex-completion-library-path "~/Dropbox/Notes/Papers/"
+     )
     )
+
+#+END_SRC
+
+* Utilities
+** Projectile
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package projectile
+    :init
+    (setq projectile-keymap-prefix (kbd "C-c C-p"))
+    :config
+    (projectile-mode)
+    (setq projectile-completion-system 'helm)
+    (setq projectile-mode-line '(:eval (format " 𝐏[%s]" (projectile-project-name))))
+    )
+
+  ;; Helm-projectile
+  (use-package helm-projectile
+    :config 
+    (helm-projectile-on))
+
+
+  
 #+END_SRC
 
 ** Magit
@@ -946,13 +966,11 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     )
 
   (use-package git-gutter
-    :ensure t
     :init
-    (global-git-gutter-mode)
+    (global-git-gutter-mode))
+  (use-package git-gutter-fringe
+    :after git-gutter)
   
-    :config
-    (use-package git-gutter-fringe
-      :ensure t))
 #+END_SRC  
 
 ** Which-key
@@ -968,28 +986,13 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+END_SRC
 
-** Paradox
-[[https://github.com/Malabarba/paradox][Paradox]] is a project for modernizing Emacs' Package Menu. With improved appearance, mode-line information. Github integration, customizability, asynchronous upgrading, and more.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package paradox
-    :config
-    (paradox-enable)
-    (setq-default
-     paradox-column-width-package 27
-     paradox-column-width-version 13
-     paradox-execute-asynchronously t
-     paradox-github-token t)
-    )
-#+END_SRC
-
 * Languages
 ** R
 
 #+BEGIN_SRC emacs-lisp
 
   (use-package ess-site
-    :ensure ess
+    :straight ess
     :config
     ;; Execute screen options after initialize process
     (add-hook 'ess-post-run-hook 'ess-execute-screen-options)
@@ -1131,32 +1134,27 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
     
 #+BEGIN_SRC emacs-lisp
 
-  (use-package tex 
+  (use-package auctex 
     :mode ("\\.tex\\'" . TeX-latex-mode)
-    :ensure auctex
     :config
+    ;; General configs
     (setq TeX-master nil
 	  TeX-auto-save t			    
 	  TeX-parse-self t
 	  TeX-PDF-mode t	    
 	  TeX-electric-escape t
 	  )
-
     ;; Turn on RefTeX in AUCTeX
     (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-
     ;; Reftex default bibfile
-    (setq reftex-default-bibliography
-	  (expand-file-name "~/Dropbox/references.bib"))
-
+    (setq reftex-default-bibliography "~/Dropbox/Research/papers.bib")
     ;; Activate nice interface between RefTeX and AUCTeX
     (setq reftex-plug-into-AUCTeX t)
-
     )
 
   ;; Completion
   (use-package company-auctex
-    :after (tex)
+    :after tex
     :init
     (company-auctex-init)
     )
@@ -1186,13 +1184,6 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :init
-  :config
-  (defun markdown-insert-code-chunk (header) 
-    "Insert an code chunk in markdown mode. Necessary due to interactions between polymode and yas snippet" 
-    (interactive "sChunk header: ") 
-    (insert (concat "```{" header "}\n\n```")) 
-    (forward-line -1))
   :bind
   (:map markdown-mode-map
    ("C-c i" . markdown-insert-code-chunk))
@@ -1227,7 +1218,7 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
 #+END_SRC
 
 ** CSS
-
+   
 #+BEGIN_SRC emacs-lisp
   (use-package css-mode
     :mode (("\\.css?\\'" . css-mode))
@@ -1236,77 +1227,4 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
     )
 #+END_SRC
 
-* Testing Feature
-** org-roam
 
-#+BEGIN_SRC emacs-lisp
-
-  (use-package org-roam
-    :after org
-    :hook (org-mode . org-roam-mode)
-    :straight (:host github :repo "jethrokuan/org-roam")
-    :custom
-    (org-roam-directory "~/Dropbox/Notes/Roam/")
-    :bind
-    ("C-c n l" . org-roam)      
-    ("C-c n t" . org-roam-today)
-    ("C-c n f" . org-roam-find-file)
-    ("C-c n i" . org-roam-insert)
-    ("C-c n g" . org-roam-show-graph))
-
-#+END_SRC
-
-** org-agenda and org-capture
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package org-agenda
-    :ensure org
-    :bind
-    ("<f1>" . org-agenda)
-    :config
-    (setq org-agenda-files '("~/Dropbox/Notes/Agenda"))
-    (setq org-default-notes-file "~/Dropbox/Notes/Agenda/inbox.org")
-    )
-
-  (use-package org-capture
-    :ensure org
-    :bind
-    ("C-c c" . org-capture))
-
-#+END_SRC
-
-** org-journal
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package org-journal
-    :bind
-    ("C-c n j" . org-journal-new-entry)
-    :init
-    (setq org-journal-date-prefix "#+TITLE: "
-	  org-journal-file-format "%Y-%m-%d.org"
-	  org-journal-dir "~/Dropbox/Notes/Roam/journal/"
-	  org-journal-date-format "%Y-%m-%d %a"
-	  org-journal-enable-agenda-integration t)
-    )
-
-#+END_SRC
-
-** deft
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package deft
-    :config
-    (setq deft-extensions '("org")
-	  deft-directory "~/Dropbox/Notes/Roam/"
-	  deft-recursive t
-	  deft-use-filter-string-for-filename t
-	  deft-use-filename-as-title t)
-    :bind
-    ("C-c n d" . deft)
-    :commands (deft)
-    )
-
-#+END_SRC
