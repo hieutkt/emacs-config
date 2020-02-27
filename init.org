@@ -239,9 +239,8 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
   ;; Set themes
   (use-package gruvbox-theme
-    :init
     :config
-    (load-theme 'gruvbox t)
+    (load-theme 'gruvbox-light-soft t)
     )
 
   (use-package rainbow-delimiters
@@ -972,6 +971,10 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+END_SRC
 
+** restart-emacs
+#+BEGIN_SRC emacs-lisp
+  (use-package restart-emacs)
+#+END_SRC
 * Languages
 ** R
 
