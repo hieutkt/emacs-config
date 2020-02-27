@@ -11,11 +11,29 @@
 The Ubuntu repo for emacs version is
 [[https://launchpad.net/~ubuntu-elisp/+archive/ubuntu/ppa]]
 
-The whole thing is driven by the following =.emacs=
+The whole thing is driven by the following =.emacs=. I clone this git into "~/Documents/Emacs/emacs-config/". Then everything is installed using =straight.el= and =use-package=.
  
 #+BEGIN_EXAMPLE emacs-lisp
 
-(require 'org)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+	(url-retrieve-synchronously  "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+				     'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+;; Install use-package
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
+(use-package diminish)
+(use-package bind-key :straight use-package) 
+
+(straight-use-package 'org-plus-contrib)
 
 (setq config-directory "~/Documents/Emacs/emacs-config/")
 (org-babel-load-file
@@ -25,30 +43,12 @@ The whole thing is driven by the following =.emacs=
 
 * Initiation
 ** Setup and bootstrap
- #+BEGIN_SRC emacs-lisp
+
+#+BEGIN_SRC emacs-lisp
    ;; Increase garbage collection threshold to improve emacs init time
    (setq gc-cons-threshold 100000000)
    (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
 
-   (defvar bootstrap-version)
-   (let ((bootstrap-file
-	  (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-	 (bootstrap-version 5))
-     (unless (file-exists-p bootstrap-file)
-       (with-current-buffer
-	   (url-retrieve-synchronously  "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-					'silent 'inhibit-cookies)
-	 (goto-char (point-max))
-	 (eval-print-last-sexp)))
-     (load bootstrap-file nil 'nomessage))
-
-   ;; Install use-package
-   (straight-use-package 'use-package)
-   (setq straight-use-package-by-default t
-	 use-package-always-defer-install t
-	 use-package-verbose t)
-   (use-package diminish)
-   (use-package bind-key :straight use-package) 
    ;; Auto-revert mode
    (global-auto-revert-mode 1)
    (setq auto-revert-interval 0.5)
@@ -584,7 +584,7 @@ Company is a completion mechanism that is very flexible
 
 ** Electric operator
 [[https://github.com/davidshepherd7/electric-operator][Electric Operator]] is an emacs minor-mode to automatically add spacing around operators.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
   (use-package electric-operator
     :config
     (setq electric-operator-R-named-argument-style 'spaced)
@@ -735,29 +735,25 @@ See [[http://orgmode.org/][here]].
     
 #+BEGIN_SRC emacs-lisp
 
-  (use-package org
-    :straight org-plus-contrib
-    :config
-    ;; Omit the headline-asterisks except the last one:
-    (setq org-hide-leading-stars t)
+  (setq org-hide-leading-stars t)
 
-    ;; Hide emphasis markers
-    ;; (setq org-hide-emphasis-markers t)
+  ;; Hide emphasis markers
+  ;; (setq org-hide-emphasis-markers t)
 
-    ;; Enable shift selection
-    (setq org-support-shift-select t)
+  ;; Enable shift selection
+  (setq org-support-shift-select t)
 
-    ;; Fontification
-    (set-face-attribute 'org-document-title nil :height 150)
-    (set-face-attribute 'org-level-1 nil :weight 'bold)
-    (set-face-attribute 'org-level-2 nil :weight 'bold)
-    (set-face-attribute 'org-block nil :background
-			(color-lighten-name
-			 (face-attribute 'default :background) 2))
+  ;; Fontification
+  (set-face-attribute 'org-document-title nil :height 150)
+  (set-face-attribute 'org-level-1 nil :weight 'bold)
+  (set-face-attribute 'org-level-2 nil :weight 'bold)
+  (set-face-attribute 'org-block nil :background
+		      (color-lighten-name
+		       (face-attribute 'default :background) 2))
 
-    ;; Make latex preview with "C-c C-x C-l" slightly bigger
-    (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
-    )
+  ;; Make latex preview with "C-c C-x C-l" slightly bigger
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
+
 #+END_SRC
 
 *** org-exports
@@ -846,7 +842,24 @@ See [[http://orgmode.org/][here]].
 #+END_SRC
 
 ** Note-taking
+*** org-ref
+#+BEGIN_SRC emacs-lisp
 
+  (use-package org-ref
+    :config
+    (setq 
+     org-ref-default-bibliography '("~/Dropbox/Notes/Research/papers.bib")
+     org-ref-pdf-directory "~/Dropbox/Notes/Papers/"
+     bibtex-dialect 'biblatex
+     bibtex-completion-notes-path "~/Dropbox/Notes/Roam/"
+     bibtex-completion-bibliography "~/Dropbox/Notes/Research/papers.bib"
+     bibtex-completion-library-path "~/Dropbox/Notes/Papers/"
+     )
+    )
+
+#+END_SRC
+
+*** Roam
 #+BEGIN_SRC emacs-lisp
 
   (use-package org-roam
@@ -900,23 +913,6 @@ See [[http://orgmode.org/][here]].
     )
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-
-  (use-package org-ref
-    :after org
-    :config
-    (setq 
-     org-ref-default-bibliography '("~/Dropbox/Notes/Research/papers.bib")
-     org-ref-pdf-directory "~/Dropbox/Notes/Papers/"
-     bibtex-dialect 'biblatex
-     bibtex-completion-notes-path "~/Dropbox/Notes/Roam/"
-     bibtex-completion-bibliography "~/Dropbox/Notes/Research/papers.bib"
-     bibtex-completion-library-path "~/Dropbox/Notes/Papers/"
-     )
-    )
-
-#+END_SRC
-
 * Utilities
 ** Projectile
 
@@ -944,7 +940,7 @@ See [[http://orgmode.org/][here]].
 Magit is an interface to the version control system Git, implemented as an Emacs package. 
 Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
 
   (use-package magit
     :bind
@@ -966,7 +962,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 ** Which-key
 [[https://github.com/justbur/emacs-which-key][which-key]] is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
 
   (use-package which-key
     :diminish which-key-mode
@@ -979,7 +975,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 * Languages
 ** R
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
 
   (use-package ess-site
     :straight ess
@@ -1046,7 +1042,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 ** Python
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
   (use-package python
     :mode ("\\.py\\'" . python-mode)
     :config
@@ -1122,7 +1118,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 ** LaTeX
 *** AUCTeX
     
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
 
   (use-package auctex 
     :mode ("\\.tex\\'" . TeX-latex-mode)
@@ -1155,7 +1151,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 CDLaTeX is a minor mode for Emacs supporting fast insertion of environment templates and math stuff in LaTeX. 
 For more information see [[https://github.com/cdominik/cdlatex][here]]
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
 
   (use-package cdlatex
     :after (tex)
@@ -1167,7 +1163,7 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
 
 ** Markdown
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
 
   (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
@@ -1185,7 +1181,7 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
 ** ELisp
 Customisation to emacs-lisp itself, this is mainly syntax highlighting
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
 
   (use-package highlight-defined
     :config
@@ -1209,7 +1205,7 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
 
 ** CSS
    
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
   (use-package css-mode
     :mode (("\\.css?\\'" . css-mode))
     :config
