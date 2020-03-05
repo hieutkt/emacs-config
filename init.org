@@ -8,9 +8,6 @@
 
 * Prerequisite
 
-The Ubuntu repo for emacs version is
-[[https://launchpad.net/~ubuntu-elisp/+archive/ubuntu/ppa]]
-
 The whole thing is driven by the following =.emacs=. I clone this git into "~/Documents/Emacs/emacs-config/". Then everything is installed using =straight.el= and =use-package=.
  
 #+BEGIN_EXAMPLE emacs-lisp
@@ -270,7 +267,7 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 #+BEGIN_SRC emacs-lisp
   ;; Rename file and buffer
   ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
-  (defun rename-file-and-buffer (new-name)
+  (defun hieu/rename-file-and-buffer (new-name)
     "Renames both current buffer and file it's visiting to NEW-NAME."
     (interactive "sNew name: ")
     (let ((name (buffer-name))
@@ -286,17 +283,17 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 	    (set-buffer-modified-p nil))))))
 
   ;; Eval and replace lisp expression
-  (defun fc-eval-and-replace ()
+  (defun hieu/fc-eval-and-replace ()
     "Replace the preceding sexp with its value."
     (interactive)
     (backward-kill-sexp)
     (prin1 (eval (read (current-kill 0)))
 	   (current-buffer)))
 
-  (bind-key "C-c e" 'fc-eval-and-replace)
+  (bind-key "C-c e" 'hieu/fc-eval-and-replace)
 
   ;; Move line/region up/down
-  (defun move-text-internal (arg)
+  (defun hieu/move-text-internal (arg)
     (cond
      ((and mark-active transient-mark-mode)
       (if (> (point) (mark))
@@ -317,38 +314,38 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 	  (transpose-lines arg))
 	(forward-line -1)))))
 
-  (defun move-text-down (arg)
+  (defun hieu/move-text-down (arg)
     "Move region (transient-mark-mode active) or current line
   arg lines down."
     (interactive "*p")
-    (move-text-internal arg))
+    (hieu/move-text-internal arg))
 
-  (defun move-text-up (arg)
+  (defun hieu/move-text-up (arg)
     "Move region (transient-mark-mode active) or current line
   arg lines up."
     (interactive "*p")
-    (move-text-internal (- arg)))
+    (hieu/move-text-internal (- arg)))
 
-  (bind-key "M-<up>" 'move-text-up)
-  (bind-key "M-<down>" 'move-text-down)
+  (bind-key "M-<up>" 'hieu/move-text-up)
+  (bind-key "M-<down>" 'hieu/move-text-down)
 
   ;; Open the gnome terminal
-  (defun open-gnome-terminal ()
+  (defun hieu/open-gnome-terminal ()
     "Open an instance of gnome-terminal on Ubuntu machine"
     (interactive)
     (shell-command "gnome-terminal"))
 
-  (bind-key "<f10>" 'open-gnome-terminal)
+  (bind-key "<f10>" 'hieu/open-gnome-terminal)
 
   ;; Insert current date (and time)
-  (defun insert-current-date () (interactive)
+  (defun hieu/insert-current-date () (interactive)
 	 (insert (shell-command-to-string "echo -n $(date +%Y-%m-%d)")))
 
-  (defun insert-current-time () (interactive)
+  (defun hieu/insert-current-time () (interactive)
 	 (insert (shell-command-to-string "echo -n $(date +%H:%M)")))
 
-  (bind-key "C-x M-d" 'insert-current-date)
-  (bind-key "C-x M-t" 'insert-current-time)
+  (bind-key "C-x M-d" 'hieu/insert-current-date)
+  (bind-key "C-x M-t" 'hieu/insert-current-time)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
