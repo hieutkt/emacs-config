@@ -386,277 +386,7 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
 * Editing
 Various packages that helps with editing
-** Smartparens
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package smartparens
-    :config
-    (smartparens-global-mode 1)
-    (add-hook 'comint-mode-hook 'smartparens-mode)
-
-    (defhydra hydra-smartparens (:idle 1 :hint nil)
-      "
-  Sexps (quit with _q_)
-
-  ^Nav^            ^Barf/Slurp^          ^Depth^
-  ^---^------------^----------^----------^-----^-----------------------
-  _f_: forward     _s_:  slurp forward   _R_:      splice
-  _b_: backward    _S_:  barf forward    _r_:      raise
-  _a_: begin       _d_:  slurp backward  _<up>_:   raise backward
-  _e_: end         _D_:  barf backward   _<down>_: raise forward
-  _m_: mark
-
-  ^Kill^           ^Misc^                       ^Wrap^
-  ^----^-----------^----^-----------------------^----^------------------
-  _w_: copy        _j_: join                    _(_: wrap with ( )
-  _k_: kill        _s_: split                   _{_: wrap with { }
-  ^^               _t_: transpose               _'_: wrap with ' '
-  ^^               _c_: convolute               _\"_: wrap with \" \"
-  ^^               _i_: indent defun"
-      ("q" nil)
-      ;; Wrapping
-      ("(" (lambda (a) (interactive "P") (sp-wrap-with-pair "(")))
-      ("{" (lambda (a) (interactive "P") (sp-wrap-with-pair "{")))
-      ("'" (lambda (a) (interactive "P") (sp-wrap-with-pair "'")))
-      ("\"" (lambda (a) (interactive "P") (sp-wrap-with-pair "\"")))
-      ;; Navigation
-      ("f" sp-beginning-of-next-sexp)
-      ("b" sp-beginning-of-previous-sexp)
-      ("a" sp-beginning-of-sexp)
-      ("e" sp-end-of-sexp)
-      ("m" sp-mark-sexp)
-      ;; Kill/copy
-      ("w" sp-copy-sexp :exit t)
-      ("k" sp-kill-sexp :exit t)
-      ;; Misc
-      ("t" sp-transpose-sexp)
-      ("j" sp-join-sexp)
-      ("c" sp-convolute-sexp)
-      ("i" sp-indent-defun)
-      ;; Depth changing
-      ("R" sp-splice-sexp)
-      ("r" sp-splice-sexp-killing-around)
-      ("<up>" sp-splice-sexp-killing-backward)
-      ("<down>" sp-splice-sexp-killing-forward)
-      ;; Barfing/slurping
-      ("s" sp-forward-slurp-sexp)
-      ("S" sp-forward-barf-sexp)
-      ("D" sp-backward-barf-sexp)
-      ("d" sp-backward-slurp-sexp))
-
-    (bind-key "M-<backspace>" 'sp-unwrap-sexp)
-    (bind-key "C-c s" 'hydra-smartparens/body)
-    )
-
-#+END_SRC
-
-** Multiple-cursor
-
-#+BEGIN_SRC emacs-lisp
-
-  ;; Multi-cursor
-  (use-package multiple-cursors
-    :init
-    ;; In case commands behavior is messy with multiple-cursors,
-    ;; check your ~/.emacs.d/.mc-lists.el
-    (defun mc/check-command-behavior ()
-      "Open ~/.emacs.d/.mc-lists.el. 
-  So you can fix the list for run-once and run-for-all multiple-cursors commands."
-      (interactive)
-      (find-file "~/.emacs.d/.mc-lists.el"))  
-    :config
-    (defhydra hydra-multiple-cursors (:columns 3 :idle 1.0)
-      "Multiple cursors"
-      ("l" mc/edit-lines "Edit lines in region" :exit t)
-      ("b" mc/edit-beginnings-of-lines "Edit beginnings of lines in region" :exit t)
-      ("e" mc/edit-ends-of-lines "Edit ends of lines in region" :exit t)
-      ("a" mc/mark-all-like-this "Mark all like this" :exit t)
-      ("S" mc/mark-all-symbols-like-this "Mark all symbols likes this" :exit t)
-      ("w" mc/mark-all-words-like-this "Mark all words like this" :exit t)
-      ("r" mc/mark-all-in-region "Mark all in region" :exit t)
-      ("R" mc/mark-all-in-region-regexp "Mark all in region (regexp)" :exit t)
-      ("i" (lambda (n) 
-	     (interactive "nInsert initial number: ") 
-	     (mc/insert-numbers n)) 
-       "Insert numbers")
-       ("s" mc/sort-regions "Sort regions")
-       ("v" mc/reverse-regions "Reverse order")
-       ("d" mc/mark-all-dwim "Mark all dwim")
-       ("n" mc/mark-next-like-this "Mark next like this")
-       ("N" mc/skip-to-next-like-this "Skip to next like this")
-       ("M-n" mc/unmark-next-like-this "Unmark next like this")
-       ("p" mc/mark-previous-like-this "Mark previous like this")
-       ("P" mc/skip-to-previous-like-this "Skip to previous like this")
-       ("M-p" mc/unmark-previous-like-this "Unmark previous like this")
-       ("q" nil "Quit" :exit t))
-    :bind
-    ("C-c m" . multiple-cursors-hydra/body)
-    )
-
-
-#+END_SRC
-
-** Eyebrowse
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package eyebrowse
-    :config
-    (setq eyebrowse-new-workspace t)
-    (eyebrowse-mode 1)
-    ;; define hydra
-    (defhydra hydra-eyebrowse (:hint nil :color red)
-      "
-  Window Manager
-  _0_ to _9_, _s_: Switch     _<left>_: Previous      _<right>_: Next
-  _c_: Create             _C_: Close              _r_: Rename"
-      ("q" nil :color blue)
-      ("0" eyebrowse-switch-to-window-config-0)
-      ("1" eyebrowse-switch-to-window-config-1)
-      ("2" eyebrowse-switch-to-window-config-2)
-      ("3" eyebrowse-switch-to-window-config-3)
-      ("4" eyebrowse-switch-to-window-config-4)
-      ("5" eyebrowse-switch-to-window-config-5)
-      ("6" eyebrowse-switch-to-window-config-6)
-      ("7" eyebrowse-switch-to-window-config-7)
-      ("8" eyebrowse-switch-to-window-config-8)
-      ("9" eyebrowse-switch-to-window-config-9)
-      ("r" eyebrowse-rename-window-config :exit t)
-      ("c" eyebrowse-create-window-config :exit t)
-      ("s" eyebrowse-switch-to-window-config :exit t)
-      ("C" eyebrowse-close-window-config :exit t)
-      ("<left>" eyebrowse-prev-window-config)
-      ("<right>" eyebrowse-next-window-config)
-      )
-    :bind* ("C-c C-w" . hydra-eyebrowse/body)
-    )
-#+END_SRC
-
-** Company
-Company is a completion mechanism that is very flexible 
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package company
-    :init
-    ;; Activate globally
-    (add-hook 'after-init-hook 'global-company-mode)
-    ;; Press <F1> to show the documentation buffer and press C-<F1> to jump to it
-    (defun my/company-show-doc-buffer ()
-      "Temporarily show the documentation buffer for the selection."
-      (interactive)
-      (let* ((selected (nth company-selection company-candidates))
-	     (doc-buffer (or (company-call-backend 'doc-buffer selected)
-			     (error "No documentation available"))))
-	(with-current-buffer doc-buffer
-	  (goto-char (point-min)))
-	(display-buffer doc-buffer t)))  
-
-    :config
-    ;; Some useful configs
-    (setq company-selection-wrap-around t
-	  company-tooltip-align-annotations t
-	  company-tooltip-limit 10
-	  company-idle-delay 0.5)
-    ;; Add yasnippet support for all company backends
-    ;; https://github.com/syl20bnr/spacemacs/pull/179
-    (defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
-    (defun company-mode/backend-with-yas (backend)
-      (if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
-	  backend
-	(append (if (consp backend) backend (list backend))
-		'(:with company-yasnippet))))
-    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
-    :bind 
-    (:map company-active-map
-	  ("C-<f1>" . my/company-show-doc-buffer)
-	  ("C-n" . company-select-next)
-	  ("C-p" . company-select-previous)
-	  )
-    )
-
-#+END_SRC
-
-** Electric operator
-[[https://github.com/davidshepherd7/electric-operator][Electric Operator]] is an emacs minor-mode to automatically add spacing around operators.
-#+BEGIN_SRC emacs-lisp 
-  (use-package electric-operator
-    :config
-    (setq electric-operator-R-named-argument-style 'spaced)
-    (add-hook 'ess-mode-hook #'electric-operator-mode)
-    (add-hook 'python-mode-hook #'electric-operator-mode)
-    
-    (electric-operator-add-rules-for-mode 'ess-r-mode
-					  (cons ":=" " := ")
-					  )
-    )
-
-#+END_SRC
-
-** Auto Highlight Symbol
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package auto-highlight-symbol
-    :init (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode)
-    :config
-    (setq ahs-idle-interval 1.0
-	  ahs-default-range 'ahs-range-whole-buffer
-	  ahs-inhibit-face-list '(font-lock-comment-delimiter-face
-				  font-lock-comment-face
-				  font-lock-doc-face))
-    (unbind-key "M--" auto-highlight-symbol-mode-map)
-    )
-
-#+END_SRC
-
-** Yasnippets
-
-#+BEGIN_SRC emacs-lisp
-
-  ;; Enable Yasnippets
-  (use-package yasnippet
-    :init
-    ;; It will test whether it can expand, if yes, change cursor color}
-    (defun yasnippet-can-fire-p (&optional field)
-      (interactive)
-      (setq yas--condition-cache-timestamp (current-time))
-      (let (templates-and-pos)
-	(unless (and yas-expand-only-for-last-commands
-		     (not (member last-command yas-expand-only-for-last-commands)))
-	  (setq templates-and-pos (if field
-				      (save-restriction
-					(narrow-to-region (yas--field-start field)
-							  (yas--field-end field))
-					(yas--templates-for-key-at-point))
-				    (yas--templates-for-key-at-point))))
-
-	(set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
-			      "#d65d0e" (face-attribute 'default :foreground)))))
-    (add-hook 'post-command-hook 'yasnippet-can-fire-p)  
-
-    (yas-global-mode 1)
-
-    :config
-    (setq yas-fallback-behavior 'call-other-command)
-
-    (setq yas-snippet-dirs-custom (format "%s/%s" config-directory "Snippets/"))
-    (add-to-list' yas-snippet-dirs 'yas-snippet-dirs-custom)
-    (yas-reload-all)
-
-    :bind*
-    (("<C-tab>" . yas-insert-snippet)
-     :map yas-minor-mode-map
-     ("`" . yas-expand-from-trigger-key))
-    )
-
-  ;; With backquote warnings:
-  ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
-
-#+END_SRC
-
-** Helm
+** helm
 #+BEGIN_SRC emacs-lisp
 
   (use-package helm-config
@@ -723,6 +453,274 @@ Company is a completion mechanism that is very flexible
 
 #+end_SRC
 
+** company
+Company is a completion mechanism that is very flexible 
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package company
+    :init
+    ;; Activate globally
+    (add-hook 'after-init-hook 'global-company-mode)
+    ;; Press <F1> to show the documentation buffer and press C-<F1> to jump to it
+    (defun my/company-show-doc-buffer ()
+      "Temporarily show the documentation buffer for the selection."
+      (interactive)
+      (let* ((selected (nth company-selection company-candidates))
+	     (doc-buffer (or (company-call-backend 'doc-buffer selected)
+			     (error "No documentation available"))))
+	(with-current-buffer doc-buffer
+	  (goto-char (point-min)))
+	(display-buffer doc-buffer t)))  
+
+    :config
+    ;; Some useful configs
+    (setq company-selection-wrap-around t
+	  company-tooltip-align-annotations t
+	  company-tooltip-limit 10
+	  company-idle-delay 0.5)
+    ;; Add yasnippet support for all company backends
+    ;; https://github.com/syl20bnr/spacemacs/pull/179
+    (defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
+    (defun company-mode/backend-with-yas (backend)
+      (if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
+	  backend
+	(append (if (consp backend) backend (list backend))
+		'(:with company-yasnippet))))
+    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+    :bind 
+    (:map company-active-map
+	  ("C-<f1>" . my/company-show-doc-buffer)
+	  ("C-n" . company-select-next)
+	  ("C-p" . company-select-previous)
+	  )
+    )
+
+#+END_SRC
+
+** yasnippets
+
+#+BEGIN_SRC emacs-lisp
+
+  ;; Enable Yasnippets
+  (use-package yasnippet
+    :init
+    ;; It will test whether it can expand, if yes, change cursor color}
+    (defun yasnippet-can-fire-p (&optional field)
+      (interactive)
+      (setq yas--condition-cache-timestamp (current-time))
+      (let (templates-and-pos)
+	(unless (and yas-expand-only-for-last-commands
+		     (not (member last-command yas-expand-only-for-last-commands)))
+	  (setq templates-and-pos (if field
+				      (save-restriction
+					(narrow-to-region (yas--field-start field)
+							  (yas--field-end field))
+					(yas--templates-for-key-at-point))
+				    (yas--templates-for-key-at-point))))
+
+	(set-cursor-color (if (and templates-and-pos (first templates-and-pos)) 
+			      "#d65d0e" (face-attribute 'default :foreground)))))
+    (add-hook 'post-command-hook 'yasnippet-can-fire-p)  
+
+    (yas-global-mode 1)
+
+    :config
+    (setq yas-fallback-behavior 'call-other-command)
+
+    (setq yas-snippet-dirs-custom (format "%s/%s" config-directory "Snippets/"))
+    (add-to-list' yas-snippet-dirs 'yas-snippet-dirs-custom)
+    (yas-reload-all)
+
+    :bind*
+    (("<C-tab>" . yas-insert-snippet)
+     :map yas-minor-mode-map
+     ("`" . yas-expand-from-trigger-key))
+    )
+
+  ;; With backquote warnings:
+  ;; (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
+
+#+END_SRC
+
+** smartparens
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package smartparens
+    :config
+    (smartparens-global-mode 1)
+    (add-hook 'comint-mode-hook 'smartparens-mode)
+
+    (defhydra hydra-smartparens (:idle 1 :hint nil)
+      "
+  Sexps (quit with _q_)
+
+  ^Nav^            ^Barf/Slurp^          ^Depth^
+  ^---^------------^----------^----------^-----^-----------------------
+  _f_: forward     _s_:  slurp forward   _R_:      splice
+  _b_: backward    _S_:  barf forward    _r_:      raise
+  _a_: begin       _d_:  slurp backward  _<up>_:   raise backward
+  _e_: end         _D_:  barf backward   _<down>_: raise forward
+  _m_: mark
+
+  ^Kill^           ^Misc^                       ^Wrap^
+  ^----^-----------^----^-----------------------^----^------------------
+  _w_: copy        _j_: join                    _(_: wrap with ( )
+  _k_: kill        _s_: split                   _{_: wrap with { }
+  ^^               _t_: transpose               _'_: wrap with ' '
+  ^^               _c_: convolute               _\"_: wrap with \" \"
+  ^^               _i_: indent defun"
+      ("q" nil)
+      ;; Wrapping
+      ("(" (lambda (a) (interactive "P") (sp-wrap-with-pair "(")))
+      ("{" (lambda (a) (interactive "P") (sp-wrap-with-pair "{")))
+      ("'" (lambda (a) (interactive "P") (sp-wrap-with-pair "'")))
+      ("\"" (lambda (a) (interactive "P") (sp-wrap-with-pair "\"")))
+      ;; Navigation
+      ("f" sp-beginning-of-next-sexp)
+      ("b" sp-beginning-of-previous-sexp)
+      ("a" sp-beginning-of-sexp)
+      ("e" sp-end-of-sexp)
+      ("m" sp-mark-sexp)
+      ;; Kill/copy
+      ("w" sp-copy-sexp :exit t)
+      ("k" sp-kill-sexp :exit t)
+      ;; Misc
+      ("t" sp-transpose-sexp)
+      ("j" sp-join-sexp)
+      ("c" sp-convolute-sexp)
+      ("i" sp-indent-defun)
+      ;; Depth changing
+      ("R" sp-splice-sexp)
+      ("r" sp-splice-sexp-killing-around)
+      ("<up>" sp-splice-sexp-killing-backward)
+      ("<down>" sp-splice-sexp-killing-forward)
+      ;; Barfing/slurping
+      ("s" sp-forward-slurp-sexp)
+      ("S" sp-forward-barf-sexp)
+      ("D" sp-backward-barf-sexp)
+      ("d" sp-backward-slurp-sexp))
+
+    (bind-key "M-<backspace>" 'sp-unwrap-sexp)
+    (bind-key "C-c s" 'hydra-smartparens/body)
+    )
+
+#+END_SRC
+
+** multiple-cursor
+
+#+BEGIN_SRC emacs-lisp
+
+  ;; Multi-cursor
+  (use-package multiple-cursors
+    :init
+    ;; In case commands behavior is messy with multiple-cursors,
+    ;; check your ~/.emacs.d/.mc-lists.el
+    (defun mc/check-command-behavior ()
+      "Open ~/.emacs.d/.mc-lists.el. 
+  So you can fix the list for run-once and run-for-all multiple-cursors commands."
+      (interactive)
+      (find-file "~/.emacs.d/.mc-lists.el"))  
+    :config
+    (defhydra hydra-multiple-cursors (:columns 3 :idle 1.0)
+      "Multiple cursors"
+      ("l" mc/edit-lines "Edit lines in region" :exit t)
+      ("b" mc/edit-beginnings-of-lines "Edit beginnings of lines in region" :exit t)
+      ("e" mc/edit-ends-of-lines "Edit ends of lines in region" :exit t)
+      ("a" mc/mark-all-like-this "Mark all like this" :exit t)
+      ("S" mc/mark-all-symbols-like-this "Mark all symbols likes this" :exit t)
+      ("w" mc/mark-all-words-like-this "Mark all words like this" :exit t)
+      ("r" mc/mark-all-in-region "Mark all in region" :exit t)
+      ("R" mc/mark-all-in-region-regexp "Mark all in region (regexp)" :exit t)
+      ("i" (lambda (n) 
+	     (interactive "nInsert initial number: ") 
+	     (mc/insert-numbers n)) 
+       "Insert numbers")
+      ("s" mc/sort-regions "Sort regions")
+      ("v" mc/reverse-regions "Reverse order")
+      ("d" mc/mark-all-dwim "Mark all dwim")
+      ("n" mc/mark-next-like-this "Mark next like this")
+      ("N" mc/skip-to-next-like-this "Skip to next like this")
+      ("M-n" mc/unmark-next-like-this "Unmark next like this")
+      ("p" mc/mark-previous-like-this "Mark previous like this")
+      ("P" mc/skip-to-previous-like-this "Skip to previous like this")
+      ("M-p" mc/unmark-previous-like-this "Unmark previous like this")
+      ("q" nil "Quit" :exit t))
+    :bind
+    ("C-c m" . hydra-multiple-cursors/body)
+    )
+#+END_SRC
+
+** electric-operator
+[[https://github.com/davidshepherd7/electric-operator][Electric Operator]] is an emacs minor-mode to automatically add spacing around operators.
+#+BEGIN_SRC emacs-lisp 
+  (use-package electric-operator
+    :config
+    (setq electric-operator-R-named-argument-style 'spaced)
+    (add-hook 'ess-mode-hook #'electric-operator-mode)
+    (add-hook 'python-mode-hook #'electric-operator-mode)
+    
+    (electric-operator-add-rules-for-mode 'ess-r-mode
+					  (cons ":=" " := ")
+					  )
+    )
+
+#+END_SRC
+
+** auto-highlight-symbol
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package auto-highlight-symbol
+    :init (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode)
+    :config
+    (setq ahs-idle-interval 1.0
+	  ahs-default-range 'ahs-range-whole-buffer
+	  ahs-inhibit-face-list '(font-lock-comment-delimiter-face
+				  font-lock-comment-face
+				  font-lock-doc-face))
+    (unbind-key "M--" auto-highlight-symbol-mode-map)
+    )
+
+#+END_SRC
+
+** eyebrowse
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package eyebrowse
+    :config
+    (setq eyebrowse-new-workspace t)
+    (eyebrowse-mode 1)
+    ;; define hydra
+    (defhydra hydra-eyebrowse (:hint nil :color red)
+      "
+  Window Manager
+  _0_ to _9_, _s_: Switch     _<left>_: Previous      _<right>_: Next
+  _c_: Create             _C_: Close              _r_: Rename"
+      ("q" nil :color blue)
+      ("0" eyebrowse-switch-to-window-config-0)
+      ("1" eyebrowse-switch-to-window-config-1)
+      ("2" eyebrowse-switch-to-window-config-2)
+      ("3" eyebrowse-switch-to-window-config-3)
+      ("4" eyebrowse-switch-to-window-config-4)
+      ("5" eyebrowse-switch-to-window-config-5)
+      ("6" eyebrowse-switch-to-window-config-6)
+      ("7" eyebrowse-switch-to-window-config-7)
+      ("8" eyebrowse-switch-to-window-config-8)
+      ("9" eyebrowse-switch-to-window-config-9)
+      ("r" eyebrowse-rename-window-config :exit t)
+      ("c" eyebrowse-create-window-config :exit t)
+      ("s" eyebrowse-switch-to-window-config :exit t)
+      ("C" eyebrowse-close-window-config :exit t)
+      ("<left>" eyebrowse-prev-window-config)
+      ("<right>" eyebrowse-next-window-config)
+      )
+    :bind* ("C-c C-w" . hydra-eyebrowse/body)
+    )
+#+END_SRC
+
 * Everything org-mode
 ** Org-mode
 Org mode is for keeping notes, maintaining TODO lists, planning projects, and authoring documents with a fast and effective plain-text system.
@@ -748,7 +746,20 @@ See [[http://orgmode.org/][here]].
 		       (face-attribute 'default :background) 2))
 
   ;; Make latex preview with "C-c C-x C-l" slightly bigger
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+
+  ;; Auto preview of latex code chunks
+  (defun hieu/org-auto-preview-code ()
+    (when (looking-back (rx "$ "))
+      (save-excursion
+	(backward-char 1)
+	(org-toggle-latex-fragment))))
+
+  (add-hook 'org-mode-hook
+	    (lambda ()
+	      (org-cdlatex-mode)
+	      (add-hook 'post-self-insert-hook
+			#'hieu/org-auto-preview-code 'append 'local)))
 
 #+END_SRC
 
@@ -911,7 +922,7 @@ See [[http://orgmode.org/][here]].
 #+END_SRC
 
 * Utilities
-** Projectile
+** projectile
 
 #+BEGIN_SRC emacs-lisp
 
@@ -933,7 +944,7 @@ See [[http://orgmode.org/][here]].
   
 #+END_SRC
 
-** Magit
+** magit
 Magit is an interface to the version control system Git, implemented as an Emacs package. 
 Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
@@ -956,7 +967,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
   
 #+END_SRC  
 
-** Which-key
+** which-key
 [[https://github.com/justbur/emacs-which-key][which-key]] is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
 
 #+BEGIN_SRC emacs-lisp 
@@ -973,7 +984,7 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 #+BEGIN_SRC emacs-lisp
   (use-package restart-emacs)
 #+END_SRC
-* Languages
+* Languages Modes
 ** R
 
 #+BEGIN_SRC emacs-lisp 
