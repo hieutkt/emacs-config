@@ -42,38 +42,39 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 ** Setup and bootstrap
 
 #+BEGIN_SRC emacs-lisp
-   ;; Increase garbage collection threshold to improve emacs init time
-   (setq gc-cons-threshold 100000000)
-   (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
+  ;; Increase garbage collection threshold to improve emacs init time
+  (setq gc-cons-threshold 100000000)
+  (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
 
-   ;; Auto-revert mode
-   (global-auto-revert-mode 1)
-   (setq auto-revert-interval 0.5)
+  ;; Auto-revert mode
+  (global-auto-revert-mode 1)
+  (setq auto-revert-interval 0.5)
 
-   ;; Backup stored in /tmp
-   (setq backup-directory-alist
-	 `((".*" . ,temporary-file-directory)))
-   (setq auto-save-file-name-transforms
-	 `((".*" , temporary-file-directory t)))
+  ;; Backup stored in /tmp
+  (setq backup-directory-alist
+	`((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+	`((".*" , temporary-file-directory t)))
 
-   ;; Delete old backup
-   (message "Deleting old backup files...")
-   (let ((week (* 60 60 24 7))
-	 (current (float-time (current-time))))
-     (dolist (file (directory-files temporary-file-directory t))
-       (when (and (backup-file-name-p file)
-		  (> (- current (float-time (nth 5 (file-attributes file))))
-		     week))
-	 (message "%s" file)
-	 (delete-file file))))
+  ;; Delete old backup
+  (message "Deleting old backup files...")
+  (let ((week (* 60 60 24 7))
+	(current (float-time (current-time))))
+    (dolist (file (directory-files temporary-file-directory t))
+      (when (and (backup-file-name-p file)
+		 (> (- current (float-time (nth 5 (file-attributes file))))
+		    week))
+	(message "%s" file)
+	(delete-file file))))
 
-   ;; Information settings
-   (setq user-full-name "Nguyễn Đức Hiếu"
-	 user-mail-address "hieunguyen31371@gmail.com")
+  ;; Information settings
+  (setq user-full-name "Nguyễn Đức Hiếu"
+	user-mail-address "hieunguyen31371@gmail.com")
 
-   ;; Set emacs as a client
-   (server-start)
-
+  ;; Set emacs as a client
+  (use-package server
+    :config
+    (unless (server-running-p) (server-start)))
  #+END_SRC
 
 ** Better Defaults
@@ -547,7 +548,8 @@ Company is a completion mechanism that is very flexible
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package smartparens
+  (use-package smartparens-config
+    :straight smartparens
     :config
     (smartparens-global-mode 1)
     (add-hook 'comint-mode-hook 'smartparens-mode)
