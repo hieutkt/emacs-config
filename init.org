@@ -94,8 +94,10 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
   (unbind-key "<insert>") 		;overwrite-mode
   (unbind-key "C-x C-z"   )		;suspend-frame
   (unbind-key "C-x m")			;compose-mail
-  (unbind-key "C-x C-l")                ;downcase region
-  (unbind-key "C-x o")
+  (unbind-key "C-x C-l")                  ;downcase region
+  (unbind-key "C-x <right>")              ;next-buffer
+  (unbind-key "C-x <left>")               ;previous-buffer
+  ;; Rebind some commands to more sane hotkeys
   (bind-key "M-p" 'other-window)
 
   ;; And keep quited please
