@@ -689,6 +689,11 @@ Company is a completion mechanism that is very flexible
 
 #+END_SRC
 
+** expand-region
+
+#+begin_src emacs-lisp
+  (use-package expand-region :bind ("M-." . er/expand-region))
+#+end_src
 ** eyebrowse
 
 #+BEGIN_SRC emacs-lisp
