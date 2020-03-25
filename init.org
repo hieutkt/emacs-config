@@ -397,39 +397,25 @@ Helm can be opened in a separate frame. In Gnome, I can press ~Super-<direction>
     :init
     (helm-mode 1)
     :config
-    (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-	  helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source	.	
-	  helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-	  helm-inherit-input-method             nil
-	  helm-echo-input-in-header-line        t 
-	  helm-M-x-fuzzy-match                  t
-	  helm-autoresize-max-height            0
-	  helm-autoresize-min-height            30
-	  helm-ff-skip-boring-files             t
-	  helm-ff-file-name-history-use-recentf t
-	  )
-
-    (helm-autoresize-mode 1)
+    (setq
+     ;; Open helm in a seperate frame
+     helm-display-function                 'helm-display-buffer-in-own-frame
+     helm-display-buffer-reuse-frame       t
+     helm-use-undecorated-frame-option     t
+     helm-display-buffer-width             80     ;; move to end or beginning of source when reaching top or bottom of source	.	
+     helm-move-to-line-cycle-in-source     t
+     ;; Inherit input method
+     helm-inherit-input-method             t
+     ;; Others
+     helm-M-x-fuzzy-match                  t
+     helm-ff-skip-boring-files             t
+     helm-ff-file-name-history-use-recentf t)
 
     ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
     ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
     ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
     (global-set-key (kbd "C-c h") 'helm-command-prefix)
     (global-unset-key (kbd "C-x c"))
-
-    ;; Hide minibuffer in Helm session if we use the header line as input field.
-    (defun spacemacs//helm-hide-minibuffer-maybe ()
-      "Hide minibuffer in Helm session if we use the header line as input field."
-      (when (with-helm-buffer helm-echo-input-in-header-line)
-	(let ((ov (make-overlay (point-min) (point-max) nil nil t)))
-	  (overlay-put ov 'window (selected-window))
-	  (overlay-put ov 'face
-		       (let ((bg-color (face-background 'default nil)))
-			 `(:background ,bg-color :foreground ,bg-color)))
-	  (setq-local cursor-type nil))))
-
-    (add-hook 'helm-minibuffer-set-up-hook
-	      'spacemacs//helm-hide-minibuffer-maybe)
 
     :bind (
 	   ("C-x b" . helm-mini)
@@ -870,6 +856,9 @@ See [[http://orgmode.org/][here]].
      bibtex-completion-notes-path "~/Dropbox/Notes/Roam/"
      bibtex-completion-bibliography "~/Dropbox/Notes/Research/papers.bib"
      bibtex-completion-library-path "~/Dropbox/Notes/Papers/"
+     ;; Optimize for 80 character frame display
+     bibtex-completion-display-formats
+     '((t . "${title:47} ${author:20} ${year:4} ${=type=:3}${=has-pdf=:1}${=has-note=:1}"))
      )
     )
 
