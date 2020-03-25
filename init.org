@@ -976,6 +976,11 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
   
 #+END_SRC  
 
+** Search
+#+begin_src emacs-lisp
+  (use-package rg :config (rg-enable-default-bindings))
+#+end_src
+
 ** which-key
 [[https://github.com/justbur/emacs-which-key][which-key]] is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
 
@@ -1234,4 +1239,12 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
     )
 #+END_SRC
 
+** PDF
+
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :magic ("%PDF". pdf-view-mode)
+    :config
+    )
+#+end_src
 
