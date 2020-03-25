@@ -193,9 +193,7 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 #+BEGIN_SRC emacs-lisp
 
   ;; Smooth scrolling
-  (use-package smooth-scrolling 
-    :config
-    (smooth-scrolling-mode t))
+  (use-package smooth-scrolling :config (smooth-scrolling-mode t))
 
 #+END_SRC
 
@@ -212,10 +210,11 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
       (add-hook hook #'visual-fill-column-mode))
     (setq visual-fill-column-width 80)
     :config
-    (setq-default visual-fill-column-center-text t
-		  visual-fill-column-fringes-outside-margins nil
-		  split-window-preferred-function 'visual-fill-column-split-window-sensibly)
- 
+    (setq
+     visual-fill-column-center-text t
+     visual-fill-column-fringes-outside-margins nil
+     split-window-preferred-function 'visual-fill-column-split-window-sensibly)
+
     (defun toggle-frame-fullscreen-and-visual-fill-adjust ()
       (interactive)
       (toggle-frame-maximized)
@@ -353,43 +352,44 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package hydra
-    :config
-    (defhydra hydra-straight-helper (:hint nil)
-      "
+  (use-package hydra)
+
+  (defhydra hydra-straight-helper (:hint nil)
+    "
     _c_heck all       |_f_etch all     |_m_erge all      |_n_ormalize all   |p_u_sh all
     _C_heck package   |_F_etch package |_M_erge package  |_N_ormlize package|p_U_sh package
     ----------------^^+--------------^^+---------------^^+----------------^^+------------||_q_uit||
     _r_ebuild all     |_p_ull all      |_v_ersions freeze|_w_atcher start   |_g_et recipe
     _R_ebuild package |_P_ull package  |_V_ersions thaw  |_W_atcher quit    |prun_e_ build"
-      ("c" straight-check-all)
-      ("C" straight-check-package)
-      ("r" straight-rebuild-all)
-      ("R" straight-rebuild-package)
-      ("f" straight-fetch-all)
-      ("F" straight-fetch-package)
-      ("p" straight-pull-all)
-      ("P" straight-pull-package)
-      ("m" straight-merge-all)
-      ("M" straight-merge-package)
-      ("n" straight-normalize-all)
-      ("N" straight-normalize-package)
-      ("u" straight-push-all)
-      ("U" straight-push-package)
-      ("v" straight-freeze-versions)
-      ("V" straight-thaw-versions)
-      ("w" straight-watcher-start)
-      ("W" straight-watcher-quit)
-      ("g" straight-get-recipe)
-      ("e" straight-prune-build)
-      ("q" nil))
-    )
+    ("c" straight-check-all)
+    ("C" straight-check-package)
+    ("r" straight-rebuild-all)
+    ("R" straight-rebuild-package)
+    ("f" straight-fetch-all)
+    ("F" straight-fetch-package)
+    ("p" straight-pull-all)
+    ("P" straight-pull-package)
+    ("m" straight-merge-all)
+    ("M" straight-merge-package)
+    ("n" straight-normalize-all)
+    ("N" straight-normalize-package)
+    ("u" straight-push-all)
+    ("U" straight-push-package)
+    ("v" straight-freeze-versions)
+    ("V" straight-thaw-versions)
+    ("w" straight-watcher-start)
+    ("W" straight-watcher-quit)
+    ("g" straight-get-recipe)
+    ("e" straight-prune-build)
+    ("q" nil))
 
 #+END_SRC
 
 * Editing
 Various packages that helps with editing
-** helm
+** Incremental completion with =helm=
+Helm can be opened in a separate frame. In Gnome, I can press ~Super-<direction>~ to move this window around.
+
 #+BEGIN_SRC emacs-lisp
 
   (use-package helm-config
