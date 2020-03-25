@@ -740,9 +740,12 @@ See [[http://orgmode.org/][here]].
 		      (color-lighten-name
 		       (face-attribute 'default :background) 2))
 
+  ;; ORG LATEX PREVIEW
   ;; Make latex preview with "C-c C-x C-l" slightly bigger
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
-
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
+  ;; Use a sans font
+  (setq org-format-latex-header
+	(concat org-format-latex-header "\n\\usepackage{sansmathfonts}"))
   ;; Auto preview of latex code chunks
   (defun hieu/org-auto-preview-code ()
     (when (looking-back (rx "$ "))
@@ -758,7 +761,13 @@ See [[http://orgmode.org/][here]].
 
 #+END_SRC
 
-*** org-exports
+=org-tempo=: quickly insert templates with =<trigger TAB=. It used to be defaults befor Org 9.2
+
+#+begin_src emacs-lisp
+  (use-package org-tempo :straight org)
+#+end_src
+
+*** Literate programming with =org-exports= features
 
 #+BEGIN_SRC emacs-lisp
   (use-package ox-latex
@@ -843,6 +852,42 @@ See [[http://orgmode.org/][here]].
 
 #+END_SRC
 
+*** Agenda
+
+#+begin_src emacs-lisp
+  (use-package org-agenda
+    :straight org
+    :config
+    (setq org-agenda-files '("~/Dropbox/Notes/Agenda")
+	  org-default-notes-file "~/Dropbox/Notes/Agenda/inbox.org"
+	  org-columns-default-format-for-agenda
+	  "%60ITEM(Task) %10Effort(Estimate){:} %CLOCKSUM"
+	  )
+    :init
+    ;; listing agenda in a separate
+    (defun hieu/open-agenda()
+      (interactive)
+      (org-agenda nil "n")
+      (delete-other-windows))
+    :bind ("<f1>" . org-agenda)
+    :hook (after-init . hieu/open-agenda)    
+    )
+
+  (use-package org-super-agenda
+    :after org-agenda
+    :config
+    (setq org-super-agenda-groups
+	  '((:auto-outline-path t :time-grid t)))
+    (org-super-agenda-mode)
+    )
+
+  (use-package org-capture
+    :straight org
+    :bind
+    ("C-c c" . org-capture))
+
+#+end_src
+
 ** Note-taking
 *** org-ref
 #+BEGIN_SRC emacs-lisp
@@ -868,35 +913,28 @@ See [[http://orgmode.org/][here]].
 #+BEGIN_SRC emacs-lisp
 
   (use-package org-roam
-	:after org
-	:hook 
-	(after-init . org-roam-mode)
-	:straight (:host github :repo "jethrokuan/org-roam" :branch "develop")
-	:custom
-	(org-roam-directory "~/Dropbox/Notes/Roam/")
-	:bind (:map org-roam-mode-map
+    :after org
+    :hook 
+    (after-init . org-roam-mode)
+    :straight (:host github :repo "jethrokuan/org-roam" :branch "master")
+    :custom
+    (org-roam-directory "~/Dropbox/Notes/Roam/")
+    (org-roam-graph-exclude-matcher '("journal" "Notes on"))
+    ;; If neato is available'
+    (org-roam-graphviz-executable (executable-find "neato"))
+    (org-roam-graphviz-extra-options '(("overlap" . "false")))
+    :init
+    (company-org-roam-init)
+    :bind (:map org-roam-mode-map
 		(("C-c n l" . org-roam)
 		 ("C-c n f" . org-roam-find-file)
 		 ("C-c n g" . org-roam-show-graph)
 		 ("C-c n b" . org-roam-switch-to-buffer))
 		:map org-mode-map
-		(("C-c n i" . org-roam-insert))))
-
-  (use-package org-agenda
-    :straight org
-    :bind
-    ("<f1>" . org-agenda)
+		(("C-c n i" . org-roam-insert)))
     :config
-    (setq org-agenda-files '("~/Dropbox/Notes/Agenda"))
-    (setq org-default-notes-file "~/Dropbox/Notes/Agenda/inbox.org")
+    (use-package org-roam-protocol :straight org-roam)
     )
-
-
-  (use-package org-capture
-    :straight org
-    :bind
-    ("C-c c" . org-capture))
-
 
   (use-package org-journal
     :straight (:host github :repo "bastibe/org-journal" :branch "master")
@@ -904,7 +942,7 @@ See [[http://orgmode.org/][here]].
     ("C-c n j" . org-journal-new-entry)
     :init
     (setq org-journal-date-prefix "#+TITLE: "
-	  org-journal-file-format "%Y-%m-%d.org"
+	  org-journal-file-format "journal_%Y-%m-%d.org"
 	  org-journal-dir "~/Dropbox/Notes/Roam/"
 	  org-journal-date-format "%Y-%m-%d %a"
 	  org-journal-enable-agenda-integration t)
@@ -912,6 +950,8 @@ See [[http://orgmode.org/][here]].
 
   (use-package org-download
     :after org
+    :config
+    (setq org-download-image-dir "./download/")
     :bind
     (:map org-mode-map
 	  (("s-Y" . org-download-screenshot)
