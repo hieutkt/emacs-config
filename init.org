@@ -337,10 +337,10 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
   ;; Insert current date (and time)
   (defun hieu/insert-current-date () (interactive)
-	 (insert (shell-command-to-string "echo -n $(date +%Y-%m-%d)")))
+         (insert (shell-command-to-string "bash -c 'echo -n $(date +%Y-%m-%d)'")))
 
   (defun hieu/insert-current-time () (interactive)
-	 (insert (shell-command-to-string "echo -n $(date +%H:%M)")))
+         (insert (shell-command-to-string "bash -c 'echo -n $(date +%H:%M)'")))
 
   (bind-key "C-x M-d" 'hieu/insert-current-date)
   (bind-key "C-x M-t" 'hieu/insert-current-time)
