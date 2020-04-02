@@ -228,23 +228,20 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 *** Faces
 
 #+BEGIN_SRC emacs-lisp
-
   ;; Default font
   (when (member "Iosevka" (font-family-list))
     (set-frame-font "Iosevka Semibold 11" nil t))
   (when (member "Source Han Sans" (font-family-list))
-    (set-fontset-font t 'han (font-spec :name "Source Han Sans")))
+    (set-fontset-font t 'han (font-spec :name "Source Han Sans" 
+                                        :weight 'light)))
 
-  ;; Set themes
-  (use-package gruvbox-theme
-    :config
-    (load-theme 'gruvbox-light-soft t)
-    )
+  ;; (use-package kaolin-themes :config (load-theme 'kaolin-valley-light t))
+  ;; (use-package flatui-theme :config (load-theme 'flatui t))
+  (use-package gruvbox-theme :config (load-theme 'gruvbox-dark-medium t)) 
 
   (use-package rainbow-delimiters
     :config
-    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-    )
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 #+END_SRC
 
 *** Mode-line
