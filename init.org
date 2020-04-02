@@ -1178,6 +1178,25 @@ Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
 #+END_SRC
 
+** Jupyter Notebook
+
+#+begin_src emacs-lisp
+  (use-package jupyter)
+
+  (use-package jupyter-org-extensions
+    :straight jupyter
+    :bind (:map jupyter-org-interaction-mode-map
+                ("C-c h" . nil)
+                ("C-c j" . jupyter-org-hydra/body))
+    )
+
+
+  (use-package ob-jupyter :straight jupyter)
+
+  (setq org-babel-default-header-args:jupyter-julia '((:session . "jl")
+                                                      (:kernel . "julia")))
+#+end_src
+
 ** LaTeX
 *** AUCTeX
     
@@ -1285,3 +1304,16 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
     )
 #+end_src
 
+** Org-mode Babel
+
+#+begin_src emacs-lisp
+  (setq org-confirm-babel-evaluate nil)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     ;; (julia . t)
+     (R . t)
+     (python . t)
+     (jupyter . t)))
+#+end_src
