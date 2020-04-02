@@ -1,7 +1,7 @@
+# -*- mode: snippet -*-
 # key: <jp
 # name: Code block: jupiter-julia
 # --
-
 #+begin_src jupyter-${1:julia}
   $0
 #+end_src
