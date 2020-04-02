@@ -712,16 +712,14 @@ Company is a completion mechanism that is very flexible
     )
 #+END_SRC
 
-* Everything org-mode
+* Notetaking with =org-mode=
 ** Org-mode
 Org mode is for keeping notes, maintaining TODO lists, planning projects, and authoring documents with a fast and effective plain-text system.
 See [[http://orgmode.org/][here]].
 *** Setting up
     
 #+BEGIN_SRC emacs-lisp
-
-  (setq org-hide-leading-stars t)
-
+  (add-hook 'org-mode-hook 'org-indent-mode)
   ;; Hide emphasis markers
   ;; (setq org-hide-emphasis-markers t)
 
@@ -733,28 +731,22 @@ See [[http://orgmode.org/][here]].
   (set-face-attribute 'org-level-1 nil :weight 'bold)
   (set-face-attribute 'org-level-2 nil :weight 'bold)
   (set-face-attribute 'org-block nil :background
-		      (color-lighten-name
-		       (face-attribute 'default :background) 2))
+                      (color-lighten-name
+                       (face-attribute 'default :background) 2))
 
   ;; ORG LATEX PREVIEW
-  ;; Make latex preview with "C-c C-x C-l" slightly bigger
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
-  ;; Use a sans font
-  (setq org-format-latex-header
-	(concat org-format-latex-header "\n\\usepackage{sansmathfonts}"))
-  ;; Auto preview of latex code chunks
-  (defun hieu/org-auto-preview-code ()
-    (when (looking-back (rx "$ "))
-      (save-excursion
-	(backward-char 1)
-	(org-toggle-latex-fragment))))
+  (setq org-startup-with-latex-preview t
+        ;; Make latex preview with "C-c C-x C-l" slightly bigger
+        org-format-latex-options
+        (plist-put org-format-latex-options :scale 1.5)
+        ;; Use a sans font
+        org-format-latex-header
+        (concat org-format-latex-header "\n\\usepackage{sansmathfonts}")
+        ;; Cache the preview images elsewhere
+        org-preview-latex-image-directory "~/.cache/ltximg/")
 
-  (add-hook 'org-mode-hook
-	    (lambda ()
-	      (org-cdlatex-mode)
-	      (add-hook 'post-self-insert-hook
-			#'hieu/org-auto-preview-code 'append 'local)))
-
+  (use-package org-fragtog
+    :config (add-hook 'org-mode-hook 'org-fragtog-mode))
 #+END_SRC
 
 =org-tempo=: quickly insert templates with =<trigger TAB=. It used to be defaults befor Org 9.2
@@ -855,10 +847,10 @@ See [[http://orgmode.org/][here]].
     :straight org
     :config
     (setq org-agenda-files '("~/Dropbox/Notes/Agenda")
-	  org-default-notes-file "~/Dropbox/Notes/Agenda/inbox.org"
-	  org-columns-default-format-for-agenda
-	  "%60ITEM(Task) %10Effort(Estimate){:} %CLOCKSUM"
-	  )
+          org-default-notes-file "~/Dropbox/Notes/Agenda/inbox.org"
+          org-columns-default-format-for-agenda
+          "%60ITEM(Task) %10Effort(Estimate){:} %CLOCKSUM"
+          )
     :init
     ;; listing agenda in a separate
     (defun hieu/open-agenda()
@@ -899,61 +891,81 @@ See [[http://orgmode.org/][here]].
      bibtex-completion-library-path "~/Dropbox/Notes/Papers/"
      ;; Optimize for 80 character frame display
      bibtex-completion-display-formats
-     '((t . "${title:47} ${author:20} ${year:4} ${=type=:3}${=has-pdf=:1}${=has-note=:1}"))
-     )
+     '((t . "${title:47} ${author:20} ${year:4} ${=type=:3}${=has-pdf=:1}${=has-note=:1}")))
     )
 
 #+END_SRC
 
-*** Roam
+*** org-roam
 #+BEGIN_SRC emacs-lisp
-
   (use-package org-roam
     :after org
+    :straight (:host github :repo "jethrokuan/org-roam" :branch "master")
     :hook 
     (after-init . org-roam-mode)
-    :straight (:host github :repo "jethrokuan/org-roam" :branch "master")
-    :custom
-    (org-roam-directory "~/Dropbox/Notes/Roam/")
-    (org-roam-graph-exclude-matcher '("journal" "Notes on"))
-    ;; If neato is available'
-    (org-roam-graphviz-executable (executable-find "neato"))
-    (org-roam-graphviz-extra-options '(("overlap" . "false")))
-    :init
-    (company-org-roam-init)
-    :bind (:map org-roam-mode-map
-		(("C-c n l" . org-roam)
-		 ("C-c n f" . org-roam-find-file)
-		 ("C-c n g" . org-roam-show-graph)
-		 ("C-c n b" . org-roam-switch-to-buffer))
-		:map org-mode-map
-		(("C-c n i" . org-roam-insert)))
     :config
-    (use-package org-roam-protocol :straight org-roam)
+    (setq org-roam-directory "~/Dropbox/Notes/Roam/"
+          bibtex-completion-notes-template-multiple-files
+          "#+TITLE: Notes on: ${author-or-editor} (${year}): ${title}
+  ,#+ROAM_KEY: cite:${=key=}
+  - bibkey :: cite:${=key=}
+  - tags :: ")
+    :bind (:map org-roam-mode-map
+                (("C-c n l" . org-roam)
+                 ("C-c n f" . org-roam-find-file)
+                 ("C-c n g" . org-roam-graph-show)
+                 ("C-c n b" . org-roam-switch-to-buffer)
+                 ("C-c n r" . org-roam-find-ref))
+                :map org-mode-map
+                (("C-c n i" . org-roam-insert)))
     )
 
+  (use-package org-roam-graph
+    :straight org-roam
+    :init
+    ;; If neato is available
+    (setq org-roam-graph-executable (executable-find "neato")
+          org-roam-grapher-extra-options '(("overlap" . "false"))
+          org-roam-graph-exclude-matcher '("journal" "Notes on"))
+    )
+
+  (use-package org-roam-protocol :straight org-roam)
+
+  (use-package company-org-roam
+    :straight (:host github :repo "jethrokuan/company-org-roam")
+    :config
+    (push 'company-org-roam company-backends))
+
+#+END_SRC
+
+*** org-journal
+
+#+begin_src emacs-lisp
   (use-package org-journal
     :straight (:host github :repo "bastibe/org-journal" :branch "master")
     :bind
     ("C-c n j" . org-journal-new-entry)
     :init
     (setq org-journal-date-prefix "#+TITLE: "
-	  org-journal-file-format "journal_%Y-%m-%d.org"
-	  org-journal-dir "~/Dropbox/Notes/Roam/"
-	  org-journal-date-format "%Y-%m-%d %a"
-	  org-journal-enable-agenda-integration t)
+          org-journal-file-format "journal_%Y-%m-%d.org"
+          org-journal-dir "~/Dropbox/Notes/Roam/"
+          org-journal-date-format "%Y-%m-%d %a"
+          org-journal-enable-agenda-integration t)
     )
+#+end_src
 
+*** org-download
+
+#+begin_src emacs-lisp
   (use-package org-download
     :after org
     :config
     (setq org-download-image-dir "./download/")
     :bind
     (:map org-mode-map
-	  (("s-Y" . org-download-screenshot)
-	   ("s-y" . org-download-yank)))
-    )
-#+END_SRC
+          (("s-Y" . org-download-screenshot)
+           ("s-y" . org-download-yank))))
+#+end_src
 
 * Utilities
 ** projectile
