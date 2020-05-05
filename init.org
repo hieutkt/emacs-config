@@ -677,6 +677,10 @@ See [[http://orgmode.org/][here]].
 *** Setting up
     
 #+BEGIN_SRC emacs-lisp
+  ;; org has quite some spurious commands
+  (unbind-key "C-c C-z" org-mode-map)	;org-add-note
+
+  ;; org-indent-mode looks better
   (add-hook 'org-mode-hook 'org-indent-mode)
 
   ;; Enable shift selection
@@ -689,21 +693,37 @@ See [[http://orgmode.org/][here]].
   (set-face-attribute 'org-block nil :background
                       (color-lighten-name
                        (face-attribute 'default :background) 2))
+  ;; Variable pitch
+  (add-hook 'org-mode-hook
+              '(lambda ()
+                 (variable-pitch-mode 1)))
+
+  (mapc (lambda (face)
+     (set-face-attribute face nil :inherit 'fixed-pitch))
+                  (list 'org-code
+                        'org-link 
+                        'org-block
+                        'org-table
+                        'org-block-begin-line
+                        'org-block-end-line
+                        'org-meta-line
+                        'org-document-info-keyword))
+
 
   ;; ORG LATEX PREVIEW
   (setq org-startup-with-latex-preview t
         ;; Make latex preview with "C-c C-x C-l" slightly bigger
         org-format-latex-options
-        (plist-put org-format-latex-options :scale 1.5)
-        ;; Use a sans font
-        org-format-latex-header
-        (concat org-format-latex-header "\n\\usepackage{sansmathfonts}")
+        (plist-put org-format-latex-options :scale 1.8)
         ;; Cache the preview images elsewhere
         org-preview-latex-image-directory "~/.cache/ltximg/")
 
   ;; Auto expand preview latex images when cursor is on it
   (use-package org-fragtog
     :config (add-hook 'org-mode-hook 'org-fragtog-mode))
+
+  ;; org-open-file use Evince if possible
+  (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))
 #+END_SRC
 
 =org-tempo=: quickly insert templates with =<trigger TAB=. It used to be defaults befor Org 9.2
@@ -834,54 +854,24 @@ See [[http://orgmode.org/][here]].
   (use-package org-ref
     :config
     (setq 
-     org-ref-default-bibliography '("~/Dropbox/Notes/Research/papers.bib")
-     org-ref-pdf-directory "~/Dropbox/Notes/Papers/"
-     bibtex-dialect 'biblatex
-     bibtex-completion-notes-path "~/Dropbox/Notes/Roam/"
-     bibtex-completion-bibliography "~/Dropbox/Notes/Research/papers.bib"
-     bibtex-completion-library-path "~/Dropbox/Notes/Papers/"
+     org-ref-default-bibliography	     '("~/Dropbox/Notes/Research/papers.bib")
+     org-ref-pdf-directory             "~/Dropbox/Notes/Papers/"
+     bibtex-dialect                    'biblatex
+     bibtex-completion-notes-extension "_notes.org"
+     bibtex-completion-notes-path      "~/Dropbox/Notes/Roam/"
+     bibtex-completion-bibliography    "~/Dropbox/Notes/Research/papers.bib"
+     bibtex-completion-library-path    "~/Dropbox/Notes/Papers/"
      ;; Optimize for 80 character frame display
      bibtex-completion-display-formats
-     '((t . "${title:47} ${author:20} ${year:4} ${=type=:3}${=has-pdf=:1}${=has-note=:1}"))))
-#+END_SRC
-
-*** org-roam
-#+BEGIN_SRC emacs-lisp
-  (use-package org-roam
-    :after org
-    :straight (:host github :repo "jethrokuan/org-roam" :branch "master")
-    :hook 
-    (after-init . org-roam-mode)
-    :config
-    (setq org-roam-directory "~/Dropbox/Notes/Roam/"
-          bibtex-completion-notes-template-multiple-files
-          "#+TITLE: Notes on: ${author-or-editor} (${year}): ${title}
-  ,#+ROAM_KEY: cite:${=key=}")
-    :bind (:map org-roam-mode-map
-                (("C-c n l" . org-roam)
-                 ("C-c n f" . org-roam-find-file)
-                 ("C-c n g" . org-roam-graph-show)
-                 ("C-c n b" . org-roam-switch-to-buffer)
-                 ("C-c n r" . org-roam-find-ref))
-                :map org-mode-map
-                (("C-c n i" . org-roam-insert)))
-    )
-
-  (use-package org-roam-graph
-    :straight org-roam
-    :init
-    ;; If neato is available
-    (setq org-roam-graph-executable (executable-find "neato")
-          org-roam-grapher-extra-options '(("overlap" . "false"))
-          org-roam-graph-exclude-matcher '("journal" "Notes on"))
-    )
-
-  (use-package org-roam-protocol :straight org-roam)
-
-  (use-package company-org-roam
-    :straight (:host github :repo "jethrokuan/company-org-roam")
-    :config
-    (push 'company-org-roam company-backends))
+     '((t . "${title:46} ${author:20} ${year:4} ${=type=:3}${=has-pdf=:1}${=has-note=:1}"))
+     bibtex-completion-notes-template-multiple-files
+     "#+TITLE: ${author-or-editor} (${year}): ${title}
+  ,#+ROAM_KEY: cite:${=key=}"
+     ;; Open pdf in external tool instead of in Emacs
+     bibtex-completion-pdf-open-function
+     (lambda (fpath)
+       (call-process "evince" nil 0 nil fpath)))
+    :bind ("C-c ]" . helm-bibtex))
 #+END_SRC
 
 *** org-journal
@@ -898,6 +888,67 @@ See [[http://orgmode.org/][here]].
           org-journal-date-format "%Y-%m-%d %a"
           org-journal-enable-agenda-integration t))
 #+end_src
+
+*** org-roam
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-roam
+    :after org
+    :straight (:host github :repo "jethrokuan/org-roam" :branch "master")
+    :hook 
+    (after-init . org-roam-mode)
+    :config
+    (setq org-roam-directory "~/Dropbox/Notes/Roam/")
+    :bind (:map org-roam-mode-map
+                (("C-c n l" . org-roam)
+                 ("C-c n f" . org-roam-find-file)
+                 ("C-c n g" . org-roam-graph)
+                 ("C-c n b" . org-roam-switch-to-buffer)
+                 ("C-c n r" . org-roam-find-ref)
+                 ("C-c n d" . org-roam-find-directory))
+                :map org-mode-map
+                (("C-c n i" . org-roam-insert))))
+
+  (use-package org-roam-protocol :straight org-roam)
+
+  (use-package org-roam-graph
+    :straight org-roam
+    :init
+    (setq org-roam-graph-executable	   (executable-find "neato")
+          org-roam-graph-extra-config        '(("overlap" . "false")
+                                             ("concentrate" . "true"))
+          org-roam-graph-shorten-titles      'wrap
+          org-roam-graph-max-title-length    50
+          org-roam-graph-exclude-matcher     '("journal")))
+
+  (use-package org-roam-capture
+    :straight org-roam
+    :config
+    (setq org-roam-capture-templates
+          '(("d" "default" plain (function org-roam-capture--get-point)
+             "%?"
+             :file-name "%<%Y%m%d%H%M%S>-${slug}"
+             :head "#+TITLE: ${title}"
+             :unnarrowed t))
+          org-roam-capture-ref-templates
+          '(("r" "ref" plain (function org-roam-capture--get-point)
+             "#+ROAM_KEY: ${ref}\n%?"
+             :file-name "%<%Y%m%d%H%M%S>_web_${slug}"
+             :head "#+TITLE: ${title}]\n"
+             :unnarrowed t))
+          org-roam-dailies-capture-templates
+          '(("d" "daily" plain (function org-roam-capture--get-point)
+             ""
+             :immediate-finish t
+             :file-name "journal_%<%Y-%m-%d>"
+             :head "#+TITLE: %<%Y-%m-%d %a>"))
+          ))
+
+  (use-package company-org-roam
+    :straight (:host github :repo "jethrokuan/company-org-roam")
+    :config
+    (push 'company-org-roam company-backends))
+#+END_SRC
 
 *** org-download
 
@@ -1137,7 +1188,7 @@ Magit is an interface to the version control system Git, implemented as an Emacs
     ;; Turn on RefTeX in AUCTeX
     (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
     ;; Reftex default bibfile
-    (setq reftex-default-bibliography "~/Dropbox/Research/papers.bib")
+    (setq reftex-default-bibliography "~/Dropbox/Notes/Research/papers.bib")
     ;; Activate nice interface between RefTeX and AUCTeX
     (setq reftex-plug-into-AUCTeX t)
     )
