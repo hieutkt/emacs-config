@@ -504,9 +504,9 @@ Company is a completion mechanism that is very flexible
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens-config
     :straight smartparens
+    :hook (((text-mode prog-mode comint-mode) . smartparens-mode)
+           (smartparens-mode . show-smartparens-mode))
     :config
-    (smartparens-global-mode 1)
-    (add-hook 'comint-mode-hook 'smartparens-mode)
     ;; Define a hydra
     (defhydra hydra-smartparens (:idle 1 :hint nil)
       "
