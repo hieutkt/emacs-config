@@ -43,7 +43,9 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
 #+BEGIN_SRC emacs-lisp
   ;; Increase garbage collection threshold to improve emacs init time
-  (use-package gcmh :config (gcmh-mode 1))
+  (setq gc-cons-threshold 100000000)
+  (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
+  ;; (use-package gcmh :config (gcmh-mode 1))
 
   ;; Auto-revert mode
   (global-auto-revert-mode 1)
