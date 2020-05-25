@@ -891,7 +891,9 @@ I am also implementing =ox-hugo=
      '((t . "${title:46} ${author:20} ${year:4} ${=type=:3}${=has-pdf=:1}${=has-note=:1}"))
      bibtex-completion-notes-template-multiple-files
      "#+TITLE: ${author-or-editor} (${year}): ${title}
-  ,#+ROAM_KEY: cite:${=key=}"
+    ,#+ROAM_KEY: cite:${=key=}"
+     bibtex-completion-pdf-symbol ""
+     bibtex-completion-notes-symbol ""
      ;; Open pdf in external tool instead of in Emacs
      bibtex-completion-pdf-open-function
      (lambda (fpath)
