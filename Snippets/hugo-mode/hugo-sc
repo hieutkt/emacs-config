@@ -1,0 +1,4 @@
+# key: sc
+# name: Hugo shortcodes
+# --
+{{< $1 >}}$0

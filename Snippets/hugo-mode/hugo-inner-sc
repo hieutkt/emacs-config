@@ -1,0 +1,4 @@
+# key: %
+# name: Hugo inner shortcodes
+# --
+{{% ${1:$$(yas-choose-value '("sidenote" "marginnote" "epigraph" "blockquote" "newthought"))} $3 %}}${2:`(if (region-active-p) (yas-selected-text) "Input")`}{{% /$1 %}}
