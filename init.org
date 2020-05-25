@@ -1309,7 +1309,7 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
   (use-package pdf-tools
     :magic ("%PDF". pdf-view-mode)
     :config
-    (pdf-tools-install :no-query)))
+    (pdf-tools-install :no-query))
 #+end_src
 
 ** Org-mode Babel
