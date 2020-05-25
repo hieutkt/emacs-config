@@ -706,6 +706,11 @@ See [[http://orgmode.org/][here]].
   (set-face-attribute 'org-block nil :background
                       (color-lighten-name
                        (face-attribute 'default :background) 2))
+  ;; Highlight temporal notes in texts with ~...~
+  (add-to-list 'org-emphasis-alist
+               '("~" (:foreground "#d65d0e" :background "#1d2021")
+                 ))
+
   ;; Variable pitch
   (add-hook 'org-mode-hook
               '(lambda ()
