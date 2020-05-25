@@ -212,31 +212,37 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
     (setq visual-fill-column-width 80)
     :config
     (setq
-     visual-fill-column-center-text t
-     visual-fill-column-fringes-outside-margins nil
+     ;; visual-fill-column-center-text nil
+     ;; visual-fill-column-fringes-outside-margins nil
      split-window-preferred-function 'visual-fill-column-split-window-sensibly)
-
     (defun toggle-frame-fullscreen-and-visual-fill-adjust ()
       (interactive)
       (toggle-frame-maximized)
-      (run-with-timer 0.1 nil 'visual-fill-column--adjust-window)
-      )
+      (run-with-timer 0.1 nil 'visual-fill-column--adjust-window))
     :bind
     ("<f11>" . toggle-frame-fullscreen-and-visual-fill-adjust))
 #+END_SRC
 
 ** Aesthetics
 *** Faces
-
 #+BEGIN_SRC emacs-lisp
   ;; Default font
   (when (member "Iosevka" (font-family-list))
-    (set-frame-font "Iosevka Semibold 11" nil t))
+    (set-frame-font "Iosevka 11" nil t))
   (when (member "Source Han Sans" (font-family-list))
-    (set-fontset-font t 'han (font-spec :name "Source Han Sans" 
-                                        :weight 'light)))
+    (set-fontset-font t 'han (font-spec :name "Source Han Sans")))
 
-  (use-package gruvbox-theme :config (load-theme 'gruvbox-dark-medium t)) 
+  (set-face-attribute 'variable-pitch nil
+                      :font "Source Sans Pro"
+                      :height 1.2)
+  (set-face-attribute 'fixed-pitch nil
+                      :font "Iosevka")
+
+  (use-package gruvbox-theme
+    :config
+    (load-theme 'gruvbox-dark-medium t)
+    (set-face-attribute 'secondary-selection nil
+                        :weight 'bold :background "#1d2021"))
 
   (use-package rainbow-delimiters
     :config
