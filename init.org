@@ -1053,6 +1053,16 @@ Magit is an interface to the version control system Git, implemented as an Emacs
     ;; Disable IDO so helm is used instead
     (setq ess-use-ido nil)
 
+    ;; We don’t want R evaluation to hang the editor, hence
+    (setq ess-eval-visibly 'nowait)
+
+    ;; Unbind ess-insert-assign (defaut value is "_")
+    (setq ess-smart-S-assign-key nil))
+
+
+  (use-package ess-r-mode
+    :straight ess
+    :config
     ;; Hot key C-S-m for pipe operator in ESS
     (defun pipe_R_operator ()
       "R - %>% operator or 'then' pipe operator"
@@ -1060,9 +1070,6 @@ Magit is an interface to the version control system Git, implemented as an Emacs
       (just-one-space 1)
       (insert "%>%")
       (just-one-space 1))
-
-    ;; Unbind ess-insert-assign (defaut value is "_")
-    (setq ess-smart-S-assign-key nil)
 
     ;; ESS syntax highlight  
     (setq ess-R-font-lock-keywords 
@@ -1102,7 +1109,8 @@ Magit is an interface to the version control system Git, implemented as an Emacs
           :map
           inferior-ess-r-mode-map
           ("M--" . ess-insert-assign)
-          ("C-S-m" . pipe_R_operator)))
+          ("C-S-m" . pipe_R_operator))
+    )
 #+END_SRC
 
 ** Python
