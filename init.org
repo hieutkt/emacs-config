@@ -41,11 +41,18 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 * Initiation
 ** Setup and bootstrap
 
-#+BEGIN_SRC emacs-lisp
-  ;; Increase garbage collection threshold to improve emacs init time
-  (setq gc-cons-threshold 100000000)
-  (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
-  ;; (use-package gcmh :config (gcmh-mode 1))
+#+begin_src emacs-lisp
+  ;; The GC can easily double startup time,
+  ;; so we suppress it at startup by turning up `gc-cons-threshold`
+  ;; and perhaps `gc-cons-percentage` temporarily:
+
+  (setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
+        gc-cons-percentage 0.6)
+
+  (add-hook 'emacs-startup-hook
+    (lambda ()
+      (setq gc-cons-threshold 16777216 ; 16mb
+            gc-cons-percentage 0.1)))
 
   ;; Auto-revert mode
   (global-auto-revert-mode 1)
