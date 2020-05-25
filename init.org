@@ -1101,7 +1101,7 @@ Magit is an interface to the version control system Git, implemented as an Emacs
             (ess-fl-keyword:delimiters . nil)
             (ess-fl-keyword:= . t)
             (ess-R-fl-keyword:F&T . nil)))
-  
+
     :bind
     (:map ess-r-mode-map
           ("M--" . ess-insert-assign)
@@ -1183,6 +1183,23 @@ Magit is an interface to the version control system Git, implemented as an Emacs
     :hook (python-mode . pipenv-mode))
 #+END_SRC
 
+** Julia
+
+#+begin_src emacs-lisp
+  (use-package julia-mode
+    :magic ("%JL" . julia-mode)
+    :init
+    (setq inferior-julia-program-name 'julia)
+    :config
+    (define-key julia-mode-map (kbd "TAB") 'julia-latexsub-or-indent))
+
+  (use-package julia-snail
+    :after julia
+    :ensure vterm
+    :hook (julia-mode . julia-snail-mode))
+
+#+end_src
+
 ** Jupyter Notebook
 
 #+begin_src emacs-lisp
@@ -1196,8 +1213,10 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 
   (use-package ob-jupyter :straight jupyter)
 
-  (setq org-babel-default-header-args:jupyter-julia '((:session . "jl")
-                                                      (:kernel . "julia")))
+  (setq org-babel-default-header-args:jupyter-julia
+        '((:async . "yes")
+          (:session . "jl")
+          (:kernel . "julia")))
 #+end_src
 
 ** LaTeX
@@ -1296,7 +1315,7 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
-     ;; (julia . t)
+     (julia . t)
      (R . t)
      (python . t)
      (jupyter . t)))
