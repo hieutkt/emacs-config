@@ -934,9 +934,14 @@ I am also implementing =ox-hugo=
   (use-package org-roam-graph
     :straight org-roam
     :init
-    (setq org-roam-graph-executable	   (executable-find "neato")
+    (setq org-roam-graph-executable	    (executable-find "neato")
           org-roam-graph-extra-config        '(("overlap" . "false")
-                                             ("concentrate" . "true"))
+                                               ("concentrate" . "true")
+                                               ("bgcolor" . "lightblue"))
+          org-roam-graph-edge-cites-extra-config
+                                             '(("color" . "gray")
+                                               ("style" . "dashed")
+                                               ("sep" . "20"))
           org-roam-graph-shorten-titles      'wrap
           org-roam-graph-max-title-length    50
           org-roam-graph-exclude-matcher     '("journal")))
