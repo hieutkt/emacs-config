@@ -829,6 +829,13 @@ See [[http://orgmode.org/][here]].
     )
 #+END_SRC
 
+I am also implementing =ox-hugo=
+
+#+begin_src emacs-lisp
+  (use-package ox-hugo
+    :after ox)
+#+end_src
+
 *** Agenda
 
 #+begin_src emacs-lisp
