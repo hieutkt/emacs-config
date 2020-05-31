@@ -7,10 +7,31 @@
 #+LATEX_HEADER: \usepackage[utf8]{vietnam}
 
 * Prerequisite
+** Reproducible environment
 
+Current emacs version:
+
+#+begin_src emacs-lisp :exports output :tangle no
+  (emacs-version)
+#+end_src
+
+#+RESULTS:
+: GNU Emacs 27.0.90 (build 1, x86_64-pc-linux-gnu, GTK+ Version 2.24.32)
+:  of 2020-05-19
+
+I build my emacs from source, with the following configuration options:
+
+#+begin_src emacs-lisp :exports output :tangle no
+  system-configuration-options
+#+end_src
+
+#+RESULTS:
+: --with-modules --with-json --with-mailutils
+
+** Boostraping
 The whole thing is driven by the following =.emacs=. I clone this git into "~/Documents/Emacs/emacs-config/". Then everything is installed using =straight.el= and =use-package=.
  
-#+BEGIN_EXAMPLE emacs-lisp :tangle "~/.emacs"
+#+begin_src emacs-lisp :tangle no
 
   (defvar bootstrap-version)
   (let ((bootstrap-file
@@ -36,7 +57,7 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
   (org-babel-load-file
   (expand-file-name "init.org" config-directory))		   
 
-#+END_EXAMPLE
+#+end_src
 
 * Initiation
 ** Setup and bootstrap
