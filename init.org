@@ -912,7 +912,8 @@ I am also implementing =ox-hugo=
      '((t . "${title:46} ${author:20} ${year:4} ${=type=:3}${=has-pdf=:1}${=has-note=:1}"))
      bibtex-completion-notes-template-multiple-files
      "#+TITLE: ${author-or-editor} (${year}): ${title}
-    ,#+ROAM_KEY: cite:${=key=}"
+  ,#+ROAM_KEY: cite:${=key=}
+  ,#+ROAM_TAGS: bibliography"
      bibtex-completion-pdf-symbol ""
      bibtex-completion-notes-symbol ""
      ;; Open pdf in external tool instead of in Emacs
@@ -931,10 +932,10 @@ I am also implementing =ox-hugo=
     ("C-c n j" . org-journal-new-entry)
     :init
     (setq org-journal-date-prefix "#+TITLE: "
-          org-journal-file-format "journal_%Y-%m-%d.org"
-          org-journal-dir "~/Dropbox/Notes/Roam/"
-          org-journal-date-format "%Y-%m-%d %a"
-          org-journal-enable-agenda-integration t))
+	  org-journal-file-format "journal_%Y-%m-%d.org"
+	  org-journal-dir "~/Dropbox/Notes/Roam/"
+	  org-journal-file-header "#+TITLE: %Y-%m-%d %a\n#+ROAM_TAGS: journal\n\n* Daily Journal"
+	  org-journal-enable-agenda-integration t))
 #+end_src
 
 *** org-roam
@@ -948,14 +949,14 @@ I am also implementing =ox-hugo=
     :config
     (setq org-roam-directory "~/Dropbox/Notes/Roam/")
     :bind (:map org-roam-mode-map
-                (("C-c n l" . org-roam)
-                 ("C-c n f" . org-roam-find-file)
-                 ("C-c n g" . org-roam-graph)
-                 ("C-c n b" . org-roam-switch-to-buffer)
-                 ("C-c n r" . org-roam-find-ref)
-                 ("C-c n d" . org-roam-find-directory))
-                :map org-mode-map
-                (("C-c n i" . org-roam-insert))))
+		(("C-c n l" . org-roam)
+		 ("C-c n f" . org-roam-find-file)
+		 ("C-c n g" . org-roam-graph)
+		 ("C-c n b" . org-roam-switch-to-buffer)
+		 ("C-c n r" . org-roam-find-ref)
+		 ("C-c n d" . org-roam-find-directory))
+		:map org-mode-map
+		(("C-c n i" . org-roam-insert))))
 
   (use-package org-roam-protocol :straight org-roam)
 
@@ -963,39 +964,39 @@ I am also implementing =ox-hugo=
     :straight org-roam
     :init
     (setq org-roam-graph-executable	    (executable-find "neato")
-          org-roam-graph-extra-config        '(("overlap" . "false")
-                                               ("concentrate" . "true")
-                                               ("bgcolor" . "lightblue"))
-          org-roam-graph-edge-cites-extra-config
-                                             '(("color" . "gray")
-                                               ("style" . "dashed")
-                                               ("sep" . "20"))
-          org-roam-graph-shorten-titles      'wrap
-          org-roam-graph-max-title-length    50
-          org-roam-graph-exclude-matcher     '("journal")))
+	  org-roam-graph-extra-config        '(("overlap" . "false")
+					       ("concentrate" . "true")
+					       ("bgcolor" . "lightblue"))
+	  org-roam-graph-edge-cites-extra-config
+					     '(("color" . "gray")
+					       ("style" . "dashed")
+					       ("sep" . "20"))
+	  org-roam-graph-shorten-titles      'wrap
+	  org-roam-graph-max-title-length    50
+	  org-roam-graph-exclude-matcher     '("journal")))
 
   (use-package org-roam-capture
     :straight org-roam
     :config
     (setq org-roam-capture-templates
-          '(("d" "default" plain (function org-roam-capture--get-point)
-             "%?"
-             :file-name "%<%Y%m%d%H%M%S>-${slug}"
-             :head "#+TITLE: ${title}"
-             :unnarrowed t))
-          org-roam-capture-ref-templates
-          '(("r" "ref" plain (function org-roam-capture--get-point)
-             "#+ROAM_KEY: ${ref}\n%?"
-             :file-name "%<%Y%m%d%H%M%S>_web_${slug}"
-             :head "#+TITLE: ${title}]\n"
-             :unnarrowed t))
-          org-roam-dailies-capture-templates
-          '(("d" "daily" plain (function org-roam-capture--get-point)
-             ""
-             :immediate-finish t
-             :file-name "journal_%<%Y-%m-%d>"
-             :head "#+TITLE: %<%Y-%m-%d %a>"))
-          ))
+	  '(("d" "default" plain (function org-roam-capture--get-point)
+	     "%?"
+	     :file-name "%<%Y%m%d%H%M%S>-${slug}"
+	     :head "#+TITLE: ${title}\n#+ROAM_ALIAS:\n#+ROAM_TAGS:\n"
+	     :unnarrowed t))
+	  org-roam-capture-ref-templates
+	  '(("r" "ref" plain (function org-roam-capture--get-point)
+	     "#+ROAM_KEY: ${ref}\n%?"
+	     :file-name "%<%Y%m%d%H%M%S>_web_${slug}"
+	     :head "#+TITLE: ${title}]\n#+ROAM_TAGS: website\n"
+	     :unnarrowed t))
+	  org-roam-dailies-capture-templates
+	  '(("d" "daily" plain (function org-roam-capture--get-point)
+	     ""
+	     :immediate-finish t
+	     :file-name "journal_%<%Y-%m-%d>"
+	     :head "#+TITLE: %<%Y-%m-%d %a>\n#+ROAM_TAGS: journal\n"))
+	  ))
 
   (use-package company-org-roam
     :straight (:host github :repo "jethrokuan/company-org-roam")
