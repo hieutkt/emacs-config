@@ -186,7 +186,6 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
   ;; Cursor type
   (setq-default cursor-type 'bar
                 cursor-in-non-selected-windows nil)
-  (blink-cursor-mode 0)
 
   ;; Global font-lock mode
   (setq global-font-lock-mode t)
