@@ -947,6 +947,8 @@ I am also implementing =ox-hugo=
     (after-init . org-roam-mode)
     :config
     (setq org-roam-directory "~/Dropbox/Notes/Roam/")
+    ;; Exclude roam files from helm
+    (add-to-list 'helm-boring-buffer-regexp-list "^[0-9]\\{14\\}.+\\.org$")
     :bind (:map org-roam-mode-map
 		(("C-c n l" . org-roam)
 		 ("C-c n f" . org-roam-find-file)
