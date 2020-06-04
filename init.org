@@ -422,7 +422,7 @@ Helm can be opened in a separate frame. In Gnome, I can press ~S-<direction>~ to
      helm-display-buffer-width             80     ;; move to end or beginning of source when reaching top or bottom of source	.	
      helm-move-to-line-cycle-in-source     t
      ;; Inherit input method
-     helm-inherit-input-method             t
+     helm-inherit-input-method             nil
      ;; Others
      helm-M-x-fuzzy-match                  t
      helm-ff-skip-boring-files             t
