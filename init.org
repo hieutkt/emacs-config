@@ -1,10 +1,10 @@
-#+TITLE: Emacs Configuration
-#+AUTHOR: Nguyễn Đức Hiếu
-#+STARTUP: content
-#+OPTIONS: num:3 ^:nil toc:nil
-#+LATEX_CLASS: koma-article
-#+LaTeX_CLASS_OPTIONS: [a4paper, 11pt] 
-#+LATEX_HEADER: \usepackage[utf8]{vietnam}
+#+title: Emacs Configuration
+#+author: Nguyễn Đức Hiếu
+#+startup: content
+#+options: num:3 ^:nil toc:nil
+#+latex_class: koma-article
+#+latex_class_options: [a4paper, 11pt] 
+#+latex_header: \usepackage[utf8]{vietnam}
 
 * Prerequisite
 ** Reproducible environment
@@ -15,7 +15,7 @@ Current emacs version:
   (emacs-version)
 #+end_src
 
-#+RESULTS:
+#+results:
 : GNU Emacs 27.0.90 (build 1, x86_64-pc-linux-gnu, GTK+ Version 2.24.32)
 :  of 2020-05-19
 
@@ -25,7 +25,7 @@ I build my emacs from source, with the following configuration options:
   system-configuration-options
 #+end_src
 
-#+RESULTS:
+#+results:
 : --with-modules --with-json --with-mailutils
 
 ** Boostraping
@@ -104,11 +104,11 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
   (use-package server
     :config
     (unless (server-running-p) (server-start)))
-#+END_SRC
+#+end_src
 
 ** Better Defaults
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; Everything utf-8
   (set-language-environment "UTF-8")
   (prefer-coding-system 'utf-8)
@@ -163,12 +163,12 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
   (setq scroll-step 1) ; keyboard scroll one line at a time
   (setq scroll-preserve-screen-position t)
   (setq scroll-conservatively 101)
-#+END_SRC
+#+end_src
 
 * Appearence
 ** Interface
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; Startup screen
   (setq inhibit-startup-screen t)
 
@@ -209,20 +209,20 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
   ;; Diminish some modes
   (diminish 'visual-line-mode)
-#+END_SRC
+#+end_src
 
 *** Smooth-scrolling
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; Smooth scrolling
   (use-package smooth-scrolling :config (smooth-scrolling-mode t))
-#+END_SRC
+#+end_src
 
 *** Visual fill colunmn
     
 [[https://github.com/joostkremers/visual-fill-column][visual-fill-column-mode]] is a better default replacement for visual-fill-mode.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package visual-fill-column
     :init
     (dolist (hook '(visual-line-mode-hook
@@ -241,11 +241,11 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
       (run-with-timer 0.1 nil 'visual-fill-column--adjust-window))
     :bind
     ("<f11>" . toggle-frame-fullscreen-and-visual-fill-adjust))
-#+END_SRC
+#+end_src
 
 ** Aesthetics
 *** Faces
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; Default font
   (when (member "Iosevka" (font-family-list))
     (set-frame-font "Iosevka 11" nil t))
@@ -267,11 +267,11 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
   (use-package rainbow-delimiters
     :config
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
-#+END_SRC
+#+end_src
 
 *** Mode-line
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package spaceline-config
     :straight (spaceline :host github :repo "TheBB/spaceline" :branch "master")
     :config
@@ -280,27 +280,27 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
     (spaceline-toggle-column-on)  
     (spaceline-emacs-theme)
     (spaceline-helm-mode 1))
-#+END_SRC
+#+end_src
 
 * Hydra and self-defined commands
 ** My commands
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; Rename file and buffer
   ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
   (defun hieu/rename-file-and-buffer (new-name)
     "Renames both current buffer and file it's visiting to NEW-NAME."
     (interactive "sNew name: ")
     (let ((name (buffer-name))
-          (filename (buffer-file-name)))
+	  (filename (buffer-file-name)))
       (if (not filename)
-          (message "Buffer '%s' is not visiting a file!" name)
-        (if (get-buffer new-name)
-            (message "A buffer named '%s' already exists!" new-name)
-          (progn
-            (rename-file filename new-name 1)
-            (rename-buffer new-name)
-            (set-visited-file-name new-name)
-            (set-buffer-modified-p nil))))))
+	  (message "Buffer '%s' is not visiting a file!" name)
+	(if (get-buffer new-name)
+	    (message "A buffer named '%s' already exists!" new-name)
+	  (progn
+	    (rename-file filename new-name 1)
+	    (rename-buffer new-name)
+	    (set-visited-file-name new-name)
+	    (set-buffer-modified-p nil))))))
 
   ;; Eval and replace lisp expression
   (defun hieu/fc-eval-and-replace ()
@@ -308,7 +308,7 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
     (interactive)
     (backward-kill-sexp)
     (prin1 (eval (read (current-kill 0)))
-           (current-buffer)))
+	   (current-buffer)))
 
   (bind-key "C-c e" 'hieu/fc-eval-and-replace)
 
@@ -317,22 +317,22 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
     (cond
      ((and mark-active transient-mark-mode)
       (if (> (point) (mark))
-          (exchange-point-and-mark))
+	  (exchange-point-and-mark))
       (let ((column (current-column))
-            (text (delete-and-extract-region (point) (mark))))
-        (forward-line arg)
-        (move-to-column column t)
-        (set-mark (point))
-        (insert text)
-        (exchange-point-and-mark)
-        (setq deactivate-mark nil)))
+	    (text (delete-and-extract-region (point) (mark))))
+	(forward-line arg)
+	(move-to-column column t)
+	(set-mark (point))
+	(insert text)
+	(exchange-point-and-mark)
+	(setq deactivate-mark nil)))
      (t
       (beginning-of-line)
       (when (or (> arg 0) (not (bobp)))
-        (forward-line)
-        (when (or (< arg 0) (not (eobp)))
-          (transpose-lines arg))
-        (forward-line -1)))))
+	(forward-line)
+	(when (or (< arg 0) (not (eobp)))
+	  (transpose-lines arg))
+	(forward-line -1)))))
 
   (defun hieu/move-text-down (arg)
     "Move region (transient-mark-mode active) or current line
@@ -359,17 +359,41 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
   ;; Insert current date (and time)
   (defun hieu/insert-current-date () (interactive)
-         (insert (shell-command-to-string "bash -c 'echo -n $(date +%Y-%m-%d)'")))
+	 (insert (shell-command-to-string "bash -c 'echo -n $(date +%Y-%m-%d)'")))
 
   (defun hieu/insert-current-time () (interactive)
-         (insert (shell-command-to-string "bash -c 'echo -n $(date +%H:%M)'")))
+	 (insert (shell-command-to-string "bash -c 'echo -n $(date +%H:%M)'")))
 
   (bind-key "C-x M-d" 'hieu/insert-current-date)
   (bind-key "C-x M-t" 'hieu/insert-current-time)
-#+END_SRC
+
+
+  ;; Replace Org keywords to lowercase, in consistent with Org-mode 9.2
+  ;; https://scripter.co/org-keywords-lower-case/
+  (defun modi/lower-case-org-keywords ()
+    "Lower case Org keywords and block identifiers.
+
+  Example: \"#+TITLE\" -> \"#+title\"
+	   \"#+BEGIN_EXAMPLE\" -> \"#+begin_example\"
+
+  Inspiration:
+  https://code.orgmode.org/bzg/org-mode/commit/13424336a6f30c50952d291e7a82906c1210daf0."
+    (interactive)
+    (save-excursion
+      (goto-char (point-min))
+      (let ((case-fold-search nil)
+	    (count 0))
+	;; Match examples: "#+FOO bar", "#+FOO:", "=#+FOO=", "~#+FOO~",
+	;;                 "‘#+FOO’", "“#+FOO”", ",#+FOO bar",
+	;;                 "#+FOO_bar<eol>", "#+FOO<eol>".
+	(while (re-search-forward "\\(?1:#\\+[A-Z_]+\\(?:_[[:alpha:]]+\\)*\\)\\(?:[ :=~’”]\\|$\\)" nil :noerror)
+	  (setq count (1+ count))
+	  (replace-match (downcase (match-string-no-properties 1)) :fixedcase nil nil 1))
+	(message "Lower-cased %d matches" count))))
+#+end_src
 
 ** My hydras
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package hydra)
 
   (defhydra hydra-straight-helper (:hint nil)
@@ -401,14 +425,14 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
     ("e" straight-prune-build)
     ("q" nil))
 
-#+END_SRC
+#+end_src
 
 * Editing
 Various packages that helps with editing
 ** Incremental completion with =helm=
 Helm can be opened in a separate frame. In Gnome, I can press ~S-<direction>~ to move this window around.
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package helm-config
     :straight helm
     :init
@@ -457,7 +481,7 @@ Helm can be opened in a separate frame. In Gnome, I can press ~S-<direction>~ to
 ** company
 Company is a completion mechanism that is very flexible 
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package company
     :init
     ;; Activate globally
@@ -494,11 +518,11 @@ Company is a completion mechanism that is very flexible
           ("C-n" . company-select-next)
           ("C-p" . company-select-previous)
           ))
-#+END_SRC
+#+end_src
 
 ** yasnippets
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; Enable Yasnippets
   (use-package yasnippet
     :init
@@ -530,11 +554,11 @@ Company is a completion mechanism that is very flexible
     :bind*  (("<C-tab>" . yas-insert-snippet)
              :map yas-minor-mode-map
              ("`" . yas-expand-from-trigger-key)))
-#+END_SRC
+#+end_src
 
 ** smartparens
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package smartparens-config
     :straight smartparens
     :hook (((text-mode prog-mode comint-mode) . smartparens-mode)
@@ -592,11 +616,11 @@ Company is a completion mechanism that is very flexible
       ("d" sp-backward-slurp-sexp))
     :bind (("M-<backspace>" . sp-unwrap-sexp)
            ("C-c s" . hydra-smartparens/body)))
-#+END_SRC
+#+end_src
 
 ** multiple-cursor
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; Multi-cursor
   (use-package multiple-cursors
     :init
@@ -634,11 +658,11 @@ Company is a completion mechanism that is very flexible
       ("q" nil "Quit" :exit t))
     :bind
     ("C-c m" . hydra-multiple-cursors/body))
-#+END_SRC
+#+end_src
 
 ** electric-operator
 [[https://github.com/davidshepherd7/electric-operator][Electric Operator]] is an emacs minor-mode to automatically add spacing around operators.
-#+BEGIN_SRC emacs-lisp 
+#+begin_src emacs-lisp 
   (use-package electric-operator
     :config
     (setq electric-operator-R-named-argument-style 'spaced)
@@ -647,11 +671,11 @@ Company is a completion mechanism that is very flexible
 
     (electric-operator-add-rules-for-mode 'ess-r-mode
                                           (cons ":=" " := ")))
-#+END_SRC
+#+end_src
 
 ** auto-highlight-symbol
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package auto-highlight-symbol
     :init (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode)
     :config
@@ -661,7 +685,7 @@ Company is a completion mechanism that is very flexible
                                   font-lock-comment-face
                                   font-lock-doc-face))
     (unbind-key "M--" auto-highlight-symbol-mode-map))
-#+END_SRC
+#+end_src
 
 ** expand-region
 
@@ -671,7 +695,7 @@ Company is a completion mechanism that is very flexible
 
 ** eyebrowse
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package eyebrowse
     :config
     (setq eyebrowse-new-workspace t)
@@ -701,7 +725,7 @@ Company is a completion mechanism that is very flexible
       ("<right>" eyebrowse-next-window-config)
       )
     :bind* ("C-c C-w" . hydra-eyebrowse/body))
-#+END_SRC
+#+end_src
 
 * Notetaking with =org-mode=
 ** Org-mode
@@ -709,7 +733,7 @@ Org mode is for keeping notes, maintaining TODO lists, planning projects, and au
 See [[http://orgmode.org/][here]].
 *** Setting up
     
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; org has quite some spurious commands
   (unbind-key "C-c C-z" org-mode-map)	;org-add-note
 
@@ -762,7 +786,7 @@ See [[http://orgmode.org/][here]].
 
   ;; org-open-file use Evince if possible
   (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))
-#+END_SRC
+#+end_src
 
 =org-tempo=: quickly insert templates with =<trigger TAB=. It used to be defaults befor Org 9.2
 
@@ -772,7 +796,7 @@ See [[http://orgmode.org/][here]].
 
 *** Literate programming with =org-exports= features
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package ox-latex
     :straight org
     :config
@@ -852,7 +876,7 @@ See [[http://orgmode.org/][here]].
                    ("\\subsection{%s}" . "\\subsection*{%s}")
                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
     )
-#+END_SRC
+#+end_src
 
 I am also implementing =ox-hugo=
 
@@ -872,13 +896,13 @@ I am also implementing =ox-hugo=
           org-columns-default-format-for-agenda
           "%60ITEM(Task) %10Effort(Estimate){:} %CLOCKSUM")
     :init
-    ;; listing agenda in a separate
     (defun hieu/open-agenda()
       (interactive)
       (org-agenda nil "n")
       (delete-other-windows))
     :bind ("<f1>" . org-agenda)
-    :hook (after-init . hieu/open-agenda))
+    ;; :hook (after-init . hieu/open-agenda)
+    )
 
   (use-package org-super-agenda
     :after org-agenda
@@ -895,7 +919,7 @@ I am also implementing =ox-hugo=
 
 ** Note-taking
 *** org-ref
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package org-ref
     :config
     (setq 
@@ -910,9 +934,9 @@ I am also implementing =ox-hugo=
      bibtex-completion-display-formats
      '((t . "${title:46} ${author:20} ${year:4} ${=type=:3}${=has-pdf=:1}${=has-note=:1}"))
      bibtex-completion-notes-template-multiple-files
-     "#+TITLE: ${author-or-editor} (${year}): ${title}
-  ,#+ROAM_KEY: cite:${=key=}
-  ,#+ROAM_TAGS: bibliography"
+     "#+title: ${author-or-editor} (${year}): ${title}
+  ,#+roam_key: cite:${=key=}
+  ,#+roam_tags: bibliography"
      bibtex-completion-pdf-symbol ""
      bibtex-completion-notes-symbol ""
      ;; Open pdf in external tool instead of in Emacs
@@ -920,7 +944,7 @@ I am also implementing =ox-hugo=
      (lambda (fpath)
        (call-process "evince" nil 0 nil fpath)))
     :bind ("C-c ]" . helm-bibtex))
-#+END_SRC
+#+end_src
 
 *** org-journal
 
@@ -930,16 +954,16 @@ I am also implementing =ox-hugo=
     :bind
     ("C-c n j" . org-journal-new-entry)
     :init
-    (setq org-journal-date-prefix "#+TITLE: "
+    (setq org-journal-date-prefix "* Daily Journal "
 	  org-journal-file-format "journal_%Y-%m-%d.org"
 	  org-journal-dir "~/Dropbox/Notes/Roam/"
-	  org-journal-file-header "#+TITLE: %Y-%m-%d %a\n#+ROAM_TAGS: journal\n\n* Daily Journal"
+	  org-journal-file-header "#+title: %Y-%m-%d %a\n#+roam_tags: journal\n"
 	  org-journal-enable-agenda-integration t))
 #+end_src
 
 *** org-roam
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package org-roam
     :after org
     :straight (:host github :repo "jethrokuan/org-roam" :branch "master")
@@ -983,27 +1007,27 @@ I am also implementing =ox-hugo=
 	  '(("d" "default" plain (function org-roam-capture--get-point)
 	     "%?"
 	     :file-name "%<%Y%m%d%H%M%S>-${slug}"
-	     :head "#+TITLE: ${title}\n#+ROAM_ALIAS:\n#+ROAM_TAGS:\n"
+	     :head "#+title: ${title}\n#+roam_alias:\n#+roam_tags:\n"
 	     :unnarrowed t))
 	  org-roam-capture-ref-templates
 	  '(("r" "ref" plain (function org-roam-capture--get-point)
-	     "#+ROAM_KEY: ${ref}\n%?"
+	     "#+roam_key: ${ref}\n%?"
 	     :file-name "%<%Y%m%d%H%M%S>_web_${slug}"
-	     :head "#+TITLE: ${title}]\n#+ROAM_TAGS: website\n"
+	     :head "#+title: ${title}]\n#+roam_tags: website\n"
 	     :unnarrowed t))
 	  org-roam-dailies-capture-templates
 	  '(("d" "daily" plain (function org-roam-capture--get-point)
 	     ""
 	     :immediate-finish t
 	     :file-name "journal_%<%Y-%m-%d>"
-	     :head "#+TITLE: %<%Y-%m-%d %a>\n#+ROAM_TAGS: journal\n"))
+	     :head "#+title: %<%Y-%m-%d %a>\n#+roam_tags: journal\n"))
 	  ))
 
   (use-package company-org-roam
     :straight (:host github :repo "jethrokuan/company-org-roam")
     :config
     (push 'company-org-roam company-backends))
-#+END_SRC
+#+end_src
 
 *** org-download
 
@@ -1021,7 +1045,7 @@ I am also implementing =ox-hugo=
 * Utilities
 ** projectile
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package projectile
     :init
     (setq projectile-keymap-prefix (kbd "C-c C-p"))
@@ -1034,12 +1058,12 @@ I am also implementing =ox-hugo=
   (use-package helm-projectile
     :config 
     (helm-projectile-on))
-#+END_SRC
+#+end_src
 
 ** magit
 Magit is an interface to the version control system Git, implemented as an Emacs package. Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
-#+BEGIN_SRC emacs-lisp 
+#+begin_src emacs-lisp 
   (use-package magit
     :bind
     ;; Set magit-status to F9
@@ -1054,7 +1078,7 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 
   (use-package git-gutter-fringe
     :after git-gutter)
-#+END_SRC  
+#+end_src  
 
 ** Search
 #+begin_src emacs-lisp
@@ -1064,21 +1088,21 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 ** which-key
 [[https://github.com/justbur/emacs-which-key][which-key]] is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
 
-#+BEGIN_SRC emacs-lisp 
+#+begin_src emacs-lisp 
   (use-package which-key
     :diminish which-key-mode
     :config
     (which-key-mode 1))
-#+END_SRC
+#+end_src
 
 ** restart-emacs
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package restart-emacs)
-#+END_SRC
+#+end_src
 * Languages Modes
 ** ESS
 
-#+BEGIN_SRC emacs-lisp 
+#+begin_src emacs-lisp 
   (use-package ess-site
     :straight ess
     :config
@@ -1146,11 +1170,11 @@ Magit is an interface to the version control system Git, implemented as an Emacs
           ("M--" . ess-insert-assign)
           ("C-S-m" . pipe_R_operator))
     )
-#+END_SRC
+#+end_src
 
 ** Python
 
-#+BEGIN_SRC emacs-lisp 
+#+begin_src emacs-lisp 
   (use-package python
     :mode ("\\.py\\'" . python-mode)
     :config
@@ -1216,7 +1240,7 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 
   (use-package pipenv
     :hook (python-mode . pipenv-mode))
-#+END_SRC
+#+end_src
 
 ** Julia
 
@@ -1257,7 +1281,7 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 ** LaTeX
 *** AUCTeX
     
-#+BEGIN_SRC emacs-lisp 
+#+begin_src emacs-lisp 
   (use-package auctex 
     :mode ("\\.tex\\'" . TeX-latex-mode)
     :config
@@ -1280,22 +1304,22 @@ Magit is an interface to the version control system Git, implemented as an Emacs
     :after tex
     :init
     (company-auctex-init))
-#+END_SRC
+#+end_src
 
 *** CDLaTex
 CDLaTeX is a minor mode for Emacs supporting fast insertion of environment templates and math stuff in LaTeX. 
 For more information see [[https://github.com/cdominik/cdlatex][here]]
 
-#+BEGIN_SRC emacs-lisp 
+#+begin_src emacs-lisp 
   (use-package cdlatex
     :after (tex)
     :config
     (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
-#+END_SRC
+#+end_src
 
 ** Markdown
 
-#+BEGIN_SRC emacs-lisp 
+#+begin_src emacs-lisp 
   (use-package markdown-mode
     :commands (markdown-mode gfm-mode)
     :mode (("README\\.md\\'" . gfm-mode)
@@ -1303,12 +1327,12 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
            ("\\.markdown\\'" . markdown-mode))
     :bind (:map markdown-mode-map
                 ("C-c i" . markdown-insert-code-chunk)))
-#+END_SRC
+#+end_src
 
 ** ELisp
 Customisation to emacs-lisp itself, this is mainly syntax highlighting
 
-#+BEGIN_SRC emacs-lisp 
+#+begin_src emacs-lisp 
   (use-package highlight-defined
     :config
     (add-hook 'emacs-lisp-mode-hook 'highlight-defined-mode))
@@ -1324,14 +1348,14 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
     (("C-h f" . helpful-callable)
      ("C-h v" . helpful-variable)
      ("C-h k" . helpful-key)))
-#+END_SRC
+#+end_src
 
 ** CSS
    
-#+BEGIN_SRC emacs-lisp 
+#+begin_src emacs-lisp 
   (use-package css-mode
     :mode (("\\.css?\\'" . css-mode)))
-#+END_SRC
+#+end_src
 
 ** PDF
 

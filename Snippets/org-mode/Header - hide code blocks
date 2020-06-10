@@ -2,4 +2,4 @@
 # name: Hide code blocks
 # key: header_hideblocks
 # --
-#+STARTUP: hideblocks
+#+startup: hideblocks

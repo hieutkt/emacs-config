@@ -2,5 +2,5 @@
 # name: header_latex_glossaries
 # key: header_latex_glossaries
 # --
-#+LATEX_HEADER: \\usepackage{glossaries}
-#+LATEX_HEADER: \\makeglossaries
+#+latex_header: \\usepackage{glossaries}
+#+latex_header: \\makeglossaries
