@@ -904,6 +904,25 @@ I am also implementing =ox-hugo=
 #+begin_src emacs-lisp
   (use-package ox-hugo
     :after ox)
+
+  ;; This may breaks things
+  (use-package org-ref-ox-hugo
+    :ensure org-ref
+    :straight (:host github :repo "jethrokuan/org-ref-ox-hugo"))
+
+  (add-to-list 'org-ref-formatted-citation-formats
+               '("md"
+                 ("article" . "${author} (${year}), *${title}*, ${journal}, *${volume}(${number})*, ${pages}. ${doi}")
+                 ("inproceedings" . "${author} (${year}), *${title}*, In ${editor}, ${booktitle} (pp. ${pages}). ${address}: ${publisher}.")
+                 ("book" . "${author} (${year}), *${title}*, ${address}: ${publisher}.")
+                 ("phdthesis" . "${author} (${year}), *${title}* (Doctoral dissertation). ${school}, ${address}.")
+                 ("inbook" . "${author} (${year}), *${title}*, In ${editor} (Eds.), ${booktitle} (pp. ${pages}). ${address}: ${publisher}.")
+                 ("incollection" . "${author} (${year}), *${title}*, In ${editor} (Eds.), ${booktitle} (pp. ${pages}). ${address}: ${publisher}.")
+                 ("proceedings" . "${editor} (Eds.), _${booktitle}_ (${year}). ${address}: ${publisher}.")
+                 ("unpublished" . "${author} (${year}), *${title}*. Unpublished manuscript.")
+                 ("misc" . "${author} (${year}). *${title}*. Retrieved from [${howpublished}](${howpublished}). ${note}.")
+                 (nil . "${author} (${year}), *${title}*.")))
+
 #+end_src
 
 *** Org-agenda
