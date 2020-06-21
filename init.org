@@ -127,6 +127,7 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
   (unbind-key "C-x C-l")                  ;downcase region
   (unbind-key "C-x <right>")              ;next-buffer
   (unbind-key "C-x <left>")               ;previous-buffer
+  (unbind-key "C-v")                      ;scroll-up-command
   ;; Rebind some commands to more sane hotkeys
   (bind-key "M-p" 'other-window)
 
