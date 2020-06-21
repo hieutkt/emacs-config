@@ -266,8 +266,7 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
     (set-fontset-font t 'han (font-spec :name "Source Han Sans")))
 
   (set-face-attribute 'variable-pitch nil
-                      :font "Source Sans Pro"
-                      :height 1.2)
+                      :font "Iosevka Aile")
   (set-face-attribute 'fixed-pitch nil
                       :font "Iosevka")
 
@@ -751,7 +750,7 @@ See [[http://orgmode.org/][here]].
   (unbind-key "C-c C-z" org-mode-map)	;org-add-note
 
   ;; org-indent-mode looks better
-  ;; (add-hook 'org-mode-hook 'org-indent-mode)
+  (add-hook 'org-mode-hook 'org-indent-mode)
 
   ;; Enable shift selection
   (setq org-support-shift-select t)
