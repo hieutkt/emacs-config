@@ -35,14 +35,14 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
   (defvar bootstrap-version)
   (let ((bootstrap-file
-	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-	(bootstrap-version 5))
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
     (unless (file-exists-p bootstrap-file)
       (with-current-buffer
-	  (url-retrieve-synchronously  "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-				       'silent 'inhibit-cookies)
-	(goto-char (point-max))
-	(eval-print-last-sexp)))
+          (url-retrieve-synchronously  "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+                                       'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
 
   ;; Install use-package
@@ -55,7 +55,7 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
   (setq config-directory "~/Documents/Emacs/emacs-config/")
   (org-babel-load-file
-  (expand-file-name "init.org" config-directory))		   
+   (expand-file-name "init.org" config-directory))		   
 
 #+end_src
 
@@ -71,9 +71,9 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
         gc-cons-percentage 0.6)
 
   (add-hook 'emacs-startup-hook
-    (lambda ()
-      (setq gc-cons-threshold 16777216 ; 16mb
-            gc-cons-percentage 0.1)))
+            (lambda ()
+              (setq gc-cons-threshold 16777216 ; 16mb
+                    gc-cons-percentage 0.1)))
 
   ;; Auto-revert mode
   (global-auto-revert-mode 1)
@@ -165,6 +165,7 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
   (setq scroll-step 1) ; keyboard scroll one line at a time
   (setq scroll-preserve-screen-position t)
   (setq scroll-conservatively 101)
+
 #+end_src
 
 * Appearence
@@ -303,16 +304,16 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
     "Renames both current buffer and file it's visiting to NEW-NAME."
     (interactive "sNew name: ")
     (let ((name (buffer-name))
-	  (filename (buffer-file-name)))
+          (filename (buffer-file-name)))
       (if (not filename)
-	  (message "Buffer '%s' is not visiting a file!" name)
-	(if (get-buffer new-name)
-	    (message "A buffer named '%s' already exists!" new-name)
-	  (progn
-	    (rename-file filename new-name 1)
-	    (rename-buffer new-name)
-	    (set-visited-file-name new-name)
-	    (set-buffer-modified-p nil))))))
+          (message "Buffer '%s' is not visiting a file!" name)
+        (if (get-buffer new-name)
+            (message "A buffer named '%s' already exists!" new-name)
+          (progn
+            (rename-file filename new-name 1)
+            (rename-buffer new-name)
+            (set-visited-file-name new-name)
+            (set-buffer-modified-p nil))))))
 
   ;; Eval and replace lisp expression
   (defun hieu/fc-eval-and-replace ()
@@ -320,7 +321,7 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
     (interactive)
     (backward-kill-sexp)
     (prin1 (eval (read (current-kill 0)))
-	   (current-buffer)))
+           (current-buffer)))
 
   (bind-key "C-c e" 'hieu/fc-eval-and-replace)
 
@@ -329,22 +330,22 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
     (cond
      ((and mark-active transient-mark-mode)
       (if (> (point) (mark))
-	  (exchange-point-and-mark))
+          (exchange-point-and-mark))
       (let ((column (current-column))
-	    (text (delete-and-extract-region (point) (mark))))
-	(forward-line arg)
-	(move-to-column column t)
-	(set-mark (point))
-	(insert text)
-	(exchange-point-and-mark)
-	(setq deactivate-mark nil)))
+            (text (delete-and-extract-region (point) (mark))))
+        (forward-line arg)
+        (move-to-column column t)
+        (set-mark (point))
+        (insert text)
+        (exchange-point-and-mark)
+        (setq deactivate-mark nil)))
      (t
       (beginning-of-line)
       (when (or (> arg 0) (not (bobp)))
-	(forward-line)
-	(when (or (< arg 0) (not (eobp)))
-	  (transpose-lines arg))
-	(forward-line -1)))))
+        (forward-line)
+        (when (or (< arg 0) (not (eobp)))
+          (transpose-lines arg))
+        (forward-line -1)))))
 
   (defun hieu/move-text-down (arg)
     "Move region (transient-mark-mode active) or current line
@@ -371,10 +372,10 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
   ;; Insert current date (and time)
   (defun hieu/insert-current-date () (interactive)
-	 (insert (shell-command-to-string "bash -c 'echo -n $(date +%Y-%m-%d)'")))
+         (insert (shell-command-to-string "bash -c 'echo -n $(date +%Y-%m-%d)'")))
 
   (defun hieu/insert-current-time () (interactive)
-	 (insert (shell-command-to-string "bash -c 'echo -n $(date +%H:%M)'")))
+         (insert (shell-command-to-string "bash -c 'echo -n $(date +%H:%M)'")))
 
   (bind-key "C-x M-d" 'hieu/insert-current-date)
   (bind-key "C-x M-t" 'hieu/insert-current-time)
@@ -382,11 +383,11 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
   ;; Replace Org keywords to lowercase, in consistent with Org-mode 9.2
   ;; https://scripter.co/org-keywords-lower-case/
-  (defun modi/lower-case-org-keywords ()
+  (defun hieu/lower-case-org-keywords ()
     "Lower case Org keywords and block identifiers.
 
   Example: \"#+TITLE\" -> \"#+title\"
-	   \"#+BEGIN_EXAMPLE\" -> \"#+begin_example\"
+           \"#+BEGIN_EXAMPLE\" -> \"#+begin_example\"
 
   Inspiration:
   https://code.orgmode.org/bzg/org-mode/commit/13424336a6f30c50952d291e7a82906c1210daf0."
@@ -394,14 +395,14 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
     (save-excursion
       (goto-char (point-min))
       (let ((case-fold-search nil)
-	    (count 0))
-	;; Match examples: "#+FOO bar", "#+FOO:", "=#+FOO=", "~#+FOO~",
-	;;                 "‘#+FOO’", "“#+FOO”", ",#+FOO bar",
-	;;                 "#+FOO_bar<eol>", "#+FOO<eol>".
-	(while (re-search-forward "\\(?1:#\\+[A-Z_]+\\(?:_[[:alpha:]]+\\)*\\)\\(?:[ :=~’”]\\|$\\)" nil :noerror)
-	  (setq count (1+ count))
-	  (replace-match (downcase (match-string-no-properties 1)) :fixedcase nil nil 1))
-	(message "Lower-cased %d matches" count))))
+            (count 0))
+        ;; Match examples: "#+FOO bar", "#+FOO:", "=#+FOO=", "~#+FOO~",
+        ;;                 "‘#+FOO’", "“#+FOO”", ",#+FOO bar",
+        ;;                 "#+FOO_bar<eol>", "#+FOO<eol>".
+        (while (re-search-forward "\\(?1:#\\+[A-Z_]+\\(?:_[[:alpha:]]+\\)*\\)\\(?:[ :=~’”]\\|$\\)" nil :noerror)
+          (setq count (1+ count))
+          (replace-match (downcase (match-string-no-properties 1)) :fixedcase nil nil 1))
+        (message "Lower-cased %d matches" count))))
 #+end_src
 
 ** My hydras
@@ -773,19 +774,20 @@ See [[http://orgmode.org/][here]].
 
   ;; Variable pitch
   (add-hook 'org-mode-hook
-              '(lambda ()
-                 (variable-pitch-mode 1)))
+            '(lambda ()
+               (variable-pitch-mode 1)))
 
   (mapc (lambda (face)
-     (set-face-attribute face nil :inherit 'fixed-pitch))
-                  (list 'org-code
-                        'org-link 
-                        'org-block
-                        'org-table
-                        'org-block-begin-line
-                        'org-block-end-line
-                        'org-meta-line
-                        'org-document-info-keyword))
+          (set-face-attribute face nil :inherit 'fixed-pitch))
+        (list 'org-code
+              'org-link 
+              'org-block
+              'org-table
+              'org-block-begin-line
+              'org-block-end-line
+              'org-meta-line
+              'org-document-info-keyword
+              'org-latex-and-related))
 
 
   ;; ORG LATEX PREVIEW
@@ -810,7 +812,7 @@ See [[http://orgmode.org/][here]].
   (use-package org-tempo :straight org)
 #+end_src
 
-*** Literate programming with =org-exports= features
+*** Org-exports
 
 #+begin_src emacs-lisp
   (use-package ox-latex
@@ -901,7 +903,7 @@ I am also implementing =ox-hugo=
     :after ox)
 #+end_src
 
-*** Agenda
+*** Org-agenda
 
 #+begin_src emacs-lisp
   (use-package org-agenda
@@ -933,8 +935,7 @@ I am also implementing =ox-hugo=
     ("C-c c" . org-capture))
 #+end_src
 
-** Note-taking
-*** org-ref
+*** Org-ref
 #+begin_src emacs-lisp
   (use-package org-ref
     :config
@@ -962,7 +963,7 @@ I am also implementing =ox-hugo=
     :bind ("C-c ]" . helm-bibtex))
 #+end_src
 
-*** org-journal
+*** Org-journal
 
 #+begin_src emacs-lisp
   (use-package org-journal
@@ -971,13 +972,13 @@ I am also implementing =ox-hugo=
     ("C-c n j" . org-journal-new-entry)
     :init
     (setq org-journal-date-prefix "* Daily Journal "
-	  org-journal-file-format "journal_%Y-%m-%d.org"
-	  org-journal-dir "~/Dropbox/Notes/Roam/"
-	  org-journal-file-header "#+title: %Y-%m-%d %a\n#+roam_tags: journal\n"
-	  org-journal-enable-agenda-integration t))
+          org-journal-file-format "journal_%Y-%m-%d.org"
+          org-journal-dir "~/Dropbox/Notes/Roam/"
+          org-journal-file-header "#+title: %Y-%m-%d %a\n#+roam_tags: journal\n"
+          org-journal-enable-agenda-integration t))
 #+end_src
 
-*** org-roam
+*** Org-roam
 
 #+begin_src emacs-lisp
   (use-package org-roam
@@ -990,14 +991,14 @@ I am also implementing =ox-hugo=
     ;; Exclude roam files from helm
     (add-to-list 'helm-boring-buffer-regexp-list "^[0-9]\\{14\\}.+\\.org$")
     :bind (:map org-roam-mode-map
-		(("C-c n l" . org-roam)
-		 ("C-c n f" . org-roam-find-file)
-		 ("C-c n g" . org-roam-graph)
-		 ("C-c n b" . org-roam-switch-to-buffer)
-		 ("C-c n r" . org-roam-find-ref)
-		 ("C-c n d" . org-roam-find-directory))
-		:map org-mode-map
-		(("C-c n i" . org-roam-insert))))
+                (("C-c n l" . org-roam)
+                 ("C-c n f" . org-roam-find-file)
+                 ("C-c n g" . org-roam-graph)
+                 ("C-c n b" . org-roam-switch-to-buffer)
+                 ("C-c n r" . org-roam-find-ref)
+                 ("C-c n d" . org-roam-find-directory))
+                :map org-mode-map
+                (("C-c n i" . org-roam-insert))))
 
   (use-package org-roam-protocol :straight org-roam)
 
@@ -1005,39 +1006,39 @@ I am also implementing =ox-hugo=
     :straight org-roam
     :init
     (setq org-roam-graph-executable	    (executable-find "neato")
-	  org-roam-graph-extra-config        '(("overlap" . "false")
-					       ("concentrate" . "true")
-					       ("bgcolor" . "lightblue"))
-	  org-roam-graph-edge-cites-extra-config
-					     '(("color" . "gray")
-					       ("style" . "dashed")
-					       ("sep" . "20"))
-	  org-roam-graph-shorten-titles      'wrap
-	  org-roam-graph-max-title-length    50
-	  org-roam-graph-exclude-matcher     '("journal")))
+          org-roam-graph-extra-config        '(("overlap" . "false")
+                                               ("concentrate" . "true")
+                                               ("bgcolor" . "lightblue"))
+          org-roam-graph-edge-cites-extra-config
+          '(("color" . "gray")
+            ("style" . "dashed")
+            ("sep" . "20"))
+          org-roam-graph-shorten-titles      'wrap
+          org-roam-graph-max-title-length    50
+          org-roam-graph-exclude-matcher     '("journal")))
 
   (use-package org-roam-capture
     :straight org-roam
     :config
     (setq org-roam-capture-templates
-	  '(("d" "default" plain (function org-roam-capture--get-point)
-	     "%?"
-	     :file-name "%<%Y%m%d%H%M%S>-${slug}"
-	     :head "#+title: ${title}\n#+roam_alias:\n#+roam_tags:\n"
-	     :unnarrowed t))
-	  org-roam-capture-ref-templates
-	  '(("r" "ref" plain (function org-roam-capture--get-point)
-	     "#+roam_key: ${ref}\n%?"
-	     :file-name "%<%Y%m%d%H%M%S>_web_${slug}"
-	     :head "#+title: ${title}]\n#+roam_tags: website\n"
-	     :unnarrowed t))
-	  org-roam-dailies-capture-templates
-	  '(("d" "daily" plain (function org-roam-capture--get-point)
-	     ""
-	     :immediate-finish t
-	     :file-name "journal_%<%Y-%m-%d>"
-	     :head "#+title: %<%Y-%m-%d %a>\n#+roam_tags: journal\n"))
-	  ))
+          '(("d" "default" plain (function org-roam-capture--get-point)
+             "%?"
+             :file-name "%<%Y%m%d%H%M%S>-${slug}"
+             :head "#+title: ${title}\n#+roam_alias:\n#+roam_tags:\n"
+             :unnarrowed t))
+          org-roam-capture-ref-templates
+          '(("r" "ref" plain (function org-roam-capture--get-point)
+             "#+roam_key: ${ref}\n%?"
+             :file-name "%<%Y%m%d%H%M%S>_web_${slug}"
+             :head "#+title: ${title}]\n#+roam_tags: website\n"
+             :unnarrowed t))
+          org-roam-dailies-capture-templates
+          '(("d" "daily" plain (function org-roam-capture--get-point)
+             ""
+             :immediate-finish t
+             :file-name "journal_%<%Y-%m-%d>"
+             :head "#+title: %<%Y-%m-%d %a>\n#+roam_tags: journal\n"))
+          ))
 
   (use-package company-org-roam
     :straight (:host github :repo "jethrokuan/company-org-roam")
@@ -1045,7 +1046,7 @@ I am also implementing =ox-hugo=
     (push 'company-org-roam company-backends))
 #+end_src
 
-*** org-download
+*** Org-download
 
 #+begin_src emacs-lisp
   (use-package org-download
