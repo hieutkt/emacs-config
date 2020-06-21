@@ -468,10 +468,10 @@ Helm can be opened in a separate frame. In Gnome, I can press ~S-<direction>~ to
     ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
     ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
     ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-    (global-set-key (kbd "C-c h") 'helm-command-prefix)
     (global-unset-key (kbd "C-x c"))
 
-    :bind (("C-x b" . helm-mini)
+    :bind (("C-c h" . helm-command-prefix)
+           ("C-x b" . helm-mini)
            ("M-x" . helm-M-x)
            ("C-x C-f" . helm-find-files)
            ("M-y" . helm-show-kill-ring)
@@ -482,6 +482,11 @@ Helm can be opened in a separate frame. In Gnome, I can press ~S-<direction>~ to
            :map helm-command-map
            ("o" . helm-occur)))
 
+#+end_SRC
+
+*** Helm-company
+
+#+begin_src emacs-lisp
   ;; Use "C-:" to switch to Helm interface during company-ing
   (use-package helm-company
     :after company
@@ -489,8 +494,17 @@ Helm can be opened in a separate frame. In Gnome, I can press ~S-<direction>~ to
                 (("C-:" . helm-company))
                 :map company-active-map
                 (("C-:" . helm-company))))
-#+end_SRC
 
+#+end_src
+
+*** Swiper-helm
+
+#+begin_src emacs-lisp
+  (use-package swiper-helm
+    :config
+    (setq swiper-helm-display-function 'helm-default-display-buffer)
+    :bind ("C-s" . swiper-helm))
+#+end_src
 ** company
 Company is a completion mechanism that is very flexible 
 
