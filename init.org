@@ -117,6 +117,7 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
   (set-buffer-file-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
   (setq default-input-method 'vietnamese-telex)
+  (setq search-default-mode 'char-fold-to-regexp)
 
   ;; Set some annoying command disabled
   ;; the function `unbind-key` require `use-package`
