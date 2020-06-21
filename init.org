@@ -628,6 +628,10 @@ Company is a completion mechanism that is very flexible
       ("d" sp-backward-slurp-sexp))
     :bind (("M-<backspace>" . sp-unwrap-sexp)
            ("C-c s" . hydra-smartparens/body)))
+
+  (use-package smartparens-org
+    :straight smartparens
+    :after org)
 #+end_src
 
 ** multiple-cursor
