@@ -176,6 +176,13 @@ First and foremost: enable =lexical-binding=
 
 #+end_src
 
+** Informative variable
+
+#+begin_src emacs-lisp
+  ;; These variable is for handily tangle blocks on different OSes
+  (set 'linuxp (when (eq system-type 'gnu/linux) "yes"))
+  (set 'windowp (when (eq system-type 'windows-nt) "yes"))
+#+end_src
 * Appearence
 ** Interface
 
@@ -507,7 +514,7 @@ Helm can be opened in a separate frame. In Gnome, I can press ~S-<direction>~ to
 
 *** Swiper-helm
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle linuxp
   (use-package swiper-helm
     :config
     (setq swiper-helm-display-function 'helm-default-display-buffer)
@@ -923,7 +930,7 @@ See [[http://orgmode.org/][here]].
 
 I am also implementing =ox-hugo=
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle linuxp
   (use-package ox-hugo
     :after ox)
 
@@ -980,7 +987,7 @@ I am also implementing =ox-hugo=
 #+end_src
 
 *** Org-ref
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle linuxp
   (use-package org-ref
     :config
     (setq 
@@ -1142,7 +1149,7 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 #+end_src  
 
 ** Search
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle linuxp
   (use-package rg :config (rg-enable-default-bindings))
 #+end_src
 
@@ -1420,7 +1427,7 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
 
 ** PDF
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle linuxp
   (use-package pdf-tools
     :magic ("%PDF". pdf-view-mode)
     :config
@@ -1429,7 +1436,7 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
 
 ** Org-mode Babel
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle linuxp
   (setq org-confirm-babel-evaluate nil)
 
   (org-babel-do-load-languages
