@@ -60,7 +60,12 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 #+end_src
 
 * Initiation
+
 ** Setup and bootstrap
+First and foremost: enable =lexical-binding=
+#+begin_src emacs-lisp
+  ;; -*- lexical-binding: t; -*-
+#+end_src
 
 #+begin_src emacs-lisp
   ;; The GC can easily double startup time,
