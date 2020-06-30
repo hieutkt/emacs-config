@@ -1018,11 +1018,11 @@ I am also implementing =ox-hugo=
 
 #+begin_src emacs-lisp
   (use-package org-journal
-    :straight (:host github :repo "bastibe/org-journal" :branch "master")
     :bind
     ("C-c n j" . org-journal-new-entry)
     :init
-    (setq org-journal-date-prefix "* Daily Journal "
+    (setq org-journal-date-format "%A, %Y-%m-%d"
+          org-journal-date-prefix "* Daily Journal "
           org-journal-file-format "journal_%Y-%m-%d.org"
           org-journal-dir "~/Dropbox/Notes/Roam/"
           org-journal-file-header "#+title: %Y-%m-%d %a\n#+roam_tags: journal\n"
