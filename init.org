@@ -1317,7 +1317,7 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 
 ** Jupyter Notebook
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle linuxp
   (use-package jupyter)
 
   (use-package jupyter-org-extensions
