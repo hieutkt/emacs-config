@@ -1097,19 +1097,6 @@ I am also implementing =ox-hugo=
     (push 'company-org-roam company-backends))
 #+end_src
 
-*** Org-download
-
-#+begin_src emacs-lisp
-  (use-package org-download
-    :after org
-    :config
-    (setq org-download-image-dir "./download/")
-    :bind
-    (:map org-mode-map
-          (("s-Y" . org-download-screenshot)
-           ("s-y" . org-download-yank))))
-#+end_src
-
 * Utilities
 ** projectile
 
