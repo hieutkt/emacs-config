@@ -1038,7 +1038,8 @@ I am also implementing =ox-hugo=
     :hook 
     (after-init . org-roam-mode)
     :config
-    (setq org-roam-directory "~/Dropbox/Notes/Roam/")
+    (setq org-roam-directory "~/Dropbox/Notes/Roam/"
+          org-roam-db-location "~/.emacs.d/org-roam.db")
     ;; Exclude roam files from helm
     (add-to-list 'helm-boring-buffer-regexp-list "^[0-9]\\{14\\}.+\\.org$")
     :bind (:map org-roam-mode-map
