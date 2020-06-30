@@ -114,6 +114,9 @@ First and foremost: enable =lexical-binding=
 ** Better Defaults
 
 #+begin_src emacs-lisp
+  ;; I work from home
+  (cd "~/")
+
   ;; Everything utf-8
   (set-language-environment "UTF-8")
   (prefer-coding-system 'utf-8)
