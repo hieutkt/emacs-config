@@ -6,10 +6,12 @@
 #+latex_class_options: [a4paper, 11pt] 
 #+latex_header: \usepackage[utf8]{vietnam}
 
+NOTE: Since March 2020, I have migrated to [[github:hlissner/doom-emacs][Doom Emacs]], and won't use this config anymore. This emacs configuration will be archived at [[github:hieutkt/emacs-config]].
+
 * Table of contents :TOC:
 - [[#prerequisite][Prerequisite]]
-  - [[#reproducible-environment][Reproducible environment]]
-  - [[#boostraping][Boostraping]]
+  - [[#reproducible-information][Reproducible information]]
+  - [[#installing][Installing]]
 - [[#initiation][Initiation]]
   - [[#setup-and-bootstrap][Setup and bootstrap]]
   - [[#better-defaults][Better Defaults]]
@@ -51,7 +53,7 @@
   - [[#org-mode-babel][Org-mode Babel]]
 
 * Prerequisite
-** Reproducible environment
+** Reproducible information
 
 Current emacs version:
 
@@ -72,7 +74,7 @@ system-configuration-options
 #+results:
 : --with-modules --with-json --with-mailutils
 
-** Boostraping
+** Installing
 The whole thing is driven by the following =.emacs=. I clone this git into "~/Documents/Emacs/emacs-config/". Then everything is installed using =straight.el= and =use-package=.
  
 #+begin_src emacs-lisp :tangle no
