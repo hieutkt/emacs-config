@@ -6,7 +6,7 @@
 #+latex_class_options: [a4paper, 11pt] 
 #+latex_header: \usepackage[utf8]{vietnam}
 
-NOTE: Since March 2020, I have migrated to [[github:hlissner/doom-emacs][Doom Emacs]], and won't use this config anymore. This emacs configuration will be archived at [[github:hieutkt/emacs-config]].
+*NOTE: Since March 2020, I have migrated to [[github:hlissner/doom-emacs][Doom Emacs]], and won't be using this config anymore. This emacs configuration will be archived at [[github:hieutkt/emacs-config][this Github repo]].*
 
 * Table of contents :TOC:
 - [[#prerequisite][Prerequisite]]
@@ -24,32 +24,37 @@ NOTE: Since March 2020, I have migrated to [[github:hlissner/doom-emacs][Doom Em
   - [[#my-hydras][My hydras]]
 - [[#editing][Editing]]
   - [[#incremental-completion-with-helm][Incremental completion with =helm=]]
-  - [[#company][company]]
-  - [[#yasnippets][yasnippets]]
-  - [[#smartparens][smartparens]]
-  - [[#multiple-cursor][multiple-cursor]]
-  - [[#electric-operator][electric-operator]]
-  - [[#auto-highlight-symbol][auto-highlight-symbol]]
-  - [[#expand-region][expand-region]]
-  - [[#eyebrowse][eyebrowse]]
+  - [[#company][Company]]
+  - [[#yasnippets][Yasnippets]]
+  - [[#smartparens][Smartparens]]
+  - [[#multiple-cursor][Multiple-cursor]]
+  - [[#electric-operator][Electric-operator]]
+  - [[#auto-highlight-symbol][Auto-highlight-symbol]]
+  - [[#expand-region][Expand-region]]
+  - [[#eyebrowse][Eyebrowse]]
 - [[#notetaking-with-org-mode][Notetaking with =org-mode=]]
-  - [[#org-mode][Org-mode]]
+  - [[#setting-up][Setting up]]
+  - [[#org-exports][Org-exports]]
+  - [[#org-agenda][Org-agenda]]
+  - [[#org-ref][Org-ref]]
+  - [[#org-journal][Org-journal]]
+  - [[#org-roam][Org-roam]]
 - [[#utilities][Utilities]]
-  - [[#projectile][projectile]]
-  - [[#magit][magit]]
+  - [[#projectile][Projectile]]
+  - [[#magit][Magit]]
   - [[#search][Search]]
-  - [[#which-key][which-key]]
-  - [[#restart-emacs][restart-emacs]]
+  - [[#which-key][Which-key]]
+  - [[#restart-emacs][Restart-emacs]]
 - [[#languages-modes][Languages Modes]]
-  - [[#ess][ESS]]
-  - [[#python][Python]]
-  - [[#julia][Julia]]
-  - [[#jupyter-notebook][Jupyter Notebook]]
-  - [[#latex][LaTeX]]
-  - [[#markdown][Markdown]]
-  - [[#elisp][ELisp]]
-  - [[#css][CSS]]
-  - [[#pdf][PDF]]
+  - [[#r-ess-mode][R: =ess-mode=]]
+  - [[#python-elpy][Python: =elpy=]]
+  - [[#julia-julia-mode-and-julia-snail][Julia: =julia-mode= and =julia-snail=]]
+  - [[#jupyter-notebook-emacs-jupiter][Jupyter Notebook: =emacs-jupiter=]]
+  - [[#latex-auctex-and-cdlatex][LaTeX: =AUCTeX= and =CDLaTeX=]]
+  - [[#markdown-markdown-mode][Markdown: =markdown-mode=]]
+  - [[#emacs-lisp][Emacs Lisp]]
+  - [[#css-css-mode][CSS: =css-mode=]]
+  - [[#pdf-pdf-tools][PDF: =pdf-tools=]]
   - [[#org-mode-babel][Org-mode Babel]]
 
 * Prerequisite
@@ -75,8 +80,8 @@ system-configuration-options
 : --with-modules --with-json --with-mailutils
 
 ** Installing
-The whole thing is driven by the following =.emacs=. I clone this git into "~/Documents/Emacs/emacs-config/". Then everything is installed using =straight.el= and =use-package=.
- 
+The whole thing is driven by the following =.emacs=.
+
 #+begin_src emacs-lisp :tangle no
 
 (defvar bootstrap-version)
@@ -105,13 +110,17 @@ The whole thing is driven by the following =.emacs=. I clone this git into "~/Do
 
 #+end_src
 
-* Initiation
+Then I clone this [[https://github.com/hieutkt/emacs-config][git]] into "~/Documents/Emacs/emacs-config/". Then everything is installed using =straight.el= and =use-package=.
 
+* Initiation
+Things may breaks mid-setup (this is a personal config after all), so I want the basic things to be put in place first.
 ** Setup and bootstrap
 First and foremost: enable =lexical-binding=
 #+begin_src emacs-lisp
 ;; -*- lexical-binding: t; -*-
 #+end_src
+
+The first part of the config is to ensure things run smoothly during startup time.
 
 #+begin_src emacs-lisp
 ;; The GC can easily double startup time,
@@ -159,8 +168,10 @@ First and foremost: enable =lexical-binding=
 
 ** Better Defaults
 
+Emacs is made in 1976, so it retains some weird defaults. I modified them to my opinionated preferences here:
+
 #+begin_src emacs-lisp
-;; I work from home
+;; Ensure starting from home directory
 (cd "~/")
 
 ;; Everything utf-8
@@ -223,12 +234,13 @@ First and foremost: enable =lexical-binding=
 #+end_src
 
 ** Informative variable
+These variable is for handily tangle blocks on different OSes.
 
 #+begin_src emacs-lisp
-;; These variable is for handily tangle blocks on different OSes
 (set 'linuxp (when (eq system-type 'gnu/linux) "yes"))
 (set 'windowp (when (eq system-type 'windows-nt) "yes"))
 #+end_src
+
 * Appearence
 ** Interface
 
@@ -273,6 +285,8 @@ First and foremost: enable =lexical-binding=
 
 *** Beacon-mode
 
+Show a trail flash of lights whenever my cursor jumps over a certain distance. Great to keep tracks of the cursor position.
+
 #+begin_src emacs-lisp
 (use-package beacon
   :config
@@ -284,14 +298,16 @@ First and foremost: enable =lexical-binding=
 
 *** Smooth-scrolling
 
+Better scrolling in Emacs.
+
 #+begin_src emacs-lisp :tangle no
 ;; Smooth scrolling
 (use-package smooth-scrolling :config (smooth-scrolling-mode t))
 #+end_src
 
 *** Visual fill colunmn
-    
-[[https://github.com/joostkremers/visual-fill-column][visual-fill-column-mode]] is a better default replacement for visual-fill-mode.
+
+[[https://github.com/joostkremers/visual-fill-column][visual-fill-column-mode]] complements the built in =visual-fill-mode= by allowing lines to wraps at a certain column.
 
 #+begin_src emacs-lisp
 (use-package visual-fill-column
@@ -317,6 +333,9 @@ First and foremost: enable =lexical-binding=
 
 ** Aesthetics
 *** Faces
+
+My favorites font:
+
 #+begin_src emacs-lisp
 ;; Default font
 (when (member "Iosevka" (font-family-list))
@@ -342,6 +361,8 @@ First and foremost: enable =lexical-binding=
 
 *** Mode-line
 
+The mode-line is the ultimate pimp for Emacs. It makes Emacs look a lot more modern.
+
 #+begin_src emacs-lisp
 (use-package spaceline-config
   :straight (spaceline :host github :repo "TheBB/spaceline" :branch "master")
@@ -355,6 +376,9 @@ First and foremost: enable =lexical-binding=
 
 * Hydra and self-defined commands
 ** My commands
+
+Self-defined handy commands that I used frequently.
+
 #+begin_src emacs-lisp
 ;; Rename file and buffer
 ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
@@ -464,6 +488,9 @@ First and foremost: enable =lexical-binding=
 #+end_src
 
 ** My hydras
+
+The =hydra= package create a reasonable UI for complicated keybinds.
+
 #+begin_src emacs-lisp
 (use-package hydra)
 
@@ -500,6 +527,7 @@ First and foremost: enable =lexical-binding=
 
 * Editing
 Various packages that helps with editing
+
 ** Incremental completion with =helm=
 Helm can be opened in a separate frame. In Gnome, I can press ~S-<direction>~ to move this window around.
 
@@ -563,8 +591,8 @@ Helm can be opened in a separate frame. In Gnome, I can press ~S-<direction>~ to
   (setq swiper-helm-display-function 'helm-display-buffer-in-own-frame)
   :bind ("C-s" . swiper-helm))
 #+end_src
-** company
-Company is a completion mechanism that is very flexible 
+** Company
+Company is THE completion mechanism for Emacs
 
 #+begin_src emacs-lisp
 (use-package company
@@ -605,7 +633,9 @@ Company is a completion mechanism that is very flexible
    ))
 #+end_src
 
-** yasnippets
+** Yasnippets
+
+=Yasnippet= is THE templating system for Emacs. My custom snippets are stored [[https://github.com/hieutkt/emacs-config/tree/master/Snippets][in the same repo]].
 
 #+begin_src emacs-lisp
 ;; Enable Yasnippets
@@ -641,7 +671,9 @@ Company is a completion mechanism that is very flexible
            ("`" . yas-expand-from-trigger-key)))
 #+end_src
 
-** smartparens
+** Smartparens
+
+Working with, not just parenthesis and braces but, every abstract pairs of text objects.
 
 #+begin_src emacs-lisp
 (use-package smartparens-config
@@ -707,7 +739,9 @@ Company is a completion mechanism that is very flexible
   :after org)
 #+end_src
 
-** multiple-cursor
+** Multiple-cursor
+
+Operate from multiple text position at once.
 
 #+begin_src emacs-lisp
 ;; Multi-cursor
@@ -749,9 +783,10 @@ Company is a completion mechanism that is very flexible
   ("C-c m" . hydra-multiple-cursors/body))
 #+end_src
 
-** electric-operator
-[[https://github.com/davidshepherd7/electric-operator][Electric Operator]] is an emacs minor-mode to automatically add spacing around operators.
-#+begin_src emacs-lisp 
+** Electric-operator
+[[https://github.com/davidshepherd7/electric-operator][Electric Operator]] is an emacs minor-mode to automatically add spacing around operators. It's handy to keep code clean without much effort.
+
+#+begin_src emacs-lisp
 (use-package electric-operator
   :config
   (setq electric-operator-R-named-argument-style 'spaced)
@@ -762,7 +797,9 @@ Company is a completion mechanism that is very flexible
                                         (cons ":=" " := ")))
 #+end_src
 
-** auto-highlight-symbol
+** Auto-highlight-symbol
+
+Auto highlight the same symbol in any (complex) script.
 
 #+begin_src emacs-lisp
 (use-package auto-highlight-symbol
@@ -776,13 +813,17 @@ Company is a completion mechanism that is very flexible
   (unbind-key "M--" auto-highlight-symbol-mode-map))
 #+end_src
 
-** expand-region
+** Expand-region
+
+Gradually expanding the selected region.
 
 #+begin_src emacs-lisp
 (use-package expand-region :bind ("M-." . er/expand-region))
 #+end_src
 
-** eyebrowse
+** Eyebrowse
+
+Eyebrowse falicitates workspaces in Emacs.
 
 #+begin_src emacs-lisp
 (use-package eyebrowse
@@ -817,11 +858,9 @@ Company is a completion mechanism that is very flexible
 #+end_src
 
 * Notetaking with =org-mode=
-** Org-mode
-Org mode is for keeping notes, maintaining TODO lists, planning projects, and authoring documents with a fast and effective plain-text system.
-See [[http://orgmode.org/][here]].
-*** Setting up
-    
+Org mode is for keeping notes, maintaining TODO lists, planning projects, and authoring documents with a fast and effective plain-text system. See [[http://orgmode.org/][here]].
+** Setting up
+
 #+begin_src emacs-lisp
 ;; org has quite some spurious commands
 (unbind-key "C-c C-z" org-mode-map)	;org-add-note
@@ -887,7 +926,8 @@ See [[http://orgmode.org/][here]].
 (use-package org-tempo :straight org)
 #+end_src
 
-*** Org-exports
+** Org-exports
+From org-mode to every other filetypes.
 
 #+begin_src emacs-lisp
 (use-package ox-latex
@@ -997,7 +1037,8 @@ I am also implementing =ox-hugo=
 
 #+end_src
 
-*** Org-agenda
+** Org-agenda
+GET.THINGS.DONE.
 
 #+begin_src emacs-lisp
 (use-package org-agenda
@@ -1029,7 +1070,9 @@ I am also implementing =ox-hugo=
   ("C-c c" . org-capture))
 #+end_src
 
-*** Org-ref
+** Org-ref
+Org-refs make citations and managing bibliographies much easier.
+
 #+begin_src emacs-lisp :tangle linuxp
 (use-package org-ref
   :config
@@ -1057,7 +1100,8 @@ I am also implementing =ox-hugo=
   :bind ("C-c ]" . helm-bibtex))
 #+end_src
 
-*** Org-journal
+** Org-journal
+A journal inside Emacs.
 
 #+begin_src emacs-lisp
 (use-package org-journal
@@ -1072,7 +1116,8 @@ I am also implementing =ox-hugo=
         org-journal-enable-agenda-integration t))
 #+end_src
 
-*** Org-roam
+** Org-roam
+Org-roam falicitate a system of networked notetaking that I am experiments with.
 
 #+begin_src emacs-lisp
 (use-package org-roam
@@ -1142,7 +1187,8 @@ I am also implementing =ox-hugo=
 #+end_src
 
 * Utilities
-** projectile
+** Projectile
+Working with multiple projects.
 
 #+begin_src emacs-lisp
 (use-package projectile
@@ -1159,10 +1205,10 @@ I am also implementing =ox-hugo=
   (helm-projectile-on))
 #+end_src
 
-** magit
+** Magit
 Magit is an interface to the version control system Git, implemented as an Emacs package. Magit aspires to be a complete Git porcelain. [[https://magit.vc/][See here]]
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (use-package magit
   :bind
   ;; Set magit-status to F9
@@ -1180,28 +1226,32 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 #+end_src
 
 ** Search
+Ripgrep is the best search tool out there.
+
 #+begin_src emacs-lisp :tangle linuxp
 (use-package rg :config (rg-enable-default-bindings))
 #+end_src
 
-** which-key
+** Which-key
 [[https://github.com/justbur/emacs-which-key][which-key]] is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (use-package which-key
   :diminish which-key-mode
   :config
   (which-key-mode 1))
 #+end_src
 
-** restart-emacs
+** Restart-emacs
+Make restarting easier, handy whenever I'm grokking Emacs.
+
 #+begin_src emacs-lisp
 (use-package restart-emacs)
 #+end_src
 * Languages Modes
-** ESS
+** R: =ess-mode=
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (use-package ess-site
   :straight ess
   :config
@@ -1271,9 +1321,9 @@ Magit is an interface to the version control system Git, implemented as an Emacs
   )
 #+end_src
 
-** Python
+** Python: =elpy=
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :config
@@ -1341,7 +1391,7 @@ Magit is an interface to the version control system Git, implemented as an Emacs
   :hook (python-mode . pipenv-mode))
 #+end_src
 
-** Julia
+** Julia: =julia-mode= and =julia-snail=
 
 #+begin_src emacs-lisp
 (use-package julia-mode
@@ -1358,7 +1408,7 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 
 #+end_src
 
-** Jupyter Notebook
+** Jupyter Notebook: =emacs-jupiter=
 
 #+begin_src emacs-lisp :tangle linuxp
 (use-package jupyter)
@@ -1377,10 +1427,11 @@ Magit is an interface to the version control system Git, implemented as an Emacs
         (:kernel . "julia")))
 #+end_src
 
-** LaTeX
+** LaTeX: =AUCTeX= and =CDLaTeX=
 *** AUCTeX
-    
-#+begin_src emacs-lisp 
+AUCTeX is THE TeX extension for Emacs. Be careful with configuration because it overrides the built-in =tex= package.
+
+#+begin_src emacs-lisp
 (use-package auctex
   :mode ("\\.tex\\'" . TeX-latex-mode)
   :config
@@ -1406,19 +1457,19 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 #+end_src
 
 *** CDLaTex
-CDLaTeX is a minor mode for Emacs supporting fast insertion of environment templates and math stuff in LaTeX. 
+CDLaTeX is a minor mode for Emacs supporting fast insertion of environment templates and math stuff in LaTeX.
 For more information see [[https://github.com/cdominik/cdlatex][here]]
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (use-package cdlatex
   :after (tex)
   :config
   (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex))
 #+end_src
 
-** Markdown
+** Markdown: =markdown-mode=
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
@@ -1428,10 +1479,10 @@ For more information see [[https://github.com/cdominik/cdlatex][here]]
          ("C-c i" . markdown-insert-code-chunk)))
 #+end_src
 
-** ELisp
+** Emacs Lisp
 Customisation to emacs-lisp itself, this is mainly syntax highlighting
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (use-package highlight-defined
   :config
   (add-hook 'emacs-lisp-mode-hook 'highlight-defined-mode))
@@ -1449,14 +1500,14 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
    ("C-h k" . helpful-key)))
 #+end_src
 
-** CSS
-   
-#+begin_src emacs-lisp 
+** CSS: =css-mode=
+
+#+begin_src emacs-lisp
 (use-package css-mode
   :mode (("\\.css?\\'" . css-mode)))
 #+end_src
 
-** PDF
+** PDF: =pdf-tools=
 
 #+begin_src emacs-lisp :tangle linuxp
 (use-package pdf-tools
@@ -1466,6 +1517,7 @@ Customisation to emacs-lisp itself, this is mainly syntax highlighting
 #+end_src
 
 ** Org-mode Babel
+Finally, the Babel functionality of Org-mode makes writings in literate programming style a lot easier. This config itself is powered by org-babel. Since it requires the major-mode for other languages, I put this at the bottom of configuration.
 
 #+begin_src emacs-lisp :tangle linuxp
 (setq org-confirm-babel-evaluate nil)
